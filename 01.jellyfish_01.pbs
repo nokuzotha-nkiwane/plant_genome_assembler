@@ -3,8 +3,8 @@
 #PBS -P PROJECT_NAME
 #PBS -q serial
 #PBS -l walltime=4:00:00
-#PBS -o GRAPEVINE_PATH/palo_mino/results/01.jellyfish/run_1.out
-#PBS -e GRAPEVINE_PATH/palo_mino/results/01.jellyfish/run_1.err
+#PBS -o GRAPEVINE_PATH_PBS/palo_mino/results/01.jellyfish/run_1.out
+#PBS -e GRAPEVINE_PATH_PBS/palo_mino/results/01.jellyfish/run_1.err
 #PBS -m abe
 #PBS -M PBS_EMAIL
 
