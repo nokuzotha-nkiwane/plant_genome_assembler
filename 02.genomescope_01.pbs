@@ -1,0 +1,29 @@
+#!/bin/bash
+#PBS -l select=2:ncpus=8:mem=20GB
+#PBS -P PROJECT_NAME
+#PBS -q serial
+#PBS -l walltime=4:00:00
+#PBS -o GRAPEVINE_PATH_PBS/palo_mino/results/01.jellyfish/run_1.out
+#PBS -e GRAPEVINE_PATH_PBS/palo_mino/results/01.jellyfish/run_1.err
+#PBS -m abe
+#PBS -M PBS_EMAIL
+
+#kill execution at first error
+set -euox pipefail 
+
+#for evaluating variables in ~/.pbsrc
+source ~/.pbsrc
+
+#directories and files
+workdir="${GRAPEVINE_PATH}/palo_mino"
+raw_reads_fq="${workdir}/raw_reads/palo_mino.fastq"
+all_results_dir="${workdir}/results"
+jellyfish_histo="${all_results_dir}/01.jellyfish/palo_mino.histo"
+genomescope2_out_dir="${all_results_dir}/02.genomescope"
+
+#load modules
+module load chpc/BIOMODULES
+module load genomescope-2 
+
+#genomescope visualisation
+/apps/chpc/bio/R/4.1.0/bin/genomescope.R -i ${jellyfish_histo} -o ${genomescope2_out_dir} -k 21
