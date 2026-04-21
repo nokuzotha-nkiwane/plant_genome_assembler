@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -l select=2:ncpus=16:mem=20GB
+#PBS -l select=2:ncpus=8:mem=20GB
 #PBS -P PROJECT_NAME
 #PBS -q serial
 #PBS -l walltime=4:00:00
