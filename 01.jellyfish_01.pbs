@@ -15,7 +15,7 @@ set -euox pipefail
 source ~/.pbsrc
 
 #resource parameters
-THREADS=24
+THREADS=8
 
 #directories and files
 workdir="${GRAPEVINE_PATH}/palo_mino"
