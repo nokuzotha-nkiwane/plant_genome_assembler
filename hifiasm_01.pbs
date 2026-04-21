@@ -11,11 +11,14 @@
 #kill execution at first error
 set -euox pipefail 
 
+#for evaluating variables in ~/.pbsrc
+source ~/.pbsrc
+
 #resource parameters
 THREADS=24
 
 #directories and files
-workdir="/mnt/lustre/users/nnkiwane/masters/grapevine/palo_mino"
+workdir="${GRAPEVINE_PATH}/palo_mino"
 raw_reads_fq="${workdir}/raw_reads/palo_mino.fastq"
 all_results_dir="${workdir}/results"
 hifiasm_asm="${all_results_dir}/04.hifiasm/palo_mino.asm"

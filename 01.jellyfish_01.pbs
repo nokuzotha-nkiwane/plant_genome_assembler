@@ -1,8 +1,7 @@
-
 #!/bin/bash
-#PBS -l select=1:ncpus=25:mem=124GB
+#PBS -l select=2:ncpus=16:mem=20GB
 #PBS -P PROJECT_NAME
-#PBS -q normal
+#PBS -q serial
 #PBS -l walltime=4:00:00
 #PBS -o GRAPEVINE_PATH/palo_mino/results/01.jellyfish/run_1.out
 #PBS -e GRAPEVINE_PATH/palo_mino/results/01.jellyfish/run_1.err
@@ -12,11 +11,14 @@
 #kill execution at first error
 set -euox pipefail 
 
+#for evaluating variables in ~/.pbsrc
+source ~/.pbsrc
+
 #resource parameters
 THREADS=24
 
 #directories and files
-workdir="GRAPEVINE_PATH/palo_mino"
+workdir="${GRAPEVINE_PATH}/palo_mino"
 raw_reads_fq="${workdir}/raw_reads/palo_mino.fastq"
 all_results_dir="${workdir}/results"
 jellyfish_jf="${all_results_dir}/01.jellyfish/palo_mino.jf"
