@@ -1,11 +1,11 @@
 #!/bin/bash
-#PBS -l select=1:ncpus=24:mem=124GB
+#PBS -l select=2:ncpus=8:mem=60GB
 #PBS -P PROJECT_NAME
-#PBS -q normal
-#PBS -l walltime=4:00:00
+#PBS -q serial
+#PBS -l walltime=8:00:00
 #PBS -o GRAPEVINE_PATH_PBS/palo_mino/results/04.hifiasm/run_1.out
 #PBS -e GRAPEVINE_PATH_PBS/palo_mino/results/04.hifiasm/run_1.err
-#PBS -m abe
+#PBS -m be
 #PBS -M PBS_EMAIL
 
 #kill execution at first error
@@ -15,7 +15,7 @@ set -euox pipefail
 source ~/.pbsrc
 
 #resource parameters
-THREADS=24
+THREADS=8
 
 #directories and files
 workdir="${GRAPEVINE_PATH}/palo_mino"
@@ -24,4 +24,4 @@ all_results_dir="${workdir}/results"
 hifiasm_asm="${all_results_dir}/04.hifiasm/palo_mino.asm"
 
 #hifiasm assembly
-hifiasm -o ${hifiasm_asm} -t ${THREADS} ${raw_reads_fq}
+hifiasm -o ${hifiasm_asm} --primary -t ${THREADS} ${raw_reads_fq}
