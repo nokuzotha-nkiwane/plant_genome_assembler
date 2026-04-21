@@ -23,5 +23,9 @@ raw_reads_fq="${workdir}/raw_reads/palo_mino.fastq"
 all_results_dir="${workdir}/results"
 hifiasm_asm="${all_results_dir}/04.hifiasm/palo_mino.asm"
 
+#load modules
+module load chpc/BIOMODULES
+module load hifiasm/0.24.0-r703
+
 #hifiasm assembly
 hifiasm -o ${hifiasm_asm} --primary -t ${THREADS} ${raw_reads_fq}
