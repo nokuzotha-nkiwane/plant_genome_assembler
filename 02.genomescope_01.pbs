@@ -3,8 +3,8 @@
 #PBS -P PROJECT_NAME
 #PBS -q serial
 #PBS -l walltime=4:00:00
-#PBS -o GRAPEVINE_PATH_PBS/palo_mino/results/01.jellyfish/run_1.out
-#PBS -e GRAPEVINE_PATH_PBS/palo_mino/results/01.jellyfish/run_1.err
+#PBS -o GRAPEVINE_PATH_PBS/palo_mino/results/02.genomescope/run_1.out
+#PBS -e GRAPEVINE_PATH_PBS/palo_mino/results/02.genomescope/run_1.err
 #PBS -m abe
 #PBS -M PBS_EMAIL
 
@@ -16,7 +16,6 @@ source ~/.pbsrc
 
 #directories and files
 workdir="${GRAPEVINE_PATH}/palo_mino"
-raw_reads_fq="${workdir}/raw_reads/palo_mino.fastq"
 all_results_dir="${workdir}/results"
 jellyfish_histo="${all_results_dir}/01.jellyfish/palo_mino.histo"
 genomescope2_out_dir="${all_results_dir}/02.genomescope"
