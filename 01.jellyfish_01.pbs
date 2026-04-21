@@ -24,6 +24,10 @@ all_results_dir="${workdir}/results"
 jellyfish_jf="${all_results_dir}/01.jellyfish/palo_mino.jf"
 jellyfish_histo="${all_results_dir}/01.jellyfish/palo_mino.histo"
 
+#load modules
+module load chpc/BIOMODULES
+module load jellyfish/2.2.10 
+
 #jellyfish kmer analysis
 jellyfish count -m 21 -s 100M -t ${THREADS} -C -o ${jellyfish_jf} ${raw_reads_fq}
 
