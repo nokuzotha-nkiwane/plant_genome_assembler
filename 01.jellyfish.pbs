@@ -18,11 +18,11 @@ source ~/.pbsrc
 THREADS=8
 
 #directories and files
-workdir="${GRAPEVINE_PATH}/${SAMPLE_CLI}"
-raw_reads_fq="${workdir}/raw_reads/${SAMPLE_CLI}.fastq"
+workdir="${GRAPEVINE_PATH}/SAMPLE_CLI"
+raw_reads_fq="${workdir}/raw_reads/SAMPLE_CLI.fastq"
 all_results_dir="${workdir}/results"
-jellyfish_jf="${all_results_dir}/01.jellyfish/${SAMPLE_CLI}.jf"
-jellyfish_histo="${all_results_dir}/01.jellyfish/${SAMPLE_CLI}.histo"
+jellyfish_jf="${all_results_dir}/01.jellyfish/SAMPLE_CLI.jf"
+jellyfish_histo="${all_results_dir}/01.jellyfish/SAMPLE_CLI.histo"
 
 #load modules
 module load chpc/BIOMODULES

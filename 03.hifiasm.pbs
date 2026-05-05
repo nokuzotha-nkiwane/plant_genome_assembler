@@ -18,10 +18,10 @@ source ~/.pbsrc
 THREADS=8
 
 #directories and files
-workdir="${GRAPEVINE_PATH}/${SAMPLE_CLI}"
-raw_reads_fq="${workdir}/raw_reads/${SAMPLE_CLI}.fastq"
+workdir="${GRAPEVINE_PATH}/SAMPLE_CLI"
+raw_reads_fq="${workdir}/raw_reads/SAMPLE_CLI.fastq"
 all_results_dir="${workdir}/results"
-hifiasm_asm="${all_results_dir}/03.hifiasm/${SAMPLE_CLI}.asm"
+hifiasm_asm="${all_results_dir}/03.hifiasm/SAMPLE_CLI.asm"
 
 
 #load modules

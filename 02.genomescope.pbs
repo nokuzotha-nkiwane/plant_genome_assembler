@@ -15,9 +15,9 @@ set -euox pipefail
 source ~/.pbsrc
 
 #directories and files
-workdir="${GRAPEVINE_PATH}/${SAMPLE_CLI}"
+workdir="${GRAPEVINE_PATH}/SAMPLE_CLI"
 all_results_dir="${workdir}/results"
-jellyfish_histo="${all_results_dir}/01.jellyfish/${SAMPLE_CLI}.histo"
+jellyfish_histo="${all_results_dir}/01.jellyfish/SAMPLE_CLI.histo"
 genomescope2_out_dir="${all_results_dir}/02.genomescope"
 
 #load modules
