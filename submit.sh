@@ -31,6 +31,6 @@ JOB_ID=$(sed -e "s/PBS_EMAIL/${PBS_EMAIL}/" \
 #write run metadata for current iteration
 echo "sample: ${SAMPLE}
 script: ${2}
-commit: $(git -C $(dirname $0) rev-parse --short HEAD)
+commit: $(git rev-parse --short HEAD)
 date: $(date -u)
 pbs_job_id: ${JOB_ID}" > "${RESULTS_DIR}/run_metadata.txt"
