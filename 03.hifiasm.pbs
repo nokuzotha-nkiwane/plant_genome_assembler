@@ -3,8 +3,8 @@
 #PBS -P PROJECT_NAME
 #PBS -q serial
 #PBS -l walltime=48:00:00
-#PBS -o GRAPEVINE_PATH_PBS/palo_mino/results/03.hifiasm/hifiasm.out
-#PBS -e GRAPEVINE_PATH_PBS/palo_mino/results/03.hifiasm/hifiasm.err
+#PBS -o GRAPEVINE_PATH_PBS/SAMPLE_CLI/results/03.hifiasm/hifiasm.out
+#PBS -e GRAPEVINE_PATH_PBS/SAMPLE_CLI/results/03.hifiasm/hifiasm.err
 #PBS -m be
 #PBS -M PBS_EMAIL
 
@@ -18,10 +18,10 @@ source ~/.pbsrc
 THREADS=8
 
 #directories and files
-workdir="${GRAPEVINE_PATH}/palo_mino"
-raw_reads_fq="${workdir}/raw_reads/palo_mino.fastq"
+workdir="${GRAPEVINE_PATH}/${SAMPLE_CLI}"
+raw_reads_fq="${workdir}/raw_reads/${SAMPLE_CLI}.fastq"
 all_results_dir="${workdir}/results"
-hifiasm_asm="${all_results_dir}/03.hifiasm/palo_mino.asm"
+hifiasm_asm="${all_results_dir}/03.hifiasm/${SAMPLE_CLI}.asm"
 
 
 #load modules

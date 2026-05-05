@@ -23,9 +23,10 @@ fi
 mkdir -p ${RESULTS_DIR}
 
 #substitutions for PBS directives in script
-JOB_ID=$(sed -e "s/PBS_EMAIL/${PBS_EMAIL}/" \
-    -e "s/PROJECT_NAME/${PROJECT_NAME}/" \
+JOB_ID=$(sed -e "s/PBS_EMAIL/${PBS_EMAIL}/g" \
+    -e "s/PROJECT_NAME/${PROJECT_NAME}/g" \
     -e "s|GRAPEVINE_PATH_PBS|${GRAPEVINE_PATH}|g" \
+    -e "s/SAMPLE_CLI/${SAMPLE}/g" \
     ${SCRIPT} | qsub)
 
 #write run metadata for current iteration
