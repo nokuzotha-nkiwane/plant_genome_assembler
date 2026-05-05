@@ -3,8 +3,8 @@
 #PBS -P PROJECT_NAME
 #PBS -q serial
 #PBS -l walltime=8:00:00
-#PBS -o GRAPEVINE_PATH_PBS/palo_mino/results/03.hifiasm/run_1.out
-#PBS -e GRAPEVINE_PATH_PBS/palo_mino/results/03.hifiasm/run_1.err
+#PBS -o GRAPEVINE_PATH_PBS/palo_mino/results/03.hifiasm/hifiasm.out
+#PBS -e GRAPEVINE_PATH_PBS/palo_mino/results/03.hifiasm/hifiasm.err
 #PBS -m be
 #PBS -M PBS_EMAIL
 
