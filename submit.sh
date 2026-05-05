@@ -34,3 +34,6 @@ script: ${2}
 commit: $(git rev-parse --short HEAD)
 date: $(date -u)
 pbs_job_id: ${JOB_ID}" > "${RESULTS_DIR}/run_metadata.txt"
+
+#notify that job was successfully submitted
+echo "Submitted ${JOB_ID} -> ${RESULTS_DIR}"
