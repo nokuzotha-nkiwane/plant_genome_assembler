@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -l select=1:ncpus=16:mem=60GB
+#PBS -l select=1:ncpus=23:mem=60GB
 #PBS -P PROJECT_NAME
 #PBS -q serial
 #PBS -l walltime=48:00:00
@@ -15,7 +15,7 @@ set -euox pipefail
 source ~/.pbsrc
 
 #resource parameters
-THREADS=16
+THREADS=23
 
 #directories and files
 workdir="${GRAPEVINE_PATH}/SAMPLE_CLI"
@@ -30,12 +30,15 @@ module load chpc/BIOMODULES
 module load busco/6.0.0
 
 #check quality of assembled contigs for each haplotype
+
 for fasta in ${contigs_in};do
+    echo "Running BUSCO for ${fasta}"
     singularity run $SIF busco --in ${fasta} \
     --metaeuk \
     -m genome \
     -l eudicotyledons_odb12 \
     --download_path ${busco_db_dir} \
     -c ${THREADS} \
-    --out_path ${busco_dir};
+    --out_path ${busco_dir}
+    echo "BUSCO for ${fasta} complete";
 done
