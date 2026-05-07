@@ -48,20 +48,10 @@ for gfa in ${gfa_files}; do
 
     #extract sequences from gfa to fasta
     awk '/^S/{print ">"$2; print $3}' "${gfa}" > ${fasta_out} || { echo "Contig extraction failed for ${gfa}"; exit 1; }
-    echo "Contig extraction complete."
-
-    #copy the fasta to a new a name
-    echo "Making second copy of fasta file"
-    cp ${fasta_out} ${fasta_out}.copy
-    echo "Second fasta made"
+    echo "Contig extraction for ${gfa} complete."
 
     #compress original fasta file
-    echo "Compressing fasta files..."
+    echo "Compressing fasta file..."
     gzip -k ${fasta_out} || { echo "Fasta compression failed for ${fasta_out}"; exit 1; }
-    echo "Fasta compression complete"
-
-    #rename second fasta file (the copy) to original name
-    #each haplotype must have a fa and fa.gz (gzip doesn't have -k parameter)
-    mv ${fasta_out}.copy ${fasta_out}
     echo "Fasta and compressed files successfully produced"
 done
