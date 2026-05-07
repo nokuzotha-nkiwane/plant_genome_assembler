@@ -30,7 +30,6 @@ module load chpc/BIOMODULES
 module load busco/6.0.0
 
 #check quality of assembled contigs for each haplotype
-
 for fasta in ${contigs_in};do
     echo "Running BUSCO for ${fasta}"
     singularity run $SIF busco --in ${fasta} \
