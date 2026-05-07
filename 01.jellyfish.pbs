@@ -3,8 +3,8 @@
 #PBS -P PROJECT_NAME
 #PBS -q serial
 #PBS -l walltime=4:00:00
-#PBS -o GRAPEVINE_PATH_PBS/SAMPLE_CLI/results/01.jellyfish/jellyfish.out
-#PBS -e GRAPEVINE_PATH_PBS/SAMPLE_CLI/results/01.jellyfish/jellyfish.err
+#PBS -o OUTPUT_FILE_PBS
+#PBS -e ERROR_FILE_PBS
 #PBS -m abe
 #PBS -M PBS_EMAIL
 
@@ -21,8 +21,9 @@ THREADS=8
 workdir="${GRAPEVINE_PATH}/SAMPLE_CLI"
 raw_reads_fq="${workdir}/raw_reads/SAMPLE_CLI.fastq"
 all_results_dir="${workdir}/results"
-jellyfish_jf="${all_results_dir}/01.jellyfish/SAMPLE_CLI.jf"
-jellyfish_histo="${all_results_dir}/01.jellyfish/SAMPLE_CLI.histo"
+jellyfish_out_dir="RESULTS_DIR"
+jellyfish_jf="${jellyfish_out_dir}/SAMPLE_CLI.jf"
+jellyfish_histo="${jellyfish_out_dir}/SAMPLE_CLI.histo"
 
 #load modules
 module load chpc/BIOMODULES

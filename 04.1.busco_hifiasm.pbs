@@ -3,8 +3,8 @@
 #PBS -P PROJECT_NAME
 #PBS -q serial
 #PBS -l walltime=48:00:00
-#PBS -o GRAPEVINE_PATH_PBS/SAMPLE_CLI/results/04.busco_hifiasm/busco_hifiasm.out
-#PBS -e GRAPEVINE_PATH_PBS/SAMPLE_CLI/results/04.busco_hifiasm/busco_hifiasm.err
+#PBS -o OUTPUT_FILE_PBS
+#PBS -e ERROR_FILE_PBS
 #PBS -m be
 #PBS -M PBS_EMAIL
 
@@ -20,7 +20,7 @@ THREADS=16
 #directories and files
 workdir="${GRAPEVINE_PATH}/SAMPLE_CLI"
 all_results_dir="${workdir}/results"
-busco_dir="${all_results_dir}/03.1.busco_hifiasm"
+busco_dir="RESULTS_DIR"
 busco_db_dir="/mnt/lustre/users/nnkiwane/masters/databases"
 contigs_dir="${all_results_dir}/contigs"
 contigs_in="${contigs_dir}/SAMPLE_CLI_hap?.fa"

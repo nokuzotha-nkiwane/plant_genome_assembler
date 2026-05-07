@@ -1,10 +1,10 @@
 #!/bin/bash
-#PBS -l select=2:ncpus=8:mem=60GB
+#PBS -l select=1:ncpus=23:mem=60GB
 #PBS -P PROJECT_NAME
 #PBS -q serial
 #PBS -l walltime=48:00:00
-#PBS -o GRAPEVINE_PATH_PBS/SAMPLE_CLI/results/03.hifiasm/hifiasm.out
-#PBS -e GRAPEVINE_PATH_PBS/SAMPLE_CLI/results/03.hifiasm/hifiasm.err
+#PBS -o OUTPUT_FILE_PBS
+#PBS -e ERROR_FILE_PBS
 #PBS -m be
 #PBS -M PBS_EMAIL
 
@@ -21,7 +21,7 @@ THREADS=16
 workdir="${GRAPEVINE_PATH}/SAMPLE_CLI"
 raw_reads_fq="${workdir}/raw_reads/SAMPLE_CLI.fastq"
 all_results_dir="${workdir}/results"
-hifiasm_dir="${all_results_dir}/03.hifiasm"
+hifiasm_dir="RESULTS_DIR"
 hifiasm_asm="${hifiasm_dir}/SAMPLE_CLI.asm"
 gfa_files="${hifiasm_dir}/SAMPLE_CLI.asm.bp.hap?.p_ctg.gfa"
 contigs_dir="${all_results_dir}/contigs"

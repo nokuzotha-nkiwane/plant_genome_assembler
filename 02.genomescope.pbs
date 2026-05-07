@@ -3,8 +3,8 @@
 #PBS -P PROJECT_NAME
 #PBS -q serial
 #PBS -l walltime=4:00:00
-#PBS -o GRAPEVINE_PATH_PBS/SAMPLE_CLI/results/02.genomescope/genomescope.out
-#PBS -e GRAPEVINE_PATH_PBS/SAMPLE_CLI/results/02.genomescope/genomescope.err
+#PBS -o OUTPUT_FILE_PBS
+#PBS -e ERROR_FILE_PBS
 #PBS -m abe
 #PBS -M PBS_EMAIL
 
@@ -18,7 +18,7 @@ source ~/.pbsrc
 workdir="${GRAPEVINE_PATH}/SAMPLE_CLI"
 all_results_dir="${workdir}/results"
 jellyfish_histo="${all_results_dir}/01.jellyfish/SAMPLE_CLI.histo"
-genomescope2_out_dir="${all_results_dir}/02.genomescope"
+genomescope2_out_dir="RESULTS_DIR"
 
 #load modules
 module load chpc/BIOMODULES
