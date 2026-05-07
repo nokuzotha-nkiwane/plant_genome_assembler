@@ -57,7 +57,7 @@ for gfa in ${gfa_files}; do
 
     #compress original fasta file
     echo "Compressing fasta files..."
-    gzip -k ${fasta_out} || { echo "Fasta compression failed for ${fasta_out}"; exit 1; }
+    gzip ${fasta_out} || { echo "Fasta compression failed for ${fasta_out}"; exit 1; }
     echo "Fasta compression complete"
 
     #rename second fasta file (the copy) to original name
