@@ -35,6 +35,7 @@ RUN_BUSCO() {
     singularity run $SIF busco --in ${fasta} \
     --metaeuk \
     -m genome \
+    --offline \
     -l eudicotyledons_odb12 \
     --download_path ${busco_db_dir} \
     -c ${THREADS} \
