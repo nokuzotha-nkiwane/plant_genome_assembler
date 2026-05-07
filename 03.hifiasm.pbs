@@ -15,18 +15,41 @@ set -euox pipefail
 source ~/.pbsrc
 
 #resource parameters
-THREADS=8
+THREADS=16
 
 #directories and files
 workdir="${GRAPEVINE_PATH}/SAMPLE_CLI"
 raw_reads_fq="${workdir}/raw_reads/SAMPLE_CLI.fastq"
 all_results_dir="${workdir}/results"
-hifiasm_asm="${all_results_dir}/03.hifiasm/SAMPLE_CLI.asm"
-
+hifiasm_dir="${all_results_dir}/03.hifiasm"
+hifiasm_asm="${hifiasm_dir}/SAMPLE_CLI.asm"
+gfa_files="${hifiasm_dir}/SAMPLE_CLI.asm.bp.hap?.p_ctg.gfa"
+contigs_dir="${all_results_dir}/contigs"
 
 #load modules
 module load chpc/BIOMODULES
 module load hifiasm/0.24.0-r703
+module load gzip-1.9
 
 #hifiasm assembly
-hifiasm -o ${hifiasm_asm} -t ${THREADS} ${raw_reads_fq}
+echo "Performing contig assembly..."
+hifiasm -o ${hifiasm_asm} -t ${THREADS} ${raw_reads_fq} || { echo "Contig assembly failed"; exit 1; }
+echo "Contig assembly complete"
+
+#convert gfa to fasta
+for gfa in ${gfa_files}; do
+    echo "Extracting contigs for ${gfa}..."
+
+    #extract basename to name output fasta file
+    hap=$(basename ${gfa} | grep -o "hap[0-9]")
+    fasta_out="${contigs_dir}/SAMPLE_CLI_${hap}.fa"
+
+    #extract sequences from gfa to fasta
+    awk '/^S/{print ">"$2; print $3}' "${gfa}" > ${fasta_out} || { echo "Contig extraction failed for ${gfa}"; exit 1; }
+    echo "Contig extraction complete."
+
+    #compress fasta files
+    echo "Compressing fasta files..."
+    gzip -k ${fasta_out} || { echo "Fasta compression failed for ${fasta_out}"; exit 1; }
+    echo "Fasta compression complete"
+done
