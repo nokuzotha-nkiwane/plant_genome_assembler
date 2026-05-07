@@ -15,7 +15,7 @@ set -euox pipefail
 source ~/.pbsrc
 
 #resource parameters
-THREADS=16
+THREADS=23
 
 #directories and files
 workdir="${GRAPEVINE_PATH}/SAMPLE_CLI"
@@ -25,6 +25,8 @@ hifiasm_dir="RESULTS_DIR"
 hifiasm_asm="${hifiasm_dir}/SAMPLE_CLI.asm"
 gfa_files="${hifiasm_dir}/SAMPLE_CLI.asm.bp.hap?.p_ctg.gfa"
 contigs_dir="${all_results_dir}/contigs"
+
+mkdir -p ${contigs_dir}
 
 #load modules
 module load chpc/BIOMODULES
@@ -48,8 +50,18 @@ for gfa in ${gfa_files}; do
     awk '/^S/{print ">"$2; print $3}' "${gfa}" > ${fasta_out} || { echo "Contig extraction failed for ${gfa}"; exit 1; }
     echo "Contig extraction complete."
 
-    #compress fasta files
+    #copy the fasta to a new a name
+    echo "Making second copy of fasta file"
+    cp ${fasta_out} ${fasta_out}.copy
+    echo "Second fasta made"
+
+    #compress original fasta file
     echo "Compressing fasta files..."
     gzip -k ${fasta_out} || { echo "Fasta compression failed for ${fasta_out}"; exit 1; }
     echo "Fasta compression complete"
+
+    #rename second fasta file (the copy) to original name
+    #each haplotype must have a fa and fa.gz (gzip doesn't have -k parameter)
+    mv ${fasta_out}.copy ${fasta_out}
+    echo "Fasta and compressed files successfully produced"
 done
