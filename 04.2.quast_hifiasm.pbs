@@ -18,10 +18,11 @@ source ~/.pbsrc
 THREADS=23
 
 #directories and files
-ref_genome="/mnt/lustre/users/nnkiwane/masters/T2T_ref.zip"
-ref_gff3="/mnt/lustre/users/nnkiwane/masters/PN40024_5.1_on_T2T_ref_with_names.zip"
-#feature_files="/mnt/lustre/users/nnkiwane/masters/5.1_on_T2T_all_variants.zip"
 workdir="${GRAPEVINE_PATH}/SAMPLE_CLI"
+ref_dir="${GRAPEVINE_PATH}/reference"
+ref_genome="${ref_dir}/T2T_ref.zip"
+ref_gff3="${ref_dir}/PN40024_5.1_on_T2T_ref_with_names.zip"
+#feature_files="${ref_dir}/5.1_on_T2T_all_variants.zip"
 quast_dir="RESULTS_DIR"
 all_results_dir="${workdir}/results"
 contigs_dir="${all_results_dir}/contigs"
