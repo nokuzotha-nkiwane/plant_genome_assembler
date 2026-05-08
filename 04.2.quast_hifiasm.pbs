@@ -1,0 +1,47 @@
+#!/bin/bash
+#PBS -l select=1:ncpus=25:mem=60GB
+#PBS -P PROJECT_NAME
+#PBS -q normal
+#PBS -l walltime=48:00:00
+#PBS -o OUTPUT_FILE_PBS
+#PBS -e ERROR_FILE_PBS
+#PBS -m be
+#PBS -M PBS_EMAIL
+
+#kill execution at first error
+set -euox pipefail 
+
+#for evaluating variables in ~/.pbsrc
+source ~/.pbsrc
+
+#resource parameters
+THREADS=23
+
+#directories and files
+ref_genome="/mnt/lustre/users/nnkiwane/masters/T2T_ref.zip"
+ref_gff3="/mnt/lustre/users/nnkiwane/masters/PN40024_5.1_on_T2T_ref_with_names.zip"
+#feature_files="/mnt/lustre/users/nnkiwane/masters/5.1_on_T2T_all_variants.zip"
+workdir="${GRAPEVINE_PATH}/SAMPLE_CLI"
+quast_dir="RESULTS_DIR"
+all_results_dir="${workdir}/results"
+contigs_dir="${all_results_dir}/contigs"
+hap1="${contigs_dir}/SAMPLE_CLI_hap1.fa.gz"
+hap2="${contigs_dir}/SAMPLE_CLI_hap2.fa.gz"
+
+#load modules
+module load chpc/BIOMODULES
+module load quast/5.2.0
+
+#check quality of assembled contigs for each haplotype
+
+python /apps/chpc/bio/quast/5.2.0/quast.py ${hap1} \
+    ${hap2} \
+    -r ${ref_genome} \
+    -g ${ref_gff3} \
+    -o ${quast_dir} \
+    -e \
+    -k \
+    --circos \
+    --plots-format pdf \
+    -t ${THREADS}
+    # --features ${feature_files} \
