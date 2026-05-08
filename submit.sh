@@ -8,7 +8,7 @@ source ~/.pbsrc
 #user input of sample and script to run 
 SAMPLE="${1}" || { echo "Please enter the command line argument: sample_name"; exit 1; }
 SCRIPT="${2}" || { echo "Please enter the command line argument: script_name"; exit 1; }
-STEP="${2%.pbs}" ||
+STEP="${2%.pbs}"
 
 #validate environment (variables set in ~/.pbsrc)
 [[ -z "${GRAPEVINE_PATH}" ]] && { echo "Error: GRAPEVINE_PATH not set"; exit 1; }
