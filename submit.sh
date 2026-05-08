@@ -6,9 +6,9 @@ set -euo pipefail
 source ~/.pbsrc
 
 #user input of sample and script to run 
-SAMPLE="${1}" || { echo "Please enter the command line argument: sample_name"; exit 1; }
-SCRIPT="${2}" || { echo "Please enter the command line argument: script_name"; exit 1; }
-STEP="${2%.pbs}"
+SCRIPT="${1}" || { echo "Please enter the command line argument: script_name"; exit 1; }
+SAMPLE="${2}" || { echo "Please enter the command line argument: sample_name"; exit 1; }
+STEP="${1%.pbs}"
 
 #validate environment (variables set in ~/.pbsrc)
 [[ -z "${GRAPEVINE_PATH}" ]] && { echo "Error: GRAPEVINE_PATH not set"; exit 1; }
@@ -43,7 +43,7 @@ JOB_ID=$(sed -e "s/PBS_EMAIL/${PBS_EMAIL}/g" \
 
 #write run metadata for current iteration
 echo "sample: ${SAMPLE}
-script: ${2}
+script: ${1}
 commit: $(git rev-parse --short HEAD)
 date: $(date -u)
 pbs_job_id: ${JOB_ID}" > "${RESULTS_DIR}/run_metadata.txt"
