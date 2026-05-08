@@ -1,6 +1,6 @@
 #!/bin/bash
 #kill execution at first error
-set -euox pipefail 
+set -euo pipefail 
 
 #for evaluating variables in ~/.pbsrc
 source ~/.pbsrc
