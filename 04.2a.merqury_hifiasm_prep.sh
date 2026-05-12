@@ -23,8 +23,8 @@ kmer_size=31
 workdir="${GRAPEVINE_PATH}/SAMPLE_CLI"
 raw_reads="${workdir}/raw_reads/SAMPLE_CLI.fastq"
 raw_reads_gz="${workdir}/raw_reads/SAMPLE_CLI.fastq.gz"
-merqury_dir="RESULTS_DIR"
-meryl_output="${merqury_dir}/SAMPLE_CLI_asm.meryl"
+meryl_dir="RESULTS_DIR"
+meryl_output="${meryl_dir}/SAMPLE_CLI_asm.meryl"
 
 #load modules
 module load chpc/BIOMODULES
