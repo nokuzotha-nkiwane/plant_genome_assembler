@@ -23,7 +23,7 @@ all_results_dir="${workdir}/results"
 contigs_dir="${all_results_dir}/contigs"
 contigs_in_1="${contigs_dir}/SAMPLE_CLI_hap1.fa.gz"
 contigs_in_2="${contigs_dir}/SAMPLE_CLI_hap2.fa.gz"
-merqury_out_prefix="mq_"
+merqury_out_prefix="mq_SAMPLE_CLI"
 
 #check if non-empty files exist
 for FILE in ${raw_reads_gz} ${contigs_in_1} ${contigs_in_2}; do
@@ -39,5 +39,6 @@ module load merqury
 
 #run merqury to check quality of assembled contigs for each haplotype
 echo "Running merqury on assembled contigs "
+cd ${merqury_dir}
 singularity run $SIF merqury.sh ${meryl_output} ${contigs_in_1} ${contigs_in_2} ${merqury_out_prefix}
 echo "Merqury complete"
