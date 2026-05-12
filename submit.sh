@@ -6,9 +6,9 @@ set -euo pipefail
 source ~/.pbsrc
 
 #user input of sample and script to run 
-SCRIPT="${1}" || { echo "Please enter the command line argument: script_name"; exit 1; }
-SAMPLE="${2}" || { echo "Please enter the command line argument: sample_name"; exit 1; }
-STEP="${1%.pbs}"
+SCRIPT="${1:?Please enter the command line argument: script_name}"
+SAMPLE="${2:?Please enter the command line argument: sample_name}"
+STEP="${SCRIPT%.pbs}"
 
 #validate environment (variables set in ~/.pbsrc)
 [[ -z "${GRAPEVINE_PATH}" ]] && { echo "Error: GRAPEVINE_PATH not set"; exit 1; }
