@@ -21,7 +21,6 @@ kmer_size=31
 
 #directories and files
 workdir="${GRAPEVINE_PATH}/SAMPLE_CLI"
-raw_reads="${workdir}/raw_reads/SAMPLE_CLI.fastq"
 raw_reads_gz="${workdir}/raw_reads/SAMPLE_CLI.fastq.gz"
 merqury_dir="RESULTS_DIR"
 meryl_output="${merqury_dir}/SAMPLE_CLI_asm.meryl"
@@ -32,7 +31,7 @@ contigs_in_2="${contigs_dir}/SAMPLE_CLI_hap2.fa.gz"
 merqury_out_prefix="mq_"
 
 #check if non-empty files exist
-for FILE in ${raw_reads} ${contigs_in_1} ${contigs_in_2}; do
+for FILE in ${raw_reads_gz} ${contigs_in_1} ${contigs_in_2}; do
     if [[ ! -s ${FILE} ]]; then
         echo "ERROR: File empty or missing: ${FILE}"
         exit 1
