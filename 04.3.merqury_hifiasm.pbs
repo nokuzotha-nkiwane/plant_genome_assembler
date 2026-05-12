@@ -48,10 +48,10 @@ module load merqury
 # #compress raw read files
 # gzip ${raw_reads}
 
-# #make reads.meryl database
-# echo "Performing k-mer count on raw reads for reads.meryl database"
-# meryl count k=${kmer_size} threads=${THREADS} memory=${MEMORY} ${raw_reads_gz} output ${meryl_output} 
-# echo "Reads database successfully made"
+#make reads.meryl database
+echo "Performing k-mer count on raw reads for reads.meryl database"
+meryl count k=${kmer_size} threads=${THREADS} memory=${MEMORY} ${raw_reads_gz} output ${meryl_output} 
+echo "Reads database successfully made"
 
 # <<< run on first run only <<<
 
