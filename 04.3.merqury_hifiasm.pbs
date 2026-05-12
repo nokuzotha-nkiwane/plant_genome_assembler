@@ -18,8 +18,8 @@ source ~/.pbsrc
 workdir="${GRAPEVINE_PATH}/SAMPLE_CLI"
 raw_reads_gz="${workdir}/raw_reads/SAMPLE_CLI.fastq.gz"
 merqury_dir="RESULTS_DIR"
-meryl_output="${merqury_dir}/SAMPLE_CLI_asm.meryl"
 all_results_dir="${workdir}/results"
+meryl_db="${all_results_dir}/04.2a.merqury_hifiasm_prep/SAMPLE_CLI_asm.meryl"
 contigs_dir="${all_results_dir}/contigs"
 contigs_in_1="${contigs_dir}/SAMPLE_CLI_hap1.fa.gz"
 contigs_in_2="${contigs_dir}/SAMPLE_CLI_hap2.fa.gz"
@@ -34,8 +34,8 @@ for FILE in ${raw_reads_gz} ${contigs_in_1} ${contigs_in_2}; do
 done
 
 #check if meryl database for reads made
-if [[ ! -d ${meryl_output} ]]; then
-    echo "ERROR: Meryl database empty or missing: ${meryl_output}"
+if [[ ! -d ${meryl_db} ]]; then
+    echo "ERROR: Meryl database empty or missing: ${meryl_db}"
     exit 1
 fi
 
@@ -47,5 +47,5 @@ module load merqury
 #run merqury to check quality of assembled contigs for each haplotype
 echo "Running merqury on assembled contigs "
 cd ${merqury_dir}
-singularity run $SIF merqury.sh ${meryl_output} ${contigs_in_1} ${contigs_in_2} ${merqury_out_prefix}
+singularity run $SIF merqury.sh ${meryl_db} ${contigs_in_1} ${contigs_in_2} ${merqury_out_prefix}
 echo "Merqury complete"
