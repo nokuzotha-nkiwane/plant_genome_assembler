@@ -33,6 +33,13 @@ for FILE in ${raw_reads_gz} ${contigs_in_1} ${contigs_in_2}; do
     fi
 done
 
+#check if meryl database for reads made
+if [[ ! -d ${meryl_output} ]]; then
+    echo "ERROR: Meryl database empty or missing: ${meryl_output}"
+    exit 1
+fi
+
+
 #load modules
 module load chpc/BIOMODULES
 module load merqury
