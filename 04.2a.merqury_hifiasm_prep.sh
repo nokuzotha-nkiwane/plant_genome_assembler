@@ -26,15 +26,6 @@ raw_reads_gz="${workdir}/raw_reads/SAMPLE_CLI.fastq.gz"
 merqury_dir="RESULTS_DIR"
 meryl_output="${merqury_dir}/SAMPLE_CLI_asm.meryl"
 
-
-#check if non-empty files exist
-for FILE in ${raw_reads} ${contigs_in_1} ${contigs_in_2}; do
-    if [[ ! -s ${FILE} ]]; then
-        echo "ERROR: File empty or missing: ${FILE}"
-        exit 1
-    fi
-done
-
 #load modules
 module load chpc/BIOMODULES
 module load merqury
@@ -42,7 +33,14 @@ module load merqury
 # >>> run only on first execution of merqury >>>
 
 #compress raw read files
-gzip ${raw_reads}
+if [[ -s ${raw_reads_gz} ]]; then
+    echo "Compressed file already exists. Skipping gzip: ${raw_reads_gz}"
+elif [[ -s ${raw_reads} ]]; then
+    gzip ${raw_reads}
+else
+    echo "ERROR: File empty or missing: ${raw_reads} and ${raw_reads_gz}"
+    exit 1
+fi
 
 #make reads.meryl database
 echo "Performing k-mer count on raw reads for reads.meryl database"
