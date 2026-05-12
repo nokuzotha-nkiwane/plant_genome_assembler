@@ -14,11 +14,6 @@ set -euox pipefail
 #for evaluating variables in ~/.pbsrc
 source ~/.pbsrc
 
-#parameters
-THREADS=23
-MEMORY=60
-kmer_size=31
-
 #directories and files
 workdir="${GRAPEVINE_PATH}/SAMPLE_CLI"
 raw_reads_gz="${workdir}/raw_reads/SAMPLE_CLI.fastq.gz"
@@ -41,18 +36,6 @@ done
 #load modules
 module load chpc/BIOMODULES
 module load merqury
-
-# >>> run on first run only >>>
-
-# #compress raw read files
-# gzip ${raw_reads}
-
-#make reads.meryl database
-echo "Performing k-mer count on raw reads for reads.meryl database"
-meryl count k=${kmer_size} threads=${THREADS} memory=${MEMORY} ${raw_reads_gz} output ${meryl_output} 
-echo "Reads database successfully made"
-
-# <<< run on first run only <<<
 
 #run merqury to check quality of assembled contigs for each haplotype
 echo "Running merqury on assembled contigs "
