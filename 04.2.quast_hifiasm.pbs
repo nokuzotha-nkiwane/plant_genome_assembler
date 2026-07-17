@@ -20,7 +20,7 @@ THREADS=23
 
 #directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
-REF_DIR="${TOMATO_PATH}/reference"
+REF_DIR="${TOMATO_PATH}/data/reference_data"
 REF_GENOME="${REF_DIR}/T2T_ref.zip"
 REF_GFF3="${REF_DIR}/PN40024_5.1_on_T2T_ref_with_names.zip"
 #feature_files="${ref_dir}/5.1_on_T2T_all_variants.zip"
@@ -31,8 +31,7 @@ HAP1="${CONTIGS_DIR}/dSAMPLE_CLI_hap1.fa.gz"
 HAP2="${CONTIGS_DIR}/dSAMPLE_CLI_hap2.fa.gz"
 
 #load modules
-module load chpc/BIOMODULES
-module load quast/5.2.0
+module load app/QUAST/5.3.0
 
 #check quality of assembled contigs for each haplotype
 

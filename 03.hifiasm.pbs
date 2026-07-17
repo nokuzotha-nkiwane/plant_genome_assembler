@@ -30,9 +30,8 @@ CONTIGS_DIR="${ALL_RESULTS_DIR}/contigs"
 mkdir -p ${contigs_dir}
 
 #load modules
-module load chpc/BIOMODULES
-module load hifiasm/0.24.0-r703
-module load gzip-1.9
+module load app/miniconda/mamba
+conda activate hifiasm
 
 #hifiasm assembly
 echo "Performing contig assembly..."
