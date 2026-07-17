@@ -3,6 +3,7 @@
 #PBS -P PROJECT_NAME
 #PBS -q serial
 #PBS -l walltime=48:00:00
+#PBS -N 03.hifiasm
 #PBS -o OUTPUT_FILE_PBS
 #PBS -e ERROR_FILE_PBS
 #PBS -m be
@@ -18,7 +19,7 @@ source ~/.pbsrc
 THREADS=23
 
 #directories and files
-workdir="${GRAPEVINE_PATH}/SAMPLE_CLI"
+workdir="${TOMATO_PATH}/SAMPLE_CLI"
 raw_reads_fq="${workdir}/raw_reads/SAMPLE_CLI.fastq"
 all_results_dir="${workdir}/results"
 hifiasm_dir="RESULTS_DIR"

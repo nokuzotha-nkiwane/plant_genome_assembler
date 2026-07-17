@@ -18,7 +18,7 @@ source ~/.pbsrc
 THREADS=8
 
 #directories and files
-workdir="${GRAPEVINE_PATH}/SAMPLE_CLI"
+workdir="${TOMATO_PATH}/SAMPLE_CLI"
 raw_reads_fq="${workdir}/raw_reads/SAMPLE_CLI.fastq"
 all_results_dir="${workdir}/results"
 jellyfish_out_dir="RESULTS_DIR"

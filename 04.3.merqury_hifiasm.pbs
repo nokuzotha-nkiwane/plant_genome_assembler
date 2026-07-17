@@ -15,7 +15,7 @@ set -euox pipefail
 source ~/.pbsrc
 
 #directories and files
-workdir="${GRAPEVINE_PATH}/SAMPLE_CLI"
+workdir="${TOMATO_PATH}/SAMPLE_CLI"
 raw_reads_gz="${workdir}/raw_reads/SAMPLE_CLI.fastq.gz"
 merqury_dir="RESULTS_DIR"
 all_results_dir="${workdir}/results"

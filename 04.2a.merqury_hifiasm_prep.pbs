@@ -3,6 +3,7 @@
 #PBS -P PROJECT_NAME
 #PBS -q serial
 #PBS -l walltime=48:00:00
+#PBS -N 04.1.merqury_hifiasm
 #PBS -o OUTPUT_FILE_PBS
 #PBS -e ERROR_FILE_PBS
 #PBS -m be
@@ -20,7 +21,7 @@ MEMORY=60
 kmer_size=31
 
 #directories and files
-workdir="${GRAPEVINE_PATH}/SAMPLE_CLI"
+workdir="${TOMATO_PATH}/SAMPLE_CLI"
 raw_reads="${workdir}/raw_reads/SAMPLE_CLI.fastq"
 raw_reads_gz="${workdir}/raw_reads/SAMPLE_CLI.fastq.gz"
 meryl_dir="RESULTS_DIR"
@@ -30,6 +31,7 @@ meryl_output="${meryl_dir}/SAMPLE_CLI_asm.meryl"
 module load chpc/BIOMODULES
 module load merqury
 
+mkdir -p ${meryl_dir}
 # >>> run only on first execution of merqury >>>
 
 #compress raw read files
@@ -43,6 +45,7 @@ else
 fi
 
 #make reads.meryl database
+if 
 echo "Performing k-mer count on raw reads for reads.meryl database"
 meryl count k=${kmer_size} threads=${THREADS} memory=${MEMORY} ${raw_reads_gz} output ${meryl_output} 
 echo "Reads database successfully made"
