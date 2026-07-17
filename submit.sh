@@ -11,7 +11,7 @@ SAMPLE_CLI="${2:?Please enter the command line argument: sample_name}"
 STEP="${SCRIPT%.sh}"
 
 #validate environment (variables set in ~/.pbsrc)
-[[ -z "${TOMATO_PATH}" ]] && { echo "Error: GRAPEVINE_PATH not set"; exit 1; }
+[[ -z "${TOMATO_PATH}" ]] && { echo "Error: TOMATO_PATH not set"; exit 1; }
 [[ -z "${PBS_EMAIL}" ]] && { echo "Error: PBS_EMAIL not set"; exit 1; }
 
 
@@ -21,7 +21,7 @@ RESULTS_DIR="${TOMATO_PATH}/${SAMPLE_CLI}/results/${STEP}"
 #move existing results directory to old_runs; include run metadata in filename for easy tracking
 if [ -d ${RESULTS_DIR} ]; then
     TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-    OLD_COMMIT=$(grep "commit:" "${RESULTS_DIR}/run_metadata.txt" 2>/dev/null | cut -d ":" -f2 | tr -d " ")
+    OLD_COMMIT=$(grep "commit:" "${RESULTS_DIR}/run_metadata.txt" 2>/dev/null | cut -d ":" -f2 | tr -d " ") || OLD_COMMIT="unknown"
     ARCHIVE_NAME="${STEP}_${TIMESTAMP}_${OLD_COMMIT}"
     mkdir -p "${TOMATO_PATH}/${SAMPLE_CLI}/old_runs/${STEP}" 
     mv ${RESULTS_DIR} "${TOMATO_PATH}/${SAMPLE_CLI}/old_runs/${STEP}/${ARCHIVE_NAME}" || \
@@ -35,10 +35,10 @@ mkdir -p ${RESULTS_DIR}
 #substitutions for PBS directives in script
 JOB_ID=$(sed -e "s/PBS_EMAIL/${PBS_EMAIL}/g" \
     -e "s/PROJECT_NAME/${PROJECT_NAME}/g" \
-    -e "s/STEP_PBS/${STEP}" \
+    -e "s/STEP_PBS/${STEP}/g" \
     -e "s|OUTPUT_FILE_PBS|${TOMATO_PATH}/${SAMPLE_CLI}/results/${STEP}/${STEP}.out|g" \
     -e "s|ERROR_FILE_PBS|${TOMATO_PATH}/${SAMPLE_CLI}/results/${STEP}/${STEP}.err|g" \
-    -e "s|RESULTS_DIR|${RESULTS_DIR}|g" \
+    -e "s|__RESULTS_DIR__|${RESULTS_DIR}|g" \
     -e "s/SAMPLE_CLI/${SAMPLE_CLI}/g" \
     ${SCRIPT} | qsub) || { echo "Error: qsub submission failed"; exit 1; }
 

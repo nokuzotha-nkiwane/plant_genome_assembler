@@ -21,7 +21,7 @@ THREADS=23
 #directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 ALL_RESULTS_DIR="${workdir}/results"
-BUSCO_DIR="RESULTS_DIR"
+BUSCO_DIR="__RESULTS_DIR__"
 BUSCO_DB_DIR="/mnt/lustre/users/nnkiwane/masters/databases"
 CONTIGS_DIR="${ALL_RESULTS_DIR}/contigs"
 CONTIGS_IN="${CONTIGS_DIR}/dSAMPLE_CLI_hap?.fa"

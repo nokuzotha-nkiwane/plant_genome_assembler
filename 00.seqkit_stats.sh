@@ -22,7 +22,7 @@ module load app/seqkit/2.7.0
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 RAW_READS_FQ="${WORKDIR}/raw_reads/D260405-SAMPLE_CLI_HiFi.fastq.gz"
 ALL_RESULTS_DIR="${WORKDIR}/results"
-SEQKIT_OUT_DIR="RESULTS_DIR"
+SEQKIT_OUT_DIR="__RESULTS_DIR__"
 OUTPUT_FILE="${SEQKIT_OUT_DIR}/dSAMPLE_CLI_seqkit_stats_--all.txt"
 
 #make top level results directory

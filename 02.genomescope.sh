@@ -19,7 +19,7 @@ source ~/.pbsrc
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 ALL_RESULTS_DIR="${WORKDIR}/results"
 JELLYFISH_HISTO="${ALL_RESULTS_DIR}/01.jellyfish/dSAMPLE_CLI.histo"
-GENOMESCOPE2_OUT_DIR="RESULTS_DIR"
+GENOMESCOPE2_OUT_DIR="__RESULTS_DIR__"
 
 #load modules
 module load app/miniconda/mamba
