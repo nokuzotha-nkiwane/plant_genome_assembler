@@ -15,18 +15,18 @@ set -euox pipefail
 source ~/.pbsrc
 
 #directories and files
-workdir="${TOMATO_PATH}/SAMPLE_CLI"
-raw_reads_gz="${workdir}/raw_reads/SAMPLE_CLI.fastq.gz"
-merqury_dir="RESULTS_DIR"
-all_results_dir="${workdir}/results"
-meryl_db="${all_results_dir}/04.2a.merqury_hifiasm_prep/SAMPLE_CLI_asm.meryl"
-contigs_dir="${all_results_dir}/contigs"
-contigs_in_1="${contigs_dir}/SAMPLE_CLI_hap1.fa.gz"
-contigs_in_2="${contigs_dir}/SAMPLE_CLI_hap2.fa.gz"
-merqury_out_prefix="mq_SAMPLE_CLI"
+WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
+RAW_READS_GZ="${WORKDIR}/raw_reads/SAMPLE_CLI.fastq.gz"
+MERQURY_DIR="RESULTS_DIR"
+ALL_RESULTS_DIR="${WORKDIR}/results"
+MERYL_DB="${ALL_RESULTS_DIR}/04.2a.merqury_hifiasm_prep/SAMPLE_CLI_asm.meryl"
+CONTIGS_DIR="${ALL_RESULTS_DIR}/contigs"
+CONTIGS_IN_1="${CONTIGS_DIR}/SAMPLE_CLI_hap1.fa.gz"
+CONTIGS_IN_2="${CONTIGS_DIR}/SAMPLE_CLI_hap2.fa.gz"
+MERQURY_OUT_PREFIX="mq_SAMPLE_CLI"
 
 #check if non-empty files exist
-for FILE in ${raw_reads_gz} ${contigs_in_1} ${contigs_in_2}; do
+for FILE in ${RAW_READS_GZ} ${CONTIGS_IN_1} ${CONTIGS_IN_2}; do
     if [[ ! -s ${FILE} ]]; then
         echo "ERROR: File empty or missing: ${FILE}"
         exit 1
@@ -34,8 +34,8 @@ for FILE in ${raw_reads_gz} ${contigs_in_1} ${contigs_in_2}; do
 done
 
 #check if meryl database for reads made
-if [[ ! -d ${meryl_db} ]]; then
-    echo "ERROR: Meryl database empty or missing: ${meryl_db}"
+if [[ ! -d ${MERYL_DB} ]]; then
+    echo "ERROR: Meryl database empty or missing: ${MERYL_DB}"
     exit 1
 fi
 
@@ -46,6 +46,6 @@ module load merqury
 
 #run merqury to check quality of assembled contigs for each haplotype
 echo "Running merqury on assembled contigs "
-cd ${merqury_dir}
-singularity run $SIF merqury.sh ${meryl_db} ${contigs_in_1} ${contigs_in_2} ${merqury_out_prefix}
+cd ${MERQURY_DIR}
+singularity run $SIF merqury.sh ${MERYL_DB} ${CONTIGS_IN_1} ${CONTIGS_IN_2} ${MERQURY_OUT_PREFIX}
 echo "Merqury complete"

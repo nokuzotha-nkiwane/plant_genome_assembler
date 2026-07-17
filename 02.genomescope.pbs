@@ -16,14 +16,14 @@ set -euox pipefail
 source ~/.pbsrc
 
 #directories and files
-workdir="${TOMATO_PATH}/SAMPLE_CLI"
-all_results_dir="${workdir}/results"
-jellyfish_histo="${all_results_dir}/01.jellyfish/SAMPLE_CLI.histo"
-genomescope2_out_dir="RESULTS_DIR"
+WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
+ALL_RESULTS_DIR="${WORKDIR}/results"
+JELLYFISH_HISTO="${ALL_RESULTS_DIR}/01.jellyfish/SAMPLE_CLI.histo"
+GENOMESCOPE2_OUT_DIR="RESULTS_DIR"
 
 #load modules
 module load chpc/BIOMODULES
 module load genomescope-2 
 
 #genomescope visualisation
-/apps/chpc/bio/R/4.1.0/bin/genomescope.R -i ${jellyfish_histo} -o ${genomescope2_out_dir} -k 21
+/apps/chpc/bio/R/4.1.0/bin/genomescope.R -i ${JELLYFISH_HISTO} -o ${GENOMESCOPE2_OUT_DIR} -k 21

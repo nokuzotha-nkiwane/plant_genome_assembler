@@ -19,12 +19,12 @@ source ~/.pbsrc
 THREADS=23
 
 #directories and files
-workdir="${TOMATO_PATH}/SAMPLE_CLI"
-all_results_dir="${workdir}/results"
-busco_dir="RESULTS_DIR"
-busco_db_dir="/mnt/lustre/users/nnkiwane/masters/databases"
-contigs_dir="${all_results_dir}/contigs"
-contigs_in="${contigs_dir}/SAMPLE_CLI_hap?.fa"
+WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
+ALL_RESULTS_DIR="${workdir}/results"
+BUSCO_DIR="RESULTS_DIR"
+BUSCO_DB_DIR="/mnt/lustre/users/nnkiwane/masters/databases"
+CONTIGS_DIR="${ALL_RESULTS_DIR}/contigs"
+CONTIGS_IN="${CONTIGS_DIR}/SAMPLE_CLI_hap?.fa"
 
 #load modules
 module load chpc/BIOMODULES
@@ -33,18 +33,18 @@ module load busco/6.0.0
 #check quality of assembled contigs for each haplotype
 RUN_BUSCO() {
     local fasta="${1}"
-    singularity run $SIF busco --in ${fasta} \
+    singularity run $SIF busco --in ${FASTA} \
     --metaeuk \
     -m genome \
     --offline \
     -l eudicotyledons_odb12 \
-    --download_path ${busco_db_dir} \
+    --download_path ${BUSCO_DB_DIR} \
     -c ${THREADS} \
-    --out_path ${busco_dir}
+    --out_path ${BUSCO_DIR}
 }
 
-for fasta in ${contigs_in};do
-    echo "Running BUSCO for ${fasta}"
+for FASTA in ${CONTIGS_IN};do
+    echo "Running BUSCO for ${FASTA}"
     RUN_BUSCO ${fasta}
-    echo "BUSCO for ${fasta} complete";
+    echo "BUSCO for ${FASTA} complete";
 done

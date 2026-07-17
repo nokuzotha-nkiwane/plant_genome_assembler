@@ -19,16 +19,16 @@ source ~/.pbsrc
 THREADS=23
 
 #directories and files
-workdir="${TOMATO_PATH}/SAMPLE_CLI"
-ref_dir="${TOMATO_PATH}/reference"
-ref_genome="${ref_dir}/T2T_ref.zip"
-ref_gff3="${ref_dir}/PN40024_5.1_on_T2T_ref_with_names.zip"
+WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
+REF_DIR="${TOMATO_PATH}/reference"
+REF_GENOME="${REF_DIR}/T2T_ref.zip"
+REF_GFF3="${REF_DIR}/PN40024_5.1_on_T2T_ref_with_names.zip"
 #feature_files="${ref_dir}/5.1_on_T2T_all_variants.zip"
-quast_dir="RESULTS_DIR"
-all_results_dir="${workdir}/results"
-contigs_dir="${all_results_dir}/contigs"
-hap1="${contigs_dir}/SAMPLE_CLI_hap1.fa.gz"
-hap2="${contigs_dir}/SAMPLE_CLI_hap2.fa.gz"
+QUAST_DIR="RESULTS_DIR"
+ALL_RESULTS_DIR="${WORKDIR}/results"
+CONTIGS_DIR="${ALL_RESULTS_DIR}/contigs"
+HAP1="${CONTIGS_DIR}/SAMPLE_CLI_hap1.fa.gz"
+HAP2="${CONTIGS_DIR}/SAMPLE_CLI_hap2.fa.gz"
 
 #load modules
 module load chpc/BIOMODULES
@@ -36,11 +36,11 @@ module load quast/5.2.0
 
 #check quality of assembled contigs for each haplotype
 
-python /apps/chpc/bio/quast/5.2.0/quast.py ${hap1} \
-    ${hap2} \
-    -r ${ref_genome} \
-    -g ${ref_gff3} \
-    -o ${quast_dir} \
+python /apps/chpc/bio/quast/5.2.0/quast.py ${HAP1} \
+    ${HAP2} \
+    -r ${REF_GENOME} \
+    -g ${REF_GFF3} \
+    -o ${QUAST_DIR} \
     -e \
     -k \
     --circos \

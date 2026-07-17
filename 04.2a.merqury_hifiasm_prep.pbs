@@ -21,33 +21,33 @@ MEMORY=60
 kmer_size=31
 
 #directories and files
-workdir="${TOMATO_PATH}/SAMPLE_CLI"
-raw_reads="${workdir}/raw_reads/SAMPLE_CLI.fastq"
-raw_reads_gz="${workdir}/raw_reads/SAMPLE_CLI.fastq.gz"
-meryl_dir="RESULTS_DIR"
-meryl_output="${meryl_dir}/SAMPLE_CLI_asm.meryl"
+WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
+RAW_READS="${WORKDIR}/raw_reads/SAMPLE_CLI.fastq"
+RAW_READS_GZ="${WORKDIR}/raw_reads/SAMPLE_CLI.fastq.gz"
+MERYL_DIR="RESULTS_DIR"
+MERYL_OUTPUT="${MERYL_DIR}/SAMPLE_CLI_asm.meryl"
 
 #load modules
 module load chpc/BIOMODULES
 module load merqury
 
-mkdir -p ${meryl_dir}
+mkdir -p ${MERYL_DIR}
 # >>> run only on first execution of merqury >>>
 
 #compress raw read files
-if [[ -s ${raw_reads_gz} ]]; then
-    echo "Compressed file already exists. Skipping gzip: ${raw_reads_gz}"
-elif [[ -s ${raw_reads} ]]; then
-    gzip ${raw_reads}
+if [[ -s ${RAW_READS_GZ} ]]; then
+    echo "Compressed file already exists. Skipping gzip: ${RAW_READS_GZ}"
+elif [[ -s ${RAW_READS} ]]; then
+    gzip ${RAW_READS}
 else
-    echo "ERROR: File empty or missing: ${raw_reads} and ${raw_reads_gz}"
+    echo "ERROR: File empty or missing: ${RAW_READS} and ${RAW_READS_GZ}"
     exit 1
 fi
 
 #make reads.meryl database
 if 
 echo "Performing k-mer count on raw reads for reads.meryl database"
-meryl count k=${kmer_size} threads=${THREADS} memory=${MEMORY} ${raw_reads_gz} output ${meryl_output} 
+meryl count k=${KMER_SIZE} threads=${THREADS} memory=${MEMORY} ${RAW_READS_GZ} output ${MERYL_OUTPUT} 
 echo "Reads database successfully made"
 
 # <<< run only on first execution of merqury <<<

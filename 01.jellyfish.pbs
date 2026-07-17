@@ -18,19 +18,19 @@ source ~/.pbsrc
 THREADS=8
 
 #directories and files
-workdir="${TOMATO_PATH}/SAMPLE_CLI"
-raw_reads_fq="${workdir}/raw_reads/SAMPLE_CLI.fastq"
-all_results_dir="${workdir}/results"
-jellyfish_out_dir="RESULTS_DIR"
-jellyfish_jf="${jellyfish_out_dir}/SAMPLE_CLI.jf"
-jellyfish_histo="${jellyfish_out_dir}/SAMPLE_CLI.histo"
+WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
+RAW_READS_FQ="${WORKDIR}/raw_reads/SAMPLE_CLI.fastq"
+ALL_RESULTS_DIR="${workdir}/results"
+JELLYFISH_OUT_DIR="RESULTS_DIR"
+JELLYFISH_JF="${JELLYFISH_OUT_DIR}/SAMPLE_CLI.jf"
+JELLYFISH_HISTO="${JELLYFISH_OUT_DIR}/SAMPLE_CLI.histo"
 
 #load modules
 module load chpc/BIOMODULES
 module load jellyfish/2.2.10 
 
 #jellyfish kmer analysis
-jellyfish count -m 21 -s 100M -t ${THREADS} -C -o ${jellyfish_jf} ${raw_reads_fq}
+jellyfish count -m 21 -s 100M -t ${THREADS} -C -o ${JELLYFISH_JF} ${RAW_READS_FQ}
 
 #jellyfish histogram construction
-jellyfish histo -t ${THREADS} ${jellyfish_jf} > ${jellyfish_histo}
+jellyfish histo -t ${THREADS} ${JELLYFISH_JF} > ${JELLYFISH_HISTO}

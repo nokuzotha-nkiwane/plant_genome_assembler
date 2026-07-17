@@ -19,13 +19,13 @@ source ~/.pbsrc
 THREADS=23
 
 #directories and files
-workdir="${TOMATO_PATH}/SAMPLE_CLI"
-raw_reads_fq="${workdir}/raw_reads/SAMPLE_CLI.fastq"
-all_results_dir="${workdir}/results"
-hifiasm_dir="RESULTS_DIR"
-hifiasm_asm="${hifiasm_dir}/SAMPLE_CLI.asm"
-gfa_files="${hifiasm_dir}/SAMPLE_CLI.asm.bp.hap?.p_ctg.gfa"
-contigs_dir="${all_results_dir}/contigs"
+WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
+RAW_READS_FQ="${WORKDIR}/raw_reads/SAMPLE_CLI.fastq"
+ALL_RESULTS_DIR="${WORKDIR}/results"
+HIFIASM_DIR="RESULTS_DIR"
+HIFIASM_ASM="${HIFIASM_DIR}/SAMPLE_CLI.asm"
+GFA_FILES="${HIFIASM_DIR}/SAMPLE_CLI.asm.bp.hap?.p_ctg.gfa"
+CONTIGS_DIR="${ALL_RESULTS_DIR}/contigs"
 
 mkdir -p ${contigs_dir}
 
@@ -36,23 +36,23 @@ module load gzip-1.9
 
 #hifiasm assembly
 echo "Performing contig assembly..."
-hifiasm -o ${hifiasm_asm} -t ${THREADS} ${raw_reads_fq} || { echo "Contig assembly failed"; exit 1; }
+hifiasm -o ${HIFIASM_ASM} -t ${THREADS} ${RAW_READS_FQ} || { echo "Contig assembly failed"; exit 1; }
 echo "Contig assembly complete"
 
 #convert gfa to fasta
-for gfa in ${gfa_files}; do
-    echo "Extracting contigs for ${gfa}..."
+for gfa in ${GFA_FILES}; do
+    echo "Extracting contigs for ${GFA}..."
 
     #extract basename to name output fasta file
-    hap=$(basename ${gfa} | grep -o "hap[0-9]")
-    fasta_out="${contigs_dir}/SAMPLE_CLI_${hap}.fa"
+    hap=$(basename ${GFA} | grep -o "hap[0-9]")
+    fasta_out="${CONTIGS_DIR}/SAMPLE_CLI_${HAP}.fa"
 
     #extract sequences from gfa to fasta
-    awk '/^S/{print ">"$2; print $3}' "${gfa}" > ${fasta_out} || { echo "Contig extraction failed for ${gfa}"; exit 1; }
-    echo "Contig extraction for ${gfa} complete."
+    awk '/^S/{print ">"$2; print $3}' "${GFA}" > ${FASTA_OUT} || { echo "Contig extraction failed for ${GFA}"; exit 1; }
+    echo "Contig extraction for ${GFA} complete."
 
     #compress original fasta file
     echo "Compressing fasta file..."
-    gzip -k ${fasta_out} || { echo "Fasta compression failed for ${fasta_out}"; exit 1; }
+    gzip -k ${FASTA_OUT} || { echo "Fasta compression failed for ${FASTA_OUT}"; exit 1; }
     echo "Fasta and compressed files successfully produced"
 done
