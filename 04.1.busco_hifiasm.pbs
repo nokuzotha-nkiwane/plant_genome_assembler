@@ -24,7 +24,7 @@ ALL_RESULTS_DIR="${workdir}/results"
 BUSCO_DIR="RESULTS_DIR"
 BUSCO_DB_DIR="/mnt/lustre/users/nnkiwane/masters/databases"
 CONTIGS_DIR="${ALL_RESULTS_DIR}/contigs"
-CONTIGS_IN="${CONTIGS_DIR}/SAMPLE_CLI_hap?.fa"
+CONTIGS_IN="${CONTIGS_DIR}/dSAMPLE_CLI_hap?.fa"
 
 #load modules
 module load chpc/BIOMODULES

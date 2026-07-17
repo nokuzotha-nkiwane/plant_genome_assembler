@@ -22,12 +22,11 @@ WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 RAW_READS_FQ="${WORKDIR}/raw_reads/SAMPLE_CLI.fastq"
 ALL_RESULTS_DIR="${workdir}/results"
 JELLYFISH_OUT_DIR="RESULTS_DIR"
-JELLYFISH_JF="${JELLYFISH_OUT_DIR}/SAMPLE_CLI.jf"
-JELLYFISH_HISTO="${JELLYFISH_OUT_DIR}/SAMPLE_CLI.histo"
+JELLYFISH_JF="${JELLYFISH_OUT_DIR}/dSAMPLE_CLI.jf"
+JELLYFISH_HISTO="${JELLYFISH_OUT_DIR}/dSAMPLE_CLI.histo"
 
 #load modules
-module load chpc/BIOMODULES
-module load jellyfish/2.2.10 
+module load app/jellyfish/2.3.1 
 
 #jellyfish kmer analysis
 jellyfish count -m 21 -s 100M -t ${THREADS} -C -o ${JELLYFISH_JF} ${RAW_READS_FQ}

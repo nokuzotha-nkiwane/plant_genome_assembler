@@ -27,8 +27,8 @@ REF_GFF3="${REF_DIR}/PN40024_5.1_on_T2T_ref_with_names.zip"
 QUAST_DIR="RESULTS_DIR"
 ALL_RESULTS_DIR="${WORKDIR}/results"
 CONTIGS_DIR="${ALL_RESULTS_DIR}/contigs"
-HAP1="${CONTIGS_DIR}/SAMPLE_CLI_hap1.fa.gz"
-HAP2="${CONTIGS_DIR}/SAMPLE_CLI_hap2.fa.gz"
+HAP1="${CONTIGS_DIR}/dSAMPLE_CLI_hap1.fa.gz"
+HAP2="${CONTIGS_DIR}/dSAMPLE_CLI_hap2.fa.gz"
 
 #load modules
 module load chpc/BIOMODULES
