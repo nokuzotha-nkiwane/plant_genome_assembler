@@ -16,7 +16,7 @@ source ~/.pbsrc
 
 #directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
-RAW_READS_GZ="${WORKDIR}/raw_reads/SAMPLE_CLI.fastq.gz"
+RAW_READS_GZ="${WORKDIR}/raw_reads/D260405-SAMPLE_CLI_HiFi.fastq.gz"
 MERQURY_DIR="RESULTS_DIR"
 ALL_RESULTS_DIR="${WORKDIR}/results"
 MERYL_DB="${ALL_RESULTS_DIR}/04.2a.merqury_hifiasm_prep/dSAMPLE_CLI_asm.meryl"

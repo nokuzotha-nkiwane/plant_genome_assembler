@@ -23,7 +23,7 @@ kmer_size=31
 #directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 RAW_READS="${WORKDIR}/raw_reads/SAMPLE_CLI.fastq"
-RAW_READS_GZ="${WORKDIR}/raw_reads/SAMPLE_CLI.fastq.gz"
+RAW_READS_GZ="${WORKDIR}/raw_reads/D260405-SAMPLE_CLI_HiFi.fastq.gz"
 MERYL_DIR="RESULTS_DIR"
 MERYL_OUTPUT="${MERYL_DIR}/dSAMPLE_CLI_asm.meryl"
 
