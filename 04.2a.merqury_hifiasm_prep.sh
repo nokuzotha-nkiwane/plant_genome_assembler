@@ -44,7 +44,6 @@ else
 fi
 
 #make reads.meryl database
-if 
 echo "Performing k-mer count on raw reads for reads.meryl database"
 meryl count k=${KMER_SIZE} threads=${THREADS} memory=${MEMORY} ${RAW_READS_GZ} output ${MERYL_OUTPUT} 
 echo "Reads database successfully made"
