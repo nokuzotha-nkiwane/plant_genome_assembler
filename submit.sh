@@ -34,7 +34,6 @@ mkdir -p ${RESULTS_DIR}
 
 #substitutions for PBS directives in script
 JOB_ID=$(sed -e "s/PBS_EMAIL/${PBS_EMAIL}/g" \
-    -e "s/PROJECT_NAME/${PROJECT_NAME}/g" \
     -e "s/STEP_PBS/${STEP}/g" \
     -e "s|OUTPUT_FILE_PBS|${TOMATO_PATH}/${SAMPLE_CLI}/results/${STEP}/${STEP}.out|g" \
     -e "s|ERROR_FILE_PBS|${TOMATO_PATH}/${SAMPLE_CLI}/results/${STEP}/${STEP}.err|g" \
