@@ -1,7 +1,6 @@
 #!/bin/bash
 #PBS -l select=2:ncpus=8:mem=20GB
-#PBS -P PROJECT_NAME
-#PBS -q serial
+#PBS -q bix
 #PBS -l walltime=4:00:00
 #PBS -o OUTPUT_FILE_PBS
 #PBS -e ERROR_FILE_PBS
