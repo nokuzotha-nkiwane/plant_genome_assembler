@@ -25,12 +25,16 @@ HIFIASM_DIR="__RESULTS_DIR__"
 HIFIASM_ASM="${HIFIASM_DIR}/dSAMPLE_CLI.asm"
 GFA_FILES="${HIFIASM_DIR}/dSAMPLE_CLI.asm.bp.hap?.p_ctg.gfa"
 CONTIGS_DIR="${ALL_RESULTS_DIR}/contigs"
-
-mkdir -p ${contigs_dir}
+TEMP_DIR="${HIFIASM_DIR}/${PBS_JOBID}"
 
 #load modules
 module load app/miniconda/mamba
 conda activate hifiasm
+
+#make temp directory to copy reads to so the original ones are accessible to other scripts
+mkdir -p ${contigs_dir} ${TEMP_DIR}
+cp ${RAW_READS_FQ} "${TEMP_DIR}/"
+RAW_READS_FQ="${TEMP_DIR}/D260405-SAMPLE_CLI_HiFi.fastq.gz"
 
 #hifiasm assembly
 echo "Performing contig assembly..."
@@ -54,3 +58,6 @@ for gfa in ${GFA_FILES}; do
     gzip -k ${FASTA_OUT} || { echo "Fasta compression failed for ${FASTA_OUT}"; exit 1; }
     echo "Fasta and compressed files successfully produced"
 done
+
+#delete temp dir
+rm -rf "${TEMP_DIR}/"
