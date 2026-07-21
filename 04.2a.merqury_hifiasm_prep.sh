@@ -27,8 +27,8 @@ MERYL_DIR="__RESULTS_DIR__"
 MERYL_OUTPUT="${MERYL_DIR}/dSAMPLE_CLI_asm.meryl"
 
 #load modules
-module load chpc/BIOMODULES
-module load merqury
+module load app/miniconda/mamba
+conda activate merqury
 
 mkdir -p ${MERYL_DIR}
 # >>> run only on first execution of merqury >>>
