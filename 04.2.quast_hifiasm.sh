@@ -34,7 +34,7 @@ module load app/QUAST/5.3.0
 
 #check quality of assembled contigs for each haplotype
 
-python /apps/chpc/bio/quast/5.2.0/quast.py ${HAP1} \
+python quast.py ${HAP1} \
     ${HAP2} \
     -r ${REF_GENOME} \
     -g ${REF_GFF3} \

@@ -47,7 +47,7 @@ for gfa in ${GFA_FILES}; do
 
     #extract basename to name output fasta file
     hap=$(basename ${gfa} | grep -o "hap[0-9]")
-    fasta_out="${CONTIGS_DIR}/SAMPLE_CLI_${hap}.fa"
+    fasta_out="${CONTIGS_DIR}/dSAMPLE_CLI_${hap}.fa"
 
     #extract sequences from gfa to fasta
     awk '/^S/{print ">"$2; print $3}' "${gfa}" > ${fasta_out} || { echo "Contig extraction failed for ${gfa}"; exit 1; }
