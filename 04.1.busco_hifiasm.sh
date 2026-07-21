@@ -30,6 +30,7 @@ CONTIGS_IN="${CONTIGS_DIR}/dSAMPLE_CLI_hap?.fa"
 #load modules
 module load app/miniconda/mamba
 conda activate busco_6.1.0
+export _JAVA_OPTIONS="-Xmx8g"
 
 #check quality of assembled contigs for each haplotype
 RUN_BUSCO() {
