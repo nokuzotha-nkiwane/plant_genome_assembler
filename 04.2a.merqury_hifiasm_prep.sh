@@ -17,7 +17,7 @@ source ~/.pbsrc
 #parameters
 THREADS=23
 MEMORY=60
-kmer_size=31
+kmer_size=21
 
 #directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
