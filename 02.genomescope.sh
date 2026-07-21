@@ -9,7 +9,7 @@
 #PBS -M PBS_EMAIL
 
 #kill execution at first error
-set -euox pipefail 
+set -euxo pipefail  
 
 #for evaluating variables in ~/.pbsrc
 source ~/.pbsrc
