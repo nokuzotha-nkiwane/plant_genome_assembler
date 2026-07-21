@@ -9,7 +9,7 @@
 #PBS -M PBS_EMAIL
 
 #kill execution at first error
-set -euox pipefail 
+set -euxo pipefail 
 
 #for evaluating variables in ~/.pbsrc
 source ~/.pbsrc
@@ -19,20 +19,20 @@ THREADS=23
 
 #directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
-ALL_RESULTS_DIR="${workdir}/results"
+ALL_RESULTS_DIR="${WORKDIR}/results"
 BUSCO_DIR="__RESULTS_DIR__"
-BUSCO_DB_DIR="/mnt/lustre/users/nnkiwane/masters/databases"
+BUSCO_DB_DIR="${TOMATO_PATH}/data/databases"
 CONTIGS_DIR="${ALL_RESULTS_DIR}/contigs"
 CONTIGS_IN="${CONTIGS_DIR}/dSAMPLE_CLI_hap?.fa"
 
 #load modules
-module load chpc/BIOMODULES
-module load busco/6.0.0
+module load app/miniconda/mamba
+conda activate busco_6.1.0
 
 #check quality of assembled contigs for each haplotype
 RUN_BUSCO() {
-    local fasta="${1}"
-    singularity run $SIF busco --in ${FASTA} \
+    local FASTA="${1}"
+    busco --in ${FASTA} \
     --metaeuk \
     -m genome \
     --offline \
@@ -44,6 +44,6 @@ RUN_BUSCO() {
 
 for FASTA in ${CONTIGS_IN};do
     echo "Running BUSCO for ${FASTA}"
-    RUN_BUSCO ${fasta}
+    RUN_BUSCO ${FASTA}
     echo "BUSCO for ${FASTA} complete";
 done
