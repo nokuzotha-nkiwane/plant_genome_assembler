@@ -22,6 +22,7 @@ WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 ALL_RESULTS_DIR="${WORKDIR}/results"
 BUSCO_DIR="__RESULTS_DIR__"
 BUSCO_DB_DIR="${TOMATO_PATH}/data/databases"
+BUSCO_OUTPUT_PREFIX="dSAMPLE_CLI_"
 CONTIGS_DIR="${ALL_RESULTS_DIR}/contigs"
 CONTIGS_IN="${CONTIGS_DIR}/dSAMPLE_CLI_hap?.fa"
 
@@ -39,6 +40,7 @@ RUN_BUSCO() {
     -l eudicotyledons_odb12 \
     --download_path ${BUSCO_DB_DIR} \
     -c ${THREADS} \
+    -o ${BUSCO_OUTPUT_PREFIX} \
     --out_path ${BUSCO_DIR}
 }
 
