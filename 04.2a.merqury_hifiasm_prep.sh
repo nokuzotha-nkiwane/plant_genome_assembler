@@ -2,7 +2,7 @@
 #PBS -l select=1:ncpus=23:mem=60GB
 #PBS -q bix
 #PBS -l walltime=48:00:00
-#PBS -N STEP_PBS
+#PBS -N SAMPLE_CLI_STEP_PBS
 #PBS -o OUTPUT_FILE_PBS
 #PBS -e ERROR_FILE_PBS
 #PBS -m be
@@ -17,7 +17,7 @@ source ~/.pbsrc
 #parameters
 THREADS=23
 MEMORY=60
-kmer_size=21
+KMER_SIZE=21
 
 #directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
