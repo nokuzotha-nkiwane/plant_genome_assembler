@@ -40,12 +40,12 @@ if [[ ! -d ${MERYL_DB} ]]; then
 fi
 
 
-#load modules
-module load chpc/BIOMODULES
-module load merqury
+#load modules version 1.4.1
+module load app/miniconda/mamba
+conda activate merqury
 
 #run merqury to check quality of assembled contigs for each haplotype
 echo "Running merqury on assembled contigs "
 cd ${MERQURY_DIR}
-singularity run $SIF merqury.sh ${MERYL_DB} ${CONTIGS_IN_1} ${CONTIGS_IN_2} ${MERQURY_OUT_PREFIX}
+$MERQURY/merqury.sh ${MERYL_DB} ${CONTIGS_IN_1} ${CONTIGS_IN_2} ${MERQURY_OUT_PREFIX}
 echo "Merqury complete"
