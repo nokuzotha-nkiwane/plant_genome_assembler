@@ -32,7 +32,7 @@ module load app/miniconda/mamba
 conda activate hifiasm
 
 #make temp directory to copy reads to so the original ones are accessible to other scripts
-mkdir -p ${contigs_dir} ${TEMP_DIR}
+mkdir -p ${CONTIGS_DIR} ${TEMP_DIR}
 cp ${RAW_READS_FQ} "${TEMP_DIR}/"
 RAW_READS_FQ="${TEMP_DIR}/D260405-SAMPLE_CLI_HiFi.fastq.gz"
 
@@ -43,19 +43,19 @@ echo "Contig assembly complete"
 
 #convert gfa to fasta
 for gfa in ${GFA_FILES}; do
-    echo "Extracting contigs for ${GFA}..."
+    echo "Extracting contigs for ${gfa}..."
 
     #extract basename to name output fasta file
-    hap=$(basename ${GFA} | grep -o "hap[0-9]")
-    fasta_out="${CONTIGS_DIR}/SAMPLE_CLI_${HAP}.fa"
+    hap=$(basename ${gfa} | grep -o "hap[0-9]")
+    fasta_out="${CONTIGS_DIR}/SAMPLE_CLI_${hap}.fa"
 
     #extract sequences from gfa to fasta
-    awk '/^S/{print ">"$2; print $3}' "${GFA}" > ${FASTA_OUT} || { echo "Contig extraction failed for ${GFA}"; exit 1; }
-    echo "Contig extraction for ${GFA} complete."
+    awk '/^S/{print ">"$2; print $3}' "${gfa}" > ${fasta_out} || { echo "Contig extraction failed for ${gfa}"; exit 1; }
+    echo "Contig extraction for ${gfa} complete."
 
     #compress original fasta file
     echo "Compressing fasta file..."
-    gzip -k ${FASTA_OUT} || { echo "Fasta compression failed for ${FASTA_OUT}"; exit 1; }
+    gzip -k ${fasta_out} || { echo "Fasta compression failed for ${fasta_out}"; exit 1; }
     echo "Fasta and compressed files successfully produced"
 done
 
