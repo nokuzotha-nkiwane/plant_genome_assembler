@@ -20,8 +20,8 @@ THREADS=23
 #directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 REF_DIR="${TOMATO_PATH}/data/reference_data"
-REF_GENOME="${REF_DIR}/T2T_ref.zip"
-REF_GFF3="${REF_DIR}/PN40024_5.1_on_T2T_ref_with_names.zip"
+REF_GENOME="${REF_DIR}/SL5.0.fasta.gz"
+REF_GFF3="${REF_DIR}/SL5.0.gff3.gz"
 #feature_files="${ref_dir}/5.1_on_T2T_all_variants.zip"
 QUAST_DIR="__RESULTS_DIR__"
 ALL_RESULTS_DIR="${WORKDIR}/results"
@@ -34,7 +34,7 @@ module load app/QUAST/5.3.0
 
 #check quality of assembled contigs for each haplotype
 
-python quast.py ${HAP1} \
+quast.py ${HAP1} \
     ${HAP2} \
     -r ${REF_GENOME} \
     -g ${REF_GFF3} \
