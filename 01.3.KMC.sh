@@ -18,5 +18,9 @@ source ~/.pbsrc
 #load modules
 
 #directories and files
+WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
+RAW_READS_FQ="${WORKDIR}/raw_reads/D260405-SAMPLE_CLI_HiFi.fastq.gz"
+ALL_RESULTS_DIR="${WORKDIR}/results"
+KMC_OUT_DIR="__RESULTS_DIR__"
 
-#resource parameters
+#kmc kmer analysis
