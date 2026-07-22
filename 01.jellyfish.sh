@@ -29,7 +29,18 @@ JELLYFISH_HISTO="${JELLYFISH_OUT_DIR}/dSAMPLE_CLI.histo"
 module load app/jellyfish/2.3.1 
 
 #jellyfish kmer analysis
-jellyfish count -m 31 -s 100M -t ${THREADS} -C -o ${JELLYFISH_JF} <(zcat ${RAW_READS_FQ})
+KMERS=(17 21 27 31 37)
 
-#jellyfish histogram construction
-jellyfish histo -t ${THREADS} ${JELLYFISH_JF} > ${JELLYFISH_HISTO}
+for K in "${KMERS[@]}"; do
+    OUT_K="${JELLYFISH_OUT_DIR}/k${K}"
+    mkdir -p "${OUT_K}"
+
+    JELLYFISH_JF="${OUT_K}/dSAMPLE_CLI.jf"
+    JELLYFISH_HISTO="${OUT_K}/dSAMPLE_CLI.histo"
+
+    #jellyfish kmer counting
+    jellyfish count -m ${K} -s 100M -t ${THREADS} -C -o ${JELLYFISH_JF} <(zcat ${RAW_READS_FQ})
+
+    #jellyfish histogram construction
+    jellyfish histo -t ${THREADS} ${JELLYFISH_JF} > ${JELLYFISH_HISTO}
+done
