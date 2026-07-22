@@ -22,8 +22,14 @@ WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 RAW_READS_FQ="${WORKDIR}/raw_reads/D260405-SAMPLE_CLI_HiFi.fastq.gz"
 ALL_RESULTS_DIR="${WORKDIR}/results"
 YAK_OUT_DIR="__RESULTS_DIR__"
+READS_HASH="${YAK_OUT_DIR}/reads.yak"
+READS_OUT_FILE="${YAK_OUT_DIR}/dSAMPLE_CLI_ccs-sr.kqv.txt"
+READS_HIST="${YAK_OUT_DIR}/dSAMPLE_CLI_sr.hist"
 
 #resource parameters
 THREADS=32
 
 #yak kmer analysis
+yak count -b37 -t${THREADS} -o ${READS_HASH} ${RAW_READS_FQ}
+yak inspect ${READS_HASH} sr.yak > ${READS_OUT_FILE}
+yak inspect sr.yak > ${READS_HIST}
