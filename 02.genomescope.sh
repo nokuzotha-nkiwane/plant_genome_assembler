@@ -25,4 +25,4 @@ module load app/miniconda/mamba
 conda activate genomescope2
 
 #genomescope visualisation
-genomescope2 -i ${JELLYFISH_HISTO} -o ${GENOMESCOPE2_OUT_DIR} -k 21
+genomescope2 -i ${JELLYFISH_HISTO} -o ${GENOMESCOPE2_OUT_DIR} -k 31
