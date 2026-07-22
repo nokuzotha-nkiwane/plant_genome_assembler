@@ -25,4 +25,13 @@ module load app/miniconda/mamba
 conda activate genomescope2
 
 #genomescope visualisation
-genomescope2 -i ${JELLYFISH_HISTO} -o ${GENOMESCOPE2_OUT_DIR} -k 31
+KMERS=(17 21 27 31 37)
+
+for K in "${KMERS[@]}"; do
+    JELLYFISH_HISTO="${JELLYFISH_OUT_DIR}/k${K}/dSAMPLE_CLI.histo"
+    OUT_K="${GENOMESCOPE2_OUT_DIR}/k${K}"
+    mkdir -p "${OUT_K}"
+
+    #genomescope visualisation
+    genomescope2 -i ${JELLYFISH_HISTO} -o ${OUT_K} -k ${K}
+done
