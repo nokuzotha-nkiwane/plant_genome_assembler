@@ -38,7 +38,7 @@ RAW_READS_FQ="${TEMP_DIR}/D260405-SAMPLE_CLI_HiFi.fastq.gz"
 
 #hifiasm assembly
 echo "Performing contig assembly..."
-hifiasm -o ${HIFIASM_ASM} -t ${THREADS} -i -l0 ${RAW_READS_FQ} || { echo "Contig assembly failed"; exit 1; }
+hifiasm -o ${HIFIASM_ASM} -t ${THREADS} -i -l0 --hom-cov ${RAW_READS_FQ} || { echo "Contig assembly failed"; exit 1; }
 echo "Contig assembly complete"
 
 #convert gfa to fasta
