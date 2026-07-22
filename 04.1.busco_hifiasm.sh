@@ -42,6 +42,7 @@ RUN_BUSCO() {
     -l eudicotyledons_odb12 \
     --download_path ${BUSCO_DB_DIR} \
     -c ${THREADS} \
+    -f \
     -o ${BUSCO_OUTPUT_PREFIX} \
     --out_path ${BUSCO_DIR}
 }
