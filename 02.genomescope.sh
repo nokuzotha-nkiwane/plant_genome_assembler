@@ -17,7 +17,7 @@ source ~/.pbsrc
 #directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 ALL_RESULTS_DIR="${WORKDIR}/results"
-JELLYFISH_HISTO="${ALL_RESULTS_DIR}/01.jellyfish/dSAMPLE_CLI.histo"
+JELLYFISH_OUT_DIR="${ALL_RESULTS_DIR}/01.jellyfish"
 GENOMESCOPE2_OUT_DIR="__RESULTS_DIR__"
 
 #load modules
