@@ -36,7 +36,6 @@ export _JAVA_OPTIONS="-Xmx8g"
 RUN_BUSCO() {
     local FASTA="${1}"
     busco --in ${FASTA} \
-    --metaeuk \
     -m genome \
     --offline \
     -l eudicotyledons_odb12 \
