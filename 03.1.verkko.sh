@@ -27,13 +27,13 @@ VERKKO_DIR_STD="${VERKKO_DIR}/standard"
 VERKKO_DIR_NOCORR="${VERKKO_DIR}/no_correction"
 
 #make temp directory to copy reads to so the original ones are accessible to other scripts
-mkdir -p ${CONTIGS_DIR} ${TEMP_DIR} ${VERKKO_DIR_STD} ${VERKKO_DIR_NOCORR}
+mkdir -p ${TEMP_DIR} ${VERKKO_DIR_STD} ${VERKKO_DIR_NOCORR}
 cp ${RAW_READS_FQ} "${TEMP_DIR}/"
 RAW_READS_FQ="${TEMP_DIR}/D260405-SAMPLE_CLI_HiFi.fastq.gz"
 
 #perform assembly
-verkko -d ${VERKKO_DIR} --hifi ${RAW_READS_FQ}
-verkko -d ${VERKKO_DIR} --hifi ${RAW_READS_FQ} --no-correction 
+verkko -d ${VERKKO_DIR_STD} --hifi ${RAW_READS_FQ}
+verkko -d ${VERKKO_DIR_NOCORR} --hifi ${RAW_READS_FQ} --no-correction 
 
 #delete temp dir
 rm -rf "${TEMP_DIR}/"
