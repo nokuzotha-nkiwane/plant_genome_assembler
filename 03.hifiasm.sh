@@ -25,7 +25,7 @@ HIFIASM_DIR="__RESULTS_DIR__"
 HIFIASM_ASM="${HIFIASM_DIR}/dSAMPLE_CLI.asm"
 # GFA_FILES="${HIFIASM_DIR}/dSAMPLE_CLI.asm.bp.hap?.p_ctg.gfa"
 CONTIGS_DIR="${ALL_RESULTS_DIR}/contigs"
-TEMP_DIR="${HIFIASM_DIR}/${PBS_JOBID}"
+TEMP_DIR="${HIFIASM_DIR}/${PBS_JOBID}_temp"
 
 #load modules
 module load app/miniconda/mamba
@@ -59,5 +59,5 @@ echo "Contig assembly complete"
 #     echo "Fasta and compressed files successfully produced"
 # done
 
-# #delete temp dir
-# rm -rf "${TEMP_DIR}/"
+#delete temp dir
+rm -rf "${TEMP_DIR}"

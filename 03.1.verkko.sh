@@ -23,7 +23,7 @@ WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 RAW_READS_FQ="${WORKDIR}/raw_reads/D260405-SAMPLE_CLI_HiFi.fastq.gz"
 ALL_RESULTS_DIR="${WORKDIR}/results"
 VERKKO_DIR="__RESULTS_DIR__"
-TEMP_DIR="${VERKKO_DIR}/${PBS_JOBID}"
+TEMP_DIR="${VERKKO_DIR}/${PBS_JOBID}_temp"
 VERKKO_DIR_STD="${VERKKO_DIR}/standard"
 VERKKO_DIR_NOCORR="${VERKKO_DIR}/no_correction"
 
@@ -37,4 +37,4 @@ verkko -d ${VERKKO_DIR_STD} --hifi ${RAW_READS_FQ}
 verkko -d ${VERKKO_DIR_NOCORR} --hifi ${RAW_READS_FQ} --no-correction 
 
 #delete temp dir
-rm -rf "${TEMP_DIR}/"
+rm -rf "${TEMP_DIR}"
