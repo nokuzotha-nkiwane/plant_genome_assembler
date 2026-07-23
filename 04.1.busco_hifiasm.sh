@@ -24,8 +24,8 @@ ALL_RESULTS_DIR="${WORKDIR}/results"
 BUSCO_DIR="__RESULTS_DIR__"
 BUSCO_DB_DIR="${TOMATO_PATH}/data"
 BUSCO_OUTPUT_PREFIX="dSAMPLE_CLI_"
-CONTIGS_DIR="${ALL_RESULTS_DIR}/contigs"
-CONTIGS_IN="${CONTIGS_DIR}/dSAMPLE_CLI_hap?.fa"
+CONTIGS_DIR="${ALL_RESULTS_DIR}/03.hifiasm"
+CONTIGS_IN="${CONTIGS_DIR}/dSAMPLE_CLI_primary.fa"
 
 #load modules
 module load app/miniconda/mamba
