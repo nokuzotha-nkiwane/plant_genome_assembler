@@ -22,26 +22,22 @@ WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 REF_DIR="${TOMATO_PATH}/data/reference_data"
 REF_GENOME="${REF_DIR}/SL5.0.fasta.gz"
 REF_GFF3="${REF_DIR}/SL5.0.gff3.gz"
-#feature_files="${ref_dir}/5.1_on_T2T_all_variants.zip"
 QUAST_DIR="__RESULTS_DIR__"
 ALL_RESULTS_DIR="${WORKDIR}/results"
-CONTIGS_DIR="${ALL_RESULTS_DIR}/contigs"
-HAP1="${CONTIGS_DIR}/dSAMPLE_CLI_hap1.fa.gz"
-HAP2="${CONTIGS_DIR}/dSAMPLE_CLI_hap2.fa.gz"
+HIFIASM_OUT_FASTA="${ALL_RESULTS_DIR}/03.hifiasm/dSAMPLE_CLI_primary.fa"
 
 #load modules
 module load app/QUAST/5.3.0
 
-#check quality of assembled contigs for each haplotype
+#check quality of assembled contigs for primary assembly
 
-quast.py ${HAP1} \
-    ${HAP2} \
-    -r ${REF_GENOME} \
-    -g ${REF_GFF3} \
-    -o ${QUAST_DIR} \
+quast.py "${HIFIASM_OUT_FASTA}" \
+    -r "${REF_GENOME}" \
+    -g "${REF_GFF3}" \
+    -o "${QUAST_DIR}" \
     -e \
     -k \
     --circos \
     --plots-format pdf \
-    -t ${THREADS}
-    # --features ${feature_files} \
+    -t "${THREADS}"
+
