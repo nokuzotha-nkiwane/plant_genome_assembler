@@ -20,7 +20,6 @@ THREADS=23
 #directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 RAW_READS_FQ="${WORKDIR}/raw_reads/D260405-SAMPLE_CLI_HiFi.fastq.gz"
-ALL_RESULTS_DIR="${WORKDIR}/results"
 HIFIASM_DIR="__RESULTS_DIR__"
 HIFIASM_ASM="${HIFIASM_DIR}/dSAMPLE_CLI.asm"
 GFA_FILE="${HIFIASM_DIR}/dSAMPLE_CLI.asm.p_ctg.gfa"
@@ -33,8 +32,6 @@ OUTPUT_PREFIX="dSAMPLE_CLI_"
 #load modules
 module load app/miniconda/mamba
 conda activate hifiasm
-conda activate busco_6.1.0
-export _JAVA_OPTIONS="-Xmx8g"
 
 #make temp directory to copy reads to so the original ones are accessible to other scripts
 mkdir -p "${TEMP_DIR}" "${BUSCO_DIR}"
@@ -48,11 +45,18 @@ echo "Contig assembly complete"
 
 #convert gfa to fasta
 awk '/^S/{print ">"$2; print $3}' "${GFA_FILE}" > "${HIFIASM_OUT_FASTA}"
-gzip -k dSAMPLE_CLI_primary.fa
+gzip -k "${HIFIASM_OUT_FASTA}"
+
+#deactivate conda environment
+conda deactivate
+
+#activate busco environment
+conda activate busco_6.1.0
+export _JAVA_OPTIONS="-Xmx8g"
 
 #busco
-echo "Running BUSCO for "${OUTPUT_PREFIX}".ctg.fa"
-busco --in "${OUTPUT_PREFIX}".ctg.fa \
+echo "Running BUSCO for $( basename "${HIFIASM_OUT_FASTA}" )"
+busco --in "${HIFIASM_OUT_FASTA}" \
     -m genome \
     --offline \
     -l eudicotyledons_odb12 \
@@ -62,8 +66,7 @@ busco --in "${OUTPUT_PREFIX}".ctg.fa \
     -o "${OUTPUT_PREFIX}" \
     --out_path "${BUSCO_DIR}"
 
-echo "BUSCO for ${OUTPUT_PREFIX}.ctg.fa complete"
-
+echo "BUSCO for $( basename "${HIFIASM_OUT_FASTA}" )"
 
 #delete temp dir
 rm -rf "${TEMP_DIR}"
