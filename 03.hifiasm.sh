@@ -23,41 +23,47 @@ RAW_READS_FQ="${WORKDIR}/raw_reads/D260405-SAMPLE_CLI_HiFi.fastq.gz"
 ALL_RESULTS_DIR="${WORKDIR}/results"
 HIFIASM_DIR="__RESULTS_DIR__"
 HIFIASM_ASM="${HIFIASM_DIR}/dSAMPLE_CLI.asm"
-# GFA_FILES="${HIFIASM_DIR}/dSAMPLE_CLI.asm.bp.hap?.p_ctg.gfa"
-CONTIGS_DIR="${ALL_RESULTS_DIR}/contigs"
+GFA_FILE="${HIFIASM_DIR}/dSAMPLE_CLI.asm.p_ctg.gfa"
 TEMP_DIR="${HIFIASM_DIR}/${PBS_JOBID}_temp"
+HIFIASM_OUT_FASTA="${HIFIASM_DIR}/dSAMPLE_CLI_primary.fa"
+BUSCO_DB_DIR="${TOMATO_PATH}/data"
+BUSCO_DIR="${HIFIASM_DIR}/busco"
+OUTPUT_PREFIX="dSAMPLE_CLI_"
 
 #load modules
 module load app/miniconda/mamba
 conda activate hifiasm
+conda activate busco_6.1.0
+export _JAVA_OPTIONS="-Xmx8g"
 
 #make temp directory to copy reads to so the original ones are accessible to other scripts
-mkdir -p ${CONTIGS_DIR} ${TEMP_DIR}
-cp ${RAW_READS_FQ} "${TEMP_DIR}/"
+mkdir -p "${TEMP_DIR}" "${BUSCO_DIR}"
+cp "${RAW_READS_FQ}" "${TEMP_DIR}/"
 RAW_READS_FQ="${TEMP_DIR}/D260405-SAMPLE_CLI_HiFi.fastq.gz"
 
 #hifiasm assembly
 echo "Performing contig assembly..."
-hifiasm -o ${HIFIASM_ASM} --primary -t ${THREADS} -i ${RAW_READS_FQ} || { echo "Contig assembly failed"; exit 1; }
+hifiasm -o "${HIFIASM_ASM}" --primary -t "${THREADS}" -i "${RAW_READS_FQ}" || { echo "Contig assembly failed"; exit 1; }
 echo "Contig assembly complete"
 
-# #convert gfa to fasta
-# for gfa in ${GFA_FILES}; do
-#     echo "Extracting contigs for ${gfa}..."
+#convert gfa to fasta
+awk '/^S/{print ">"$2; print $3}' "${GFA_FILE}" > "${HIFIASM_OUT_FASTA}"
+gzip -k dSAMPLE_CLI_primary.fa
 
-#     #extract basename to name output fasta file
-#     hap=$(basename ${gfa} | grep -o "hap[0-9]")
-#     fasta_out="${CONTIGS_DIR}/dSAMPLE_CLI_${hap}.fa"
+#busco
+echo "Running BUSCO for "${OUTPUT_PREFIX}".ctg.fa"
+busco --in "${OUTPUT_PREFIX}".ctg.fa \
+    -m genome \
+    --offline \
+    -l eudicotyledons_odb12 \
+    --download_path "${BUSCO_DB_DIR}" \
+    -c "${THREADS}" \
+    -f \
+    -o "${OUTPUT_PREFIX}" \
+    --out_path "${BUSCO_DIR}"
 
-#     #extract sequences from gfa to fasta
-#     awk '/^S/{print ">"$2; print $3}' "${gfa}" > ${fasta_out} || { echo "Contig extraction failed for ${gfa}"; exit 1; }
-#     echo "Contig extraction for ${gfa} complete."
+echo "BUSCO for ${OUTPUT_PREFIX}.ctg.fa complete"
 
-#     #compress original fasta file
-#     echo "Compressing fasta file..."
-#     gzip -k ${fasta_out} || { echo "Fasta compression failed for ${fasta_out}"; exit 1; }
-#     echo "Fasta and compressed files successfully produced"
-# done
 
 #delete temp dir
 rm -rf "${TEMP_DIR}"
