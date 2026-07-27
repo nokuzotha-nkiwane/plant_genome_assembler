@@ -14,6 +14,10 @@ set -euxo pipefail
 #for evaluating variables in ~/.pbsrc
 source ~/.pbsrc
 
+#load modules
+module load app/miniconda/mamba
+conda activate merqury
+
 #parameters
 THREADS=23
 MEMORY=60
@@ -25,27 +29,34 @@ RAW_READS="${WORKDIR}/raw_reads/SAMPLE_CLI.fastq"
 RAW_READS_GZ="${WORKDIR}/raw_reads/D260405-SAMPLE_CLI_HiFi.fastq.gz"
 MERYL_DIR="__RESULTS_DIR__"
 MERYL_OUTPUT="${MERYL_DIR}/dSAMPLE_CLI_asm.meryl"
+TEMP_DIR="${MERYL_DIR}/${PBS_JOBID}_temp"
 
-#load modules
-module load app/miniconda/mamba
-conda activate merqury
-
-mkdir -p ${MERYL_DIR}
+mkdir -p "${MERYL_DIR}"
 # >>> run only on first execution of merqury >>>
 
 #compress raw read files
-if [[ -s ${RAW_READS_GZ} ]]; then
+if [[ -s "${RAW_READS_GZ}" ]]; then
     echo "Compressed file already exists. Skipping gzip: ${RAW_READS_GZ}"
-elif [[ -s ${RAW_READS} ]]; then
-    gzip ${RAW_READS}
+elif [[ -s "${RAW_READS}" ]]; then
+    gzip -c  "${RAW_READS}" > "${RAW_READS_GZ}"
 else
     echo "ERROR: File empty or missing: ${RAW_READS} and ${RAW_READS_GZ}"
     exit 1
 fi
 
+#make temp directory to copy reads to so the original ones are accessible to other scripts
+mkdir -p "${TEMP_DIR}"
+
+#automatically remove TEMP_DIR whenever the script exits (normal or error)
+trap 'rm -rf "${TEMP_DIR}"' EXIT
+
+#copy reads to temporary directory 
+cp "${RAW_READS_GZ}" "${TEMP_DIR}/"
+TEMP_READS_GZ="${TEMP_DIR}/$(basename "${RAW_READS_GZ}")"
+
 #make reads.meryl database
 echo "Performing k-mer count on raw reads for reads.meryl database"
-meryl count k=${KMER_SIZE} threads=${THREADS} memory=${MEMORY} ${RAW_READS_GZ} output ${MERYL_OUTPUT} 
+meryl count k="${KMER_SIZE}" threads="${THREADS}" memory="${MEMORY}" "${TEMP_READS_GZ}" output "${MERYL_OUTPUT}" 
 echo "Reads database successfully made"
 
 # <<< run only on first execution of merqury <<<
