@@ -40,7 +40,8 @@ module load app/QUAST/5.3.0
 
 #check quality of assembled contigs for primary assembly
 
-quast.py "${HIFIASM_OUT_FASTA}" \
+quast.py "${P_CONTIGS_IN}" \
+    "${A_CONTIGS_IN}" \
     -r "${REF_GENOME}" \
     -g "${REF_GFF3}" \
     -o "${QUAST_DIR}" \

@@ -33,7 +33,7 @@ mkdir -p "${TEMP_DIR}"
 trap 'rm -rf "${TEMP_DIR}"' EXIT
 
 #check if non-empty files exist
-for FILE in ${RAW_READS_GZ} ${CONTIGS_IN_1} ${CONTIGS_IN_2}; do
+for FILE in ${RAW_READS_GZ} ${P_CONTIGS_IN} ${A_CONTIGS_IN}; do
     if [[ ! -s ${FILE} ]]; then
         echo "ERROR: File empty or missing: ${FILE}"
         exit 1
@@ -54,5 +54,5 @@ conda activate merqury
 #run merqury to check quality of assembled contigs for each haplotype
 echo "Running merqury on assembled contigs "
 cd ${MERQURY_DIR}
-$MERQURY/merqury.sh ${MERYL_DB} ${CONTIGS_IN_1} ${CONTIGS_IN_2} ${MERQURY_OUT_PREFIX}
+$MERQURY/merqury.sh ${MERYL_DB} ${P_CONTIGS_IN} ${A_CONTIGS_IN} ${MERQURY_OUT_PREFIX}
 echo "Merqury complete"
