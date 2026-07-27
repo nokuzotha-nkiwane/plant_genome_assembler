@@ -24,7 +24,10 @@ REF_GENOME="${REF_DIR}/SL5.0.fasta.gz"
 REF_GFF3="${REF_DIR}/SL5.0.gff3.gz"
 QUAST_DIR="__RESULTS_DIR__"
 ALL_RESULTS_DIR="${WORKDIR}/results"
-HIFIASM_OUT_FASTA="${ALL_RESULTS_DIR}/03.hifiasm/dSAMPLE_CLI_primary.fa"
+HIFIASM_DIR="${ALL_RESULTS_DIR}/03.hifiasm"
+P_CONTIGS_IN="${HIFIASM_DIR}/dSAMPLE_CLI_primary.fa"
+A_CONTIGS_IN="${HIFIASM_DIR}/dSAMPLE_CLI_alternate.fa"
+TEMP_DIR="${HIFIASM_DIR}/${PBS_JOBID}_temp"
 
 #load modules
 module load app/QUAST/5.3.0
