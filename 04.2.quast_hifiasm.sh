@@ -14,6 +14,9 @@ set -euxo pipefail
 #for evaluating variables in ~/.pbsrc
 source ~/.pbsrc
 
+#load modules
+module load app/QUAST/5.3.0
+
 #resource parameters
 THREADS=23
 
@@ -34,9 +37,6 @@ mkdir -p "${TEMP_DIR}"
 
 #automatically remove TEMP_DIR whenever the script exits (normal or error)
 trap 'rm -rf "${TEMP_DIR}"' EXIT
-
-#load modules
-module load app/QUAST/5.3.0
 
 #check quality of assembled contigs for primary assembly
 

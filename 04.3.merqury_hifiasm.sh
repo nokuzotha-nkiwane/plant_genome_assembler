@@ -14,6 +14,10 @@ set -euxo pipefail
 #for evaluating variables in ~/.pbsrc
 source ~/.pbsrc
 
+#load modules version 1.4.1
+module load app/miniconda/mamba
+conda activate merqury
+
 #directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 RAW_READS_GZ="${WORKDIR}/raw_reads/D260405-SAMPLE_CLI_HiFi.fastq.gz"
@@ -45,11 +49,6 @@ if [[ ! -d ${MERYL_DB} ]]; then
     echo "ERROR: Meryl database empty or missing: ${MERYL_DB}"
     exit 1
 fi
-
-
-#load modules version 1.4.1
-module load app/miniconda/mamba
-conda activate merqury
 
 #run merqury to check quality of assembled contigs for each haplotype
 echo "Running merqury on assembled contigs "
