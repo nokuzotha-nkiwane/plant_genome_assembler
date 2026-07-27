@@ -31,7 +31,7 @@ BUSCO_DB_DIR="${TOMATO_PATH}/data"
 HIFIASM_DIR="${ALL_RESULTS_DIR}/03.hifiasm"
 P_CONTIGS_IN="${HIFIASM_DIR}/dSAMPLE_CLI_primary.fa"
 A_CONTIGS_IN="${HIFIASM_DIR}/dSAMPLE_CLI_alternate.fa"
-TEMP_DIR="${HIFIASM_DIR}/${PBS_JOBID}_temp"
+TEMP_DIR="${BUSCO_DIR}/${PBS_JOBID}_temp"
 
 #make temp directory to fastas to so the original ones are accessible to other scripts
 mkdir -p "${TEMP_DIR}"
