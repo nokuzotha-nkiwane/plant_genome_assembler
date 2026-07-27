@@ -38,10 +38,19 @@ mkdir -p "${TEMP_DIR}"
 #automatically remove TEMP_DIR whenever the script exits (normal or error)
 trap 'rm -rf "${TEMP_DIR}"' EXIT
 
+#copy fastas file to temporary directory
+cp "${P_CONTIGS_IN}" "${A_CONTIGS_IN}" "${TEMP_DIR}/"
+
+# Re-assign array to point to temp FASTA copies
+CONTIGS_IN=(
+    "${TEMP_DIR}/$(basename "${P_CONTIGS_IN}")"
+    "${TEMP_DIR}/$(basename "${A_CONTIGS_IN}")"
+)
+
 #check quality of assembled contigs for primary assembly
 
-quast.py "${P_CONTIGS_IN}" \
-    "${A_CONTIGS_IN}" \
+quast.py "${CONTIGS_IN[0]}" \
+    "${CONTIGS_IN[1]}" \
     -r "${REF_GENOME}" \
     -g "${REF_GFF3}" \
     -o "${QUAST_DIR}" \

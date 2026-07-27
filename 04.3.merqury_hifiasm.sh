@@ -37,21 +37,30 @@ mkdir -p "${TEMP_DIR}"
 trap 'rm -rf "${TEMP_DIR}"' EXIT
 
 #check if non-empty files exist
-for FILE in ${RAW_READS_GZ} ${P_CONTIGS_IN} ${A_CONTIGS_IN}; do
+for FILE in "${RAW_READS_GZ}" "${P_CONTIGS_IN}" "${A_CONTIGS_IN}"; do
     if [[ ! -s ${FILE} ]]; then
         echo "ERROR: File empty or missing: ${FILE}"
         exit 1
     fi
 done
 
+#copy fastas file to temporary directory
+cp "${P_CONTIGS_IN}" "${A_CONTIGS_IN}" "${TEMP_DIR}/"
+
+# Re-assign array to point to temp FASTA copies
+CONTIGS_IN=(
+    "${TEMP_DIR}/$(basename "${P_CONTIGS_IN}")"
+    "${TEMP_DIR}/$(basename "${A_CONTIGS_IN}")"
+)
+
 #check if meryl database for reads made
-if [[ ! -d ${MERYL_DB} ]]; then
+if [[ ! -d "${MERYL_DB}" ]]; then
     echo "ERROR: Meryl database empty or missing: ${MERYL_DB}"
     exit 1
 fi
 
 #run merqury to check quality of assembled contigs for each haplotype
 echo "Running merqury on assembled contigs "
-cd ${MERQURY_DIR}
-$MERQURY/merqury.sh ${MERYL_DB} ${P_CONTIGS_IN} ${A_CONTIGS_IN} ${MERQURY_OUT_PREFIX}
+cd "${MERQURY_DIR}"
+$MERQURY/merqury.sh "${MERYL_DB}" "${CONTIGS_IN[0]}" "${CONTIGS_IN[1]}" "${MERQURY_OUT_PREFIX}"
 echo "Merqury complete"
