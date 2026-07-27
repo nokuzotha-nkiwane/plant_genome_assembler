@@ -15,6 +15,11 @@ set -euxo pipefail
 #for evaluating variables in ~/.pbsrc
 source ~/.pbsrc
 
+#load modules
+module load app/miniconda/mamba
+conda activate busco_6.1.0
+export _JAVA_OPTIONS="-Xmx8g"
+
 #resource parameters
 THREADS=23
 
@@ -23,31 +28,34 @@ WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 ALL_RESULTS_DIR="${WORKDIR}/results"
 BUSCO_DIR="__RESULTS_DIR__"
 BUSCO_DB_DIR="${TOMATO_PATH}/data"
-BUSCO_OUTPUT_PREFIX="dSAMPLE_CLI_"
-CONTIGS_DIR="${ALL_RESULTS_DIR}/03.hifiasm"
-CONTIGS_IN="${CONTIGS_DIR}/dSAMPLE_CLI_primary.fa"
+HIFIASM_DIR="${ALL_RESULTS_DIR}/03.hifiasm"
+P_CONTIGS_IN="${HIFIASM_DIR}/dSAMPLE_CLI_primary.fa"
+A_CONTIGS_IN="${HIFIASM_DIR}/dSAMPLE_CLI_alternate.fa"
 
-#load modules
-module load app/miniconda/mamba
-conda activate busco_6.1.0
-export _JAVA_OPTIONS="-Xmx8g"
+#combine contig inputs into a single sequence/array
+CONTIGS_IN=("${P_CONTIGS_IN}" "${A_CONTIGS_IN}")
 
-#check quality of assembled contigs for each haplotype
+# check quality of assembled contigs for each haplotype
 RUN_BUSCO() {
     local FASTA="${1}"
-    busco --in ${FASTA} \
-    -m genome \
-    --offline \
-    -l eudicotyledons_odb12 \
-    --download_path ${BUSCO_DB_DIR} \
-    -c ${THREADS} \
-    -f \
-    -o ${BUSCO_OUTPUT_PREFIX} \
-    --out_path ${BUSCO_DIR}
+    
+    # Extract base filename without extension to create a unique output folder per run
+    local BASE_NAME
+    BASE_NAME=$(basename "${FASTA}" .fa)
+    
+    busco --in "${FASTA}" \
+        -m genome \
+        --offline \
+        -l eudicotyledons_odb12 \
+        --download_path "${BUSCO_DB_DIR}" \
+        -c "${THREADS}" \
+        -f \
+        -o "${BASE_NAME}_busco" \
+        --out_path "${BUSCO_DIR}"
 }
 
-for FASTA in ${CONTIGS_IN};do
+for FASTA in "${CONTIGS_IN[@]}"; do
     echo "Running BUSCO for ${FASTA}"
-    RUN_BUSCO ${FASTA}
-    echo "BUSCO for ${FASTA} complete";
+    RUN_BUSCO "${FASTA}" || { echo "BUSCO failed for ${FASTA}"; exit 1; }
+    echo "BUSCO for ${FASTA} complete"
 done
