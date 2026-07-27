@@ -26,6 +26,12 @@ P_CONTIGS_IN="${HIFIASM_DIR}/dSAMPLE_CLI_primary.fa"
 A_CONTIGS_IN="${HIFIASM_DIR}/dSAMPLE_CLI_alternate.fa"
 TEMP_DIR="${HIFIASM_DIR}/${PBS_JOBID}_temp"
 
+#make temp directory to fastas to so the original ones are accessible to other scripts
+mkdir -p "${TEMP_DIR}"
+
+#automatically remove TEMP_DIR whenever the script exits (normal or error)
+trap 'rm -rf "${TEMP_DIR}"' EXIT
+
 #check if non-empty files exist
 for FILE in ${RAW_READS_GZ} ${CONTIGS_IN_1} ${CONTIGS_IN_2}; do
     if [[ ! -s ${FILE} ]]; then
