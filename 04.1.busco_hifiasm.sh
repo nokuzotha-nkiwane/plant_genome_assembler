@@ -58,7 +58,7 @@ RUN_BUSCO() {
     busco --in "${FASTA}" \
         -m genome \
         --offline \
-        -l eudicotyledons_odb12 \
+        -l solanales_odb10 \
         --download_path "${BUSCO_DB_DIR}" \
         -c "${THREADS}" \
         -f \
