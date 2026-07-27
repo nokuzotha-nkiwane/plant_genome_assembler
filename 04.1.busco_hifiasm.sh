@@ -31,10 +31,22 @@ BUSCO_DB_DIR="${TOMATO_PATH}/data"
 HIFIASM_DIR="${ALL_RESULTS_DIR}/03.hifiasm"
 P_CONTIGS_IN="${HIFIASM_DIR}/dSAMPLE_CLI_primary.fa"
 A_CONTIGS_IN="${HIFIASM_DIR}/dSAMPLE_CLI_alternate.fa"
+TEMP_DIR="${HIFIASM_DIR}/${PBS_JOBID}_temp"
 
-#combine contig inputs into a single sequence/array
-CONTIGS_IN=("${P_CONTIGS_IN}" "${A_CONTIGS_IN}")
+#make temp directory to fastas to so the original ones are accessible to other scripts
+mkdir -p "${TEMP_DIR}"
 
+#automatically remove TEMP_DIR whenever the script exits (normal or error)
+trap 'rm -rf "${TEMP_DIR}"' EXIT
+
+#copy fastas file to temporary directory
+cp "${P_CONTIGS_IN}" "${A_CONTIGS_IN}" "${TEMP_DIR}/"
+
+# Re-assign array to point to temp FASTA copies
+CONTIGS_IN=(
+    "${TEMP_DIR}/$(basename "${P_CONTIGS_IN}")"
+    "${TEMP_DIR}/$(basename "${A_CONTIGS_IN}")"
+)
 # check quality of assembled contigs for each haplotype
 RUN_BUSCO() {
     local FASTA="${1}"
