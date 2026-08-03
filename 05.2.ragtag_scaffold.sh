@@ -23,14 +23,34 @@ THREADS=23
 
 #directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
+REF_DIR="${TOMATO_PATH}/data/reference_data"
+REF_GENOME="${REF_DIR}/SL5.0.fasta.gz"
 ALL_RESULTS_DIR="${WORKDIR}/results"
-BUSCO_DIR="__RESULTS_DIR__"
-BUSCO_DB_DIR="${TOMATO_PATH}/data"
+RAGTAG_SCAFFOLD_DIR="__RESULTS_DIR__"
 HIFIASM_DIR="${ALL_RESULTS_DIR}/03.hifiasm"
 P_CONTIGS_IN="${HIFIASM_DIR}/dSAMPLE_CLI_primary.fa"
-A_CONTIGS_IN="${HIFIASM_DIR}/dSAMPLE_CLI_alternate.fa"
-TEMP_DIR="${BUSCO_DIR}/${PBS_JOBID}_temp"
+TEMP_DIR="${RAGTAG_SCAFFOLD_DIR}/${PBS_JOBID}_temp"
 
+#make temp directory to fastas to so the original ones are accessible to other scripts
+mkdir -p "${TEMP_DIR}"
+
+#automatically remove TEMP_DIR whenever the script exits (normal or error)
+trap 'rm -rf "${TEMP_DIR}"' EXIT
+
+#copy fastas file to temporary directory
+cp "${P_CONTIGS_IN}" \
+    "${REF_GENOME}" "${TEMP_DIR}/"
+
+#unzip reference fasta
+gzip -d "${TEMP_DIR}/$(basename "${REF_GENOME}")"
+
+#reassign variables to the temp directory versions
+P_CONTIGS_IN="${TEMP_DIR}/$(basename "${P_CONTIGS_IN}")"
+REF_GENOME="${TEMP_DIR}/$(basename "${REF_GENOME}" .gz)"
 
 #scaffold assemblies
-ragtag.py scaffold ref.fasta query.fasta
+cd "${TEMP_DIR}"
+ragtag.py scaffold "${REF_GENOME}" "${P_CONTIGS_IN}"
+
+#copy outputs (including directories) to final output directory
+cp -r * "${RAGTAG_SCAFFOLD_DIR}"
