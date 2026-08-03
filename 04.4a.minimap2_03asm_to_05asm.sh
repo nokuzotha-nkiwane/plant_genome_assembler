@@ -29,10 +29,9 @@ D03_CONTIGS_IN="${WORKDIR_03}/results/03.hifiasm/d03_primary.fa"
 D05_CONTIGS_IN="${WORKDIR_05}/results/03.hifiasm/d05_primary.fa"
 TEMP_DIR="${ASM_ASM_ALN}/${PBS_JOBID}_temp"
 ASM_03_05="${ASM_ASM_ALN}/asm_03_05"
-ASM_05_03="${ASM_ASM_ALN}/asm_05_03"
 
 #make temp directory to fastas to so the original ones are accessible to other scripts
-mkdir -p "${TEMP_DIR}" "${ASM_03_05}" "${ASM_05_03}"
+mkdir -p "${TEMP_DIR}" "${ASM_03_05}"
 
 #automatically remove TEMP_DIR whenever the script exits (normal or error)
 trap 'rm -rf "${TEMP_DIR}"' EXIT
@@ -49,8 +48,3 @@ D05_CONTIGS_IN="${TEMP_DIR}/$(basename "${D05_CONTIGS_IN}")"
 minimap2 -ax asm5 -t "${THREADS}" "${D03_CONTIGS_IN}" "${D05_CONTIGS_IN}" > "${ASM_03_05}/aln5.sam"
 minimap2 -ax asm10 -t "${THREADS}" "${D03_CONTIGS_IN}" "${D05_CONTIGS_IN}" > "${ASM_03_05}/aln10.sam"
 minimap2 -ax asm20 -t "${THREADS}" "${D03_CONTIGS_IN}" "${D05_CONTIGS_IN}" > "${ASM_03_05}/aln20.sam"
-
-#align assemblies to each other have 05 as reference
-minimap2 -ax asm5 -t "${THREADS}" "${D05_CONTIGS_IN}" "${D03_CONTIGS_IN}" > "${ASM_05_03}/aln5.sam"
-minimap2 -ax asm10 -t "${THREADS}" "${D05_CONTIGS_IN}" "${D03_CONTIGS_IN}" > "${ASM_05_03}/aln10.sam"
-minimap2 -ax asm20 -t "${THREADS}" "${D05_CONTIGS_IN}" "${D03_CONTIGS_IN}" > "${ASM_05_03}/aln20.sam"
