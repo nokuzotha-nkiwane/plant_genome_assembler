@@ -53,4 +53,4 @@ cd "${TEMP_DIR}"
 ragtag.py scaffold "${REF_GENOME}" "${P_CONTIGS_IN}"
 
 #copy outputs (including directories) to final output directory
-cp -r * "${RAGTAG_SCAFFOLD_DIR}"
+cp -r ragtag_output/* "${RAGTAG_SCAFFOLD_DIR}"
