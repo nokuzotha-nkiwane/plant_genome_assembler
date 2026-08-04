@@ -25,8 +25,8 @@ THREADS=23
 WORKDIR_03="${TOMATO_PATH}/03"
 WORKDIR_05="${TOMATO_PATH}/05"
 ASM_ASM_ALN="__RESULTS_DIR__"
-D03_CONTIGS_IN="${WORKDIR_03}/results/03.hifiasm/d03_primary.fa"
-D05_CONTIGS_IN="${WORKDIR_05}/results/03.hifiasm/d05_primary.fa"
+D03_CONTIGS_IN="${WORKDIR_03}/results/03.hifiasm/d03_primary_renamed.fa"
+D05_CONTIGS_IN="${WORKDIR_05}/results/03.hifiasm/d05_primary_renamed.fa"
 TEMP_DIR="${ASM_ASM_ALN}/${PBS_JOBID}_temp"
 ASM_03_05="${ASM_ASM_ALN}/asm_03_05"
 

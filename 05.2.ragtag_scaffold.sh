@@ -28,7 +28,7 @@ REF_GENOME="${REF_DIR}/SL5.0.fasta.gz"
 ALL_RESULTS_DIR="${WORKDIR}/results"
 RAGTAG_SCAFFOLD_DIR="__RESULTS_DIR__"
 HIFIASM_DIR="${ALL_RESULTS_DIR}/03.hifiasm"
-P_CONTIGS_IN="${HIFIASM_DIR}/dSAMPLE_CLI_primary.fa"
+P_CONTIGS_IN="${HIFIASM_DIR}/dSAMPLE_CLI_primary_renamed.fa"
 TEMP_DIR="${RAGTAG_SCAFFOLD_DIR}/${PBS_JOBID}_temp"
 
 #make temp directory to fastas to so the original ones are accessible to other scripts
