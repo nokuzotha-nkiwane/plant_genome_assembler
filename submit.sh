@@ -7,7 +7,6 @@ source ~/.pbsrc
 
 #user input of sample and script to run
 SCRIPT="${1:?Please enter the command line argument: script_name}"
-SAMPLE_CLI="${2:?Please enter the command line argument: sample_name}"
 
 #cross-sample scripts are named step_name.cross.sh; strip both the .cross
 #marker and .sh extension to get the base step name, and use the marker's
@@ -17,8 +16,10 @@ if [[ "${SCRIPT}" == *.cross.sh ]]; then
     STEP="${SCRIPT%.cross.sh}"
 else
     IS_CROSS=false
+    SAMPLE_CLI="${2:?Please enter the command line argument: sample_name}"
     STEP="${SCRIPT%.sh}"
 fi
+[[ "${IS_CROSS}" == true ]] && SAMPLE_CLI="combined_03_05"
 
 #validate environment (variables set in ~/.pbsrc)
 [[ -z "${TOMATO_PATH}" ]] && { echo "Error: TOMATO_PATH not set"; exit 1; }
