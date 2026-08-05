@@ -17,7 +17,6 @@ source ~/.pbsrc
 #load modules
 module load app/miniconda/mamba
 conda activate ragtag
-conda activate helper-tools
 
 #resource parameters
 THREADS=23
