@@ -27,12 +27,12 @@ REF_DIR="${TOMATO_PATH}/data/reference_data"
 REF_GENOME="${REF_DIR}/SL5.0.fasta.gz"
 ALL_RESULTS_DIR="${WORKDIR}/results"
 RAGTAG_SCAFFOLD_DIR="__RESULTS_DIR__"
-HIFIASM_DIR="${ALL_RESULTS_DIR}/03.hifiasm"
-P_CONTIGS_IN="${HIFIASM_DIR}/dSAMPLE_CLI_primary_renamed.fa"
+RAGTAG_SCAFFOLD_DIR_2="${RAGTAG_SCAFFOLD_DIR}/default"
+P_CONTIGS_IN="${ALL_RESULTS_DIR}/05.1.ragtag_correct/ragtag.correct.fasta"
 TEMP_DIR="${RAGTAG_SCAFFOLD_DIR}/${PBS_JOBID}_temp"
 
 #make temp directory to fastas to so the original ones are accessible to other scripts
-mkdir -p "${TEMP_DIR}"
+mkdir -p "${TEMP_DIR}" "${RAGTAG_SCAFFOLD_DIR_2}"
 
 #automatically remove TEMP_DIR whenever the script exits (normal or error)
 trap 'rm -rf "${TEMP_DIR}"' EXIT
@@ -49,8 +49,7 @@ P_CONTIGS_IN="${TEMP_DIR}/$(basename "${P_CONTIGS_IN}")"
 REF_GENOME="${TEMP_DIR}/$(basename "${REF_GENOME}" .gz)"
 
 #scaffold assemblies
-cd "${TEMP_DIR}"
-ragtag.py scaffold "${REF_GENOME}" "${P_CONTIGS_IN}"
-
-#copy outputs (including directories) to final output directory
-cp -r ragtag_output/* "${RAGTAG_SCAFFOLD_DIR}"
+ragtag.py scaffold -t "${THREADS}" "${REF_GENOME}" "${P_CONTIGS_IN}" -o "${RAGTAG_SCAFFOLD_DIR_2}"
+ragtag.py scaffold --remove-small -f 10000 -d 500000 -i 0.5 \
+    -a 0.5 -s 0.5 --mm2-params '-x asm10' -C -t "${THREADS}" \
+    -o  "${RAGTAG_SCAFFOLD_DIR}" "${REF_GENOME}" "${P_CONTIGS_IN}"
