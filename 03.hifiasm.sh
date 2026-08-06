@@ -57,8 +57,8 @@ RUN_HIFIASM "primary" "${HIFIASM_ASM_primary}" --primary
 
 #make arrays of input gfa files and corresponding output fasta files across both modes
 GFA_FILES=(
-    "${HIFIASM_ASM_l0}.p_ctg.gfa"
-    "${HIFIASM_ASM_l0}.a_ctg.gfa"
+    "${HIFIASM_ASM_l0}.bp.p_ctg.gfa"
+    "${HIFIASM_ASM_l0}.bp.a_ctg.gfa"
     "${HIFIASM_ASM_primary}.p_ctg.gfa"
     "${HIFIASM_ASM_primary}.a_ctg.gfa"
 )
