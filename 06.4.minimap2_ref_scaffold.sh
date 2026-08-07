@@ -22,33 +22,32 @@ conda activate helper-tools
 THREADS=23
 
 #directories and files
-WORKDIR_03="${TOMATO_PATH}/03"
-WORKDIR_05="${TOMATO_PATH}/05"
+WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
+ALL_RESULTS_DIR="${WORKDIR}/results"
 REF_DIR="${TOMATO_PATH}/data/reference_data"
 REF_GENOME="${REF_DIR}/SL5.0.fasta.gz"
-ASM_ASM_ALN="__RESULTS_DIR__"
+REF_SCAFFOLD_ALN="__RESULTS_DIR__"
 SCAFFOLD_IN="${ALL_RESULTS_DIR}/05.1.ragtag_correct/ragtag.correct.fasta"
-TEMP_DIR="${ASM_ASM_ALN}/${PBS_JOBID}_temp"
-ASM_03_05="${ASM_ASM_ALN}/asm_03_05"
+TEMP_DIR="${REF_SCAFFOLD_ALN}/${PBS_JOBID}_temp"
 
 #make temp directory to fastas to so the original ones are accessible to other scripts
-mkdir -p "${TEMP_DIR}" "${ASM_03_05}"
+mkdir -p "${TEMP_DIR}"
 
 #automatically remove TEMP_DIR whenever the script exits (normal or error)
 trap 'rm -rf "${TEMP_DIR}"' EXIT
 
 #copy input file to temporary directory
-cp "${D03_CONTIGS_IN}" \
- "${D05_CONTIGS_IN}" "${TEMP_DIR}/"
+cp "${REF_GENOME}" \
+ "${SCAFFOLD_IN}" "${TEMP_DIR}/"
 
 #reassign variables to the temp directory versions
-D03_CONTIGS_IN="${TEMP_DIR}/$(basename "${D03_CONTIGS_IN}")"
-D05_CONTIGS_IN="${TEMP_DIR}/$(basename "${D05_CONTIGS_IN}")"
+REF_GENOME="${TEMP_DIR}/$(basename "${REF_GENOME}")"
+SCAFFOLD_IN="${TEMP_DIR}/$(basename "${SCAFFOLD_IN}")"
 
 #align assemblies to each other have 03 as reference
-minimap2 -ax asm5 -t "${THREADS}" "${D03_CONTIGS_IN}" "${D05_CONTIGS_IN}" > "${ASM_03_05}/aln5.sam"
-minimap2 -cx asm5 --cs -t "${THREADS}" "${D03_CONTIGS_IN}" "${D05_CONTIGS_IN}" > "${ASM_03_05}/aln5.paf"
-minimap2 -ax asm10 -t "${THREADS}" "${D03_CONTIGS_IN}" "${D05_CONTIGS_IN}" > "${ASM_03_05}/aln10.sam"
-minimap2 -cx asm10 --cs -t "${THREADS}" "${D03_CONTIGS_IN}" "${D05_CONTIGS_IN}" > "${ASM_03_05}/aln10.paf"
-minimap2 -ax asm20 -t "${THREADS}" "${D03_CONTIGS_IN}" "${D05_CONTIGS_IN}" > "${ASM_03_05}/aln20.sam"
-minimap2 -cx asm20 --cs -t "${THREADS}" "${D03_CONTIGS_IN}" "${D05_CONTIGS_IN}" > "${ASM_03_05}/aln20.paf"
+minimap2 -ax asm5 -t "${THREADS}" "${REF_GENOME}" "${SCAFFOLD_IN}" > "${REF_SCAFFOLD_ALN}/aln5.sam"
+minimap2 -cx asm5 --cs -t "${THREADS}" "${REF_GENOME}" "${SCAFFOLD_IN}" > "${REF_SCAFFOLD_ALN}/aln5.paf"
+minimap2 -ax asm10 -t "${THREADS}" "${REF_GENOME}" "${SCAFFOLD_IN}" > "${REF_SCAFFOLD_ALN}/aln10.sam"
+minimap2 -cx asm10 --cs -t "${THREADS}" "${REF_GENOME}" "${SCAFFOLD_IN}" > "${REF_SCAFFOLD_ALN}/aln10.paf"
+minimap2 -ax asm20 -t "${THREADS}" "${REF_GENOME}" "${SCAFFOLD_IN}" > "${REF_SCAFFOLD_ALN}/aln20.sam"
+minimap2 -cx asm20 --cs -t "${THREADS}" "${REF_GENOME}" "${SCAFFOLD_IN}" > "${REF_SCAFFOLD_ALN}/aln20.paf"
