@@ -1,8 +1,8 @@
 #!/bin/bash
-#PBS -l ncpus=24
-#PBS -l mem=60GB
+#PBS -l ncpus=4
+#PBS -l mem=8GB
 #PBS -q bix
-#PBS -l walltime=6:00:00
+#PBS -l walltime=1:00:00
 #PBS -N SAMPLE_CLI_STEP_PBS
 #PBS -o OUTPUT_FILE_PBS
 #PBS -e ERROR_FILE_PBS
@@ -21,7 +21,7 @@ conda activate busco_6.1.0
 export _JAVA_OPTIONS="-Xmx8g"
 
 #resource parameters
-THREADS=23
+THREADS=4
 
 #directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"

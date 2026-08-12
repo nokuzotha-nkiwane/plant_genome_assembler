@@ -1,7 +1,8 @@
 #!/bin/bash
-#PBS -l select=1:ncpus=23:mem=60GB
+#PBS -l ncpus=8
+#PBS -l mem=8GB
 #PBS -q bix
-#PBS -l walltime=48:00:00
+#PBS -l walltime=3:00:00
 #PBS -N SAMPLE_CLI_STEP_PBS
 #PBS -o OUTPUT_FILE_PBS
 #PBS -e ERROR_FILE_PBS

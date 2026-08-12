@@ -1,7 +1,7 @@
 #!/bin/bash
-#PBS -l select=1:ncpus=23:mem=60GB
+#PBS -l select=1:ncpus=4:mem=40GB
 #PBS -q bix
-#PBS -l walltime=15:00:00
+#PBS -l walltime=1:00:00
 #PBS -N SAMPLE_CLI_STEP_PBS
 #PBS -o OUTPUT_FILE_PBS
 #PBS -e ERROR_FILE_PBS
@@ -19,7 +19,7 @@ module load app/miniconda/mamba
 conda activate ragtag
 
 #resource parameters
-THREADS=23
+THREADS=4
 
 #directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
@@ -49,7 +49,6 @@ P_CONTIGS_IN="${TEMP_DIR}/$(basename "${P_CONTIGS_IN}")"
 REF_GENOME="${TEMP_DIR}/$(basename "${REF_GENOME}" .gz)"
 
 #scaffold assemblies
-ragtag.py scaffold -t "${THREADS}" "${REF_GENOME}" "${P_CONTIGS_IN}" -o "${RAGTAG_SCAFFOLD_DIR_2}"
 ragtag.py scaffold --remove-small -f 10000 -d 500000 -i 0.5 \
     -a 0.5 -s 0.5 --mm2-params '-x asm10' -C -t "${THREADS}" \
     -o  "${RAGTAG_SCAFFOLD_DIR}" "${REF_GENOME}" "${P_CONTIGS_IN}"
