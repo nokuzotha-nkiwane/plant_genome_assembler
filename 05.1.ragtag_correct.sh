@@ -51,5 +51,5 @@ P_CONTIGS_IN="${TEMP_DIR}/$(basename "${P_CONTIGS_IN}")"
 REF_GENOME="${TEMP_DIR}/$(basename "${REF_GENOME}" .gz)"
 RAW_READS_GZ="${TEMP_DIR}/$(basename "${RAW_READS_GZ}")"
 
-#scaffold assemblies
+#correct assemblies assemblies
 ragtag.py correct -R "${RAW_READS_GZ}" -T corr -t "${THREADS}" -o "${RAGTAG_CORRECT_DIR}" "${REF_GENOME}" "${P_CONTIGS_IN}"
