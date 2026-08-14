@@ -47,7 +47,3 @@ D05_CONTIGS_IN="${TEMP_DIR}/$(basename "${D05_CONTIGS_IN}")"
 #align assemblies to each other have 05 as reference
 minimap2 -ax asm5 -t "${THREADS}" "${D05_CONTIGS_IN}" "${D03_CONTIGS_IN}" > "${ASM_05_03}/aln5.sam"
 minimap2 -cx asm5 --cs -t "${THREADS}" "${D05_CONTIGS_IN}" "${D03_CONTIGS_IN}" > "${ASM_05_03}/aln5.paf"
-minimap2 -ax asm10 -t "${THREADS}" "${D05_CONTIGS_IN}" "${D03_CONTIGS_IN}" > "${ASM_05_03}/aln10.sam"
-minimap2 -cx asm10 --cs -t "${THREADS}" "${D05_CONTIGS_IN}" "${D03_CONTIGS_IN}" > "${ASM_05_03}/aln10.paf"
-minimap2 -ax asm20 -t "${THREADS}" "${D05_CONTIGS_IN}" "${D03_CONTIGS_IN}" > "${ASM_05_03}/aln20.sam"
-minimap2 -cx asm20 --cs -t "${THREADS}" "${D05_CONTIGS_IN}" "${D03_CONTIGS_IN}" > "${ASM_05_03}/aln20.paf"

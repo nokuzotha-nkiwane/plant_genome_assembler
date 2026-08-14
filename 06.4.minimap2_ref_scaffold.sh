@@ -27,7 +27,7 @@ ALL_RESULTS_DIR="${WORKDIR}/results"
 REF_DIR="${TOMATO_PATH}/data/reference_data"
 REF_GENOME="${REF_DIR}/SL5.0.fasta.gz"
 REF_SCAFFOLD_ALN="__RESULTS_DIR__"
-SCAFFOLD_IN="${ALL_RESULTS_DIR}/05.2.ragtag_scafold/ragtag.scaffold.fasta"
+SCAFFOLD_IN="${ALL_RESULTS_DIR}/05.2.ragtag_scafold/ragtag.scaffold.chromosomes.fasta"
 TEMP_DIR="${REF_SCAFFOLD_ALN}/${PBS_JOBID}_temp"
 
 #make temp directory to fastas to so the original ones are accessible to other scripts
@@ -47,7 +47,3 @@ SCAFFOLD_IN="${TEMP_DIR}/$(basename "${SCAFFOLD_IN}")"
 #align assemblies to each other have 03 as reference
 minimap2 -ax asm5 -t "${THREADS}" "${REF_GENOME}" "${SCAFFOLD_IN}" > "${REF_SCAFFOLD_ALN}/aln5.sam"
 minimap2 -cx asm5 --cs -t "${THREADS}" "${REF_GENOME}" "${SCAFFOLD_IN}" > "${REF_SCAFFOLD_ALN}/aln5.paf"
-minimap2 -ax asm10 -t "${THREADS}" "${REF_GENOME}" "${SCAFFOLD_IN}" > "${REF_SCAFFOLD_ALN}/aln10.sam"
-minimap2 -cx asm10 --cs -t "${THREADS}" "${REF_GENOME}" "${SCAFFOLD_IN}" > "${REF_SCAFFOLD_ALN}/aln10.paf"
-minimap2 -ax asm20 -t "${THREADS}" "${REF_GENOME}" "${SCAFFOLD_IN}" > "${REF_SCAFFOLD_ALN}/aln20.sam"
-minimap2 -cx asm20 --cs -t "${THREADS}" "${REF_GENOME}" "${SCAFFOLD_IN}" > "${REF_SCAFFOLD_ALN}/aln20.paf"
