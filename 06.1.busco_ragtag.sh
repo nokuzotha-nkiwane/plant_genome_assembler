@@ -38,7 +38,7 @@ BUSCO_DB_DIR="${TOMATO_PATH}/data"
 if [[ "${RAGTAG_MODE}" == "correct" ]];then
         CONTIGS_IN="${ALL_RESULTS_DIR}/05.1.ragtag_correct/ragtag.correct.fasta"
 elif [[ "${RAGTAG_MODE}" == "scaffold" ]];then
-        CONTIGS_IN="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold/ragtag.scaffold.fasta"
+        CONTIGS_IN="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold/ragtag.scaffold.chromosomes.fasta"
 else
     echo "Error: RAGTAG_MODE must be 'correct' or 'scaffold', got: ${RAGTAG_MODE}"
     exit 1
