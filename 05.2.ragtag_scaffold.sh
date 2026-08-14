@@ -27,12 +27,11 @@ REF_DIR="${TOMATO_PATH}/data/reference_data"
 REF_GENOME="${REF_DIR}/SL5.0.fasta.gz"
 ALL_RESULTS_DIR="${WORKDIR}/results"
 RAGTAG_SCAFFOLD_DIR="__RESULTS_DIR__"
-RAGTAG_SCAFFOLD_DIR_2="${RAGTAG_SCAFFOLD_DIR}/default"
 P_CONTIGS_IN="${ALL_RESULTS_DIR}/05.1.ragtag_correct/ragtag.correct.fasta"
 TEMP_DIR="${RAGTAG_SCAFFOLD_DIR}/${PBS_JOBID}_temp"
 
 #make temp directory to fastas to so the original ones are accessible to other scripts
-mkdir -p "${TEMP_DIR}" "${RAGTAG_SCAFFOLD_DIR_2}"
+mkdir -p "${TEMP_DIR}"
 
 #automatically remove TEMP_DIR whenever the script exits (normal or error)
 trap 'rm -rf "${TEMP_DIR}"' EXIT
