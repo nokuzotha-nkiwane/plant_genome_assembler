@@ -60,6 +60,10 @@ REF_SCAFFOLD_ALIGN() {
     local REFERENCE="$1" OUT_DIR="$2"
     minimap2 -ax asm5 -t "${THREADS}" "${REFERENCE}" "${SCAFFOLD_IN}" > "${OUT_DIR}/aln5.sam"
     minimap2 -cx asm5 --cs -t "${THREADS}" "${REFERENCE}" "${SCAFFOLD_IN}" > "${OUT_DIR}/aln5.paf"
+    minimap2 -ax asm10 -t "${THREADS}" "${REFERENCE}" "${SCAFFOLD_IN}" > "${OUT_DIR}/aln10.sam"
+    minimap2 -cx asm10 --cs -t "${THREADS}" "${REFERENCE}" "${SCAFFOLD_IN}" > "${OUT_DIR}/aln10.paf"
+    minimap2 -ax asm20 -t "${THREADS}" "${REFERENCE}" "${SCAFFOLD_IN}" > "${OUT_DIR}/aln20.sam"
+    minimap2 -cx asm20 --cs -t "${THREADS}" "${REFERENCE}" "${SCAFFOLD_IN}" > "${OUT_DIR}/aln20.paf"
 }
 
 #align the variable reference sequences to the scaffold
