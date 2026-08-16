@@ -7,3 +7,12 @@
 #PBS -e ERROR_FILE_PBS
 #PBS -m be
 #PBS -M PBS_EMAIL
+
+#kill execution at first error
+set -euxo pipefail 
+
+#for evaluating variables in ~/.pbsrc
+source ~/.pbsrc
+
+#load modules
+module load app/miniconda/mamba
