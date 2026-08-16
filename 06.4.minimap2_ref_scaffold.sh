@@ -58,8 +58,8 @@ OUT_FILES=("${FULL_REF_DIR}"
 #align scaffolded assembly reference
 REF_SCAFFOLD_ALIGN() {
     local REFERENCE="$1" OUT_DIR="$2"
-    minimap2 -ax asm5 -t "${THREADS}" "${REFERENCE}" "${SCAFFOLD_IN}" > "${OUT_DIR}/aln5.sam"
-    minimap2 -cx asm5 --cs -t "${THREADS}" "${REFERENCE}" "${SCAFFOLD_IN}" > "${OUT_DIR}/aln5.paf"
+    minimap2 -ax asm5 -t "${THREADS}" "${REFERENCE}" "${SCAFFOLD_IN}" > "${OUT_DIR}/dSAMPLE_CLI_aln5.sam"
+    minimap2 -cx asm5 --cs -t "${THREADS}" "${REFERENCE}" "${SCAFFOLD_IN}" > "${OUT_DIR}/dSAMPLE_CLI_aln5.paf"
 }
 
 #align the variable reference sequences to the scaffold
