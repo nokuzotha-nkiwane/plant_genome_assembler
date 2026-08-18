@@ -58,7 +58,7 @@ REF_SCAFFOLD_ALIGN() {
 
     #perform alignment visualisation
     cd "${OUT_DIR}"
-    nucmer -r "${REFERENCE}" -q "${SCAFFOLD_IN}" -p dSAMPLE_CLI
+    nucmer "${REFERENCE}" "${SCAFFOLD_IN}" -p dSAMPLE_CLI
 }
 
 #align the variable reference sequences to the scaffold
