@@ -2,7 +2,7 @@
 #PBS -l ncpus=24
 #PBS -l mem=60GB
 #PBS -q bix
-#PBS -l walltime=6:00:00
+#PBS -l walltime=12:00:00
 #PBS -N SAMPLE_CLI_STEP_PBS
 #PBS -o OUTPUT_FILE_PBS
 #PBS -e ERROR_FILE_PBS
@@ -94,8 +94,18 @@ elif [[ "${RAGTAG_MODE}" == "scaffold" ]]; then
         for D_VAL in "${D_VALUES[@]}"; do
             PREFIX="SAMPLE_CLI.f${F_VAL}_d${D_VAL}"
             COMBO_STEP_DIR="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold/f${F_VAL}_d${D_VAL}"
+
+            # run for full output scaffold fasta
+            run_busco "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.fasta"
+            COMBO_STATUS["f${F_VAL}_d${D_VAL}_full"]=$?
+
+            # run for chromosomes only scaffold fasta
             run_busco "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.chromosomes.fasta"
-            COMBO_STATUS["f${F_VAL}_d${D_VAL}"]=$?
+            COMBO_STATUS["f${F_VAL}_d${D_VAL}_chromosomes"]=$?
+
+            # run for unplaced chromosomes only scaffold fasta
+            run_busco "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.unplaced.fasta"
+            COMBO_STATUS["f${F_VAL}_d${D_VAL}_unplaced"]=$?
         done
     done
 
