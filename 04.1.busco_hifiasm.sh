@@ -2,7 +2,7 @@
 #PBS -l ncpus=4
 #PBS -l mem=8GB
 #PBS -q bix
-#PBS -l walltime=3:00:00
+#PBS -l walltime=4:00:00
 #PBS -N SAMPLE_CLI_STEP_PBS
 #PBS -o OUTPUT_FILE_PBS
 #PBS -e ERROR_FILE_PBS
@@ -54,6 +54,10 @@ FASTAS_IN=(
 RUN_BUSCO() {
     local FASTA="${1}"
     
+    # Extract base filename without extension to create a unique output folder per run
+    local BASE_NAME
+    BASE_NAME=$(basename "${FASTA}")
+    
     busco --in "${FASTA}" \
         -m genome \
         --offline \
@@ -61,7 +65,7 @@ RUN_BUSCO() {
         --download_path "${BUSCO_DB_DIR}" \
         -c "${THREADS}" \
         -f \
-        -o "${FASTA}_busco" \
+        -o "${BASE_NAME}_busco" \
         --out_path "${BUSCO_DIR}"
 }
 
