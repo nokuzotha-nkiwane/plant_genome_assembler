@@ -49,15 +49,22 @@ REF_GENOME="${TEMP_DIR}/$(basename "${REF_GENOME}" .gz)"
 
 #scaffold assemblies asm5
 #run ragtag scaffold for a given (-f, -d) combination, into its own subdirectory
+#run ragtag scaffold for a given (-f, -d) combination, into its own subdirectory
 run_ragtag_scaffold() {
     local f_val="$1"
     local d_val="$2"
     local outdir="${RAGTAG_SCAFFOLD_DIR}/f${f_val}_d${d_val}"
+    local prefix="SAMPLE_CLI.f${f_val}_d${d_val}"
 
     ragtag.py scaffold --remove-small -f "${f_val}" -d "${d_val}" -i 0.5 \
         -a 0.5 -s 0.5 --mm2-params '-x asm5' -t "${THREADS}" \
         -o "${outdir}" "${REF_GENOME}" "${P_CONTIGS_IN}" \
         || { echo "ragtag scaffold failed for -f ${f_val} -d ${d_val}"; exit 1; }
+
+    #prefix all ragtag.py outputs with sample name and parameter combination
+    for RAGTAG_OUT in "${outdir}"/ragtag.scaffold.*; do
+        mv "${RAGTAG_OUT}" "${outdir}/${prefix}.$(basename "${RAGTAG_OUT}")"
+    done
 }
 
 #parameter sweep
@@ -69,23 +76,31 @@ done
 
 
 
-# #deactivate ragtag and activate seqkit
-# conda deactivate
-# conda activate seqkit
+#deactivate ragtag and activate seqkit
+conda deactivate
+conda activate seqkit
 
-# # #perform for each output directory (asm5 and asm10)
-# # for DIR in "${RAGTAG_SCAFFOLD_DIR_ASM5}" "${RAGTAG_SCAFFOLD_DIR_ASM10}";do
-#     #remove unplaced contigs and place them in a separate file
-#     cp "${RAGTAG_SCAFFOLD_DIR}/ragtag.scaffold.fasta" "${RAGTAG_SCAFFOLD_DIR}/ragtag.scaffold.fasta.tmp"
-#     sed -n '/>Chr0_RagTag/,$p' "${RAGTAG_SCAFFOLD_DIR}/ragtag.scaffold.fasta.tmp" > "${RAGTAG_SCAFFOLD_DIR}/ragtag.scaffold.unplaced.fasta"
+#perform for each output directory (asm5 and asm10)
+#split a single parameter combination's scaffold fasta into chromosomes-only and unplaced, then index all three
+extract_and_index() {
+    local f_val="$1"
+    local d_val="$2"
+    local outdir="${RAGTAG_SCAFFOLD_DIR}/f${f_val}_d${d_val}"
+    local prefix="SAMPLE_CLI.f${f_val}_d${d_val}"
+    local scaffold_fasta="${outdir}/${prefix}.ragtag.scaffold.fasta"
 
-#     #make fasta with chromosome scaffolds and reference unplaced
-#     sed -n '/>Chr0_RagTag/q; p' "${RAGTAG_SCAFFOLD_DIR}/ragtag.scaffold.fasta.tmp" > "${RAGTAG_SCAFFOLD_DIR}/ragtag.scaffold.chromosomes.fasta"
-#     rm -rf "${RAGTAG_SCAFFOLD_DIR}/ragtag.scaffold.fasta.tmp"
+    seqkit grep -n -r -p '_RagTag$' "${scaffold_fasta}" > "${outdir}/${prefix}.ragtag.scaffold.chromosomes.fasta"
+    seqkit grep -v -n -r -p '_RagTag$' "${scaffold_fasta}" > "${outdir}/${prefix}.ragtag.scaffold.unplaced.fasta"
 
-#     #index the resulting ragtag.scaffold.fasta, ragtag.scaffold.chromosomes.fasta, and ragtag.scaffold.unplaced.fasta
-#     for FASTA in ${RAGTAG_SCAFFOLD_DIR}/*.fasta;do
-#         BASE=$(basename "${FASTA}" .fasta)
-#         seqkit fx2tab --length --name --header-line "${FASTA}" > "${RAGTAG_SCAFFOLD_DIR}/${BASE}.lengths"
-#     done
-# # done
+    for FASTA in "${outdir}"/${prefix}.*.fasta; do
+        BASE=$(basename "${FASTA}" .fasta)
+        seqkit fx2tab --length --name --header-line "${FASTA}" > "${outdir}/${BASE}.lengths"
+    done
+}
+
+#run extraction/indexing for every parameter combination directory
+for f_val in 10000 5000; do
+    for d_val in 100000 300000 500000; do
+        extract_and_index "${f_val}" "${d_val}"
+    done
+done
