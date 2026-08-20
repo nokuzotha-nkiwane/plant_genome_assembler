@@ -33,45 +33,95 @@ ALL_RESULTS_DIR="${WORKDIR}/results"
 #is needed
 MERYL_DB="${ALL_RESULTS_DIR}/04.2a.merqury_hifiasm_prep/dSAMPLE_CLI_asm.meryl"
 
+TEMP_DIR="${MERQURY_DIR}/${PBS_JOBID}_temp"
+mkdir -p "${TEMP_DIR}"
+trap 'rm -rf "${TEMP_DIR}"' EXIT
+
+#check if meryl database for reads made (shared across all combos, checked once)
+if [[ ! -d "${MERYL_DB}" ]]; then
+    echo "ERROR: Meryl database empty or missing: ${MERYL_DB}"
+    exit 1
+fi
+if [[ ! -s "${RAW_READS_GZ}" ]]; then
+    echo "ERROR: File empty or missing: ${RAW_READS_GZ}"
+    exit 1
+fi
+
+declare -A MERQURY_STATUS
+
+#run merqury on a single fasta, staged to its own TEMP_DIR subdir, output
+#isolated in its own MERQURY_DIR subdir so parallel prefixes never collide
+run_merqury() {
+    local SRC_FASTA="$1"
+    local OUT_SUBDIR="$2"
+    local OUT_PREFIX="$3"
+
+    [[ -s "${SRC_FASTA}" ]] || { echo "Missing fasta: ${SRC_FASTA}"; return 1; }
+
+    local RUN_TEMP="${TEMP_DIR}/${OUT_PREFIX}"
+    mkdir -p "${RUN_TEMP}"
+    cp "${SRC_FASTA}" "${RUN_TEMP}/"
+    local CONTIGS_IN="${RUN_TEMP}/$(basename "${SRC_FASTA}")"
+
+    local RUN_OUT_DIR="${MERQURY_DIR}/${OUT_SUBDIR}"
+    mkdir -p "${RUN_OUT_DIR}"
+
+    #merqury.sh writes output files to cwd using OUT_PREFIX -- subshell keeps
+    #the cd scoped to this run only
+    (
+        cd "${RUN_OUT_DIR}" && \
+        ${MERQURY}/merqury.sh "${MERYL_DB}" "${CONTIGS_IN}" "${OUT_PREFIX}"
+    ) || { echo "Merqury failed for ${CONTIGS_IN}"; return 1; }
+
+    echo "Merqury for ${CONTIGS_IN} complete"
+    rm -f "${CONTIGS_IN}"
+}
+
+#### what does the "subshell keeps the cd scoped to this run only" mean?
+# with 18 sequential runs just using cd outside a subshell would have the remainder
+# of the script working in the directory cd into first and merqury would drop everything
+# in there
+# the subsehell makes the workdir that script works from the same only that subshell
+# breaks away. once its done the script returns to the initial workdir to subshell into
+# the next appropriate one again
+
 if [[ "${RAGTAG_MODE}" == "correct" ]]; then
     CONTIGS_IN="${ALL_RESULTS_DIR}/05.1.ragtag_correct/ragtag.correct.fasta"
+    run_merqury "${CONTIGS_IN}" "correct" "mq_dSAMPLE_CLI_correct"
+
 elif [[ "${RAGTAG_MODE}" == "scaffold" ]]; then
-    CONTIGS_IN="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold/ragtag.scaffold.chromosomes.fasta"
+    F_VALUES=(10000 5000)
+    D_VALUES=(100000 300000 500000)
+
+    for F_VAL in "${F_VALUES[@]}"; do
+        for D_VAL in "${D_VALUES[@]}"; do
+            PREFIX="SAMPLE_CLI.f${F_VAL}_d${D_VAL}"
+            COMBO_STEP_DIR="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold/f${F_VAL}_d${D_VAL}"
+            OUT_SUBDIR="f${F_VAL}_d${D_VAL}"
+
+            run_merqury "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.fasta" "${OUT_SUBDIR}" "mq_${PREFIX}_full"
+            MERQURY_STATUS["f${F_VAL}_d${D_VAL}_full"]=$?
+
+            run_merqury "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.chromosomes.fasta" "${OUT_SUBDIR}" "mq_${PREFIX}_chromosomes"
+            MERQURY_STATUS["f${F_VAL}_d${D_VAL}_chromosomes"]=$?
+
+            run_merqury "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.unplaced.fasta" "${OUT_SUBDIR}" "mq_${PREFIX}_unplaced"
+            MERQURY_STATUS["f${F_VAL}_d${D_VAL}_unplaced"]=$?
+        done
+    done
+
 else
     echo "Error: RAGTAG_MODE must be 'correct' or 'scaffold', got: ${RAGTAG_MODE}"
     exit 1
 fi
 
-MERQURY_OUT_PREFIX="mq_dSAMPLE_CLI_${RAGTAG_MODE}"
-TEMP_DIR="${MERQURY_DIR}/${PBS_JOBID}_temp"
+echo "Merqury (${RAGTAG_MODE}) complete"
 
-#make temp directory to fastas to so the original ones are accessible to other scripts
-mkdir -p "${TEMP_DIR}"
-
-#automatically remove TEMP_DIR whenever the script exits (normal or error)
-trap 'rm -rf "${TEMP_DIR}"' EXIT
-
-#check if non-empty files exist
-for FILE in "${RAW_READS_GZ}" "${CONTIGS_IN}"; do
-    if [[ ! -s ${FILE} ]]; then
-        echo "ERROR: File empty or missing: ${FILE}"
-        exit 1
-    fi
-done
-
-#check if meryl database for reads made
-if [[ ! -d "${MERYL_DB}" ]]; then
-    echo "ERROR: Meryl database empty or missing: ${MERYL_DB}"
-    exit 1
-fi
-
-#copy fasta file to temporary directory
-cp "${CONTIGS_IN}" "${TEMP_DIR}/"
-CONTIGS_IN="${TEMP_DIR}/$(basename "${CONTIGS_IN}")"
-
-#run merqury to check quality of the ragtag assembly (single input -- no
-#alternate haplotype at this stage, unlike 04.3's primary+alternate call)
-echo "Running merqury on ragtag ${RAGTAG_MODE} assembly"
-cd "${MERQURY_DIR}"
-$MERQURY/merqury.sh "${MERYL_DB}" "${CONTIGS_IN}" "${MERQURY_OUT_PREFIX}"
-echo "Merqury complete"
+#log final exit status of each fasta to the error log (scaffold mode only)
+{
+    echo "===== Merqury combination exit status summary ====="
+    for COMBO in "${!MERQURY_STATUS[@]}"; do
+        echo "${COMBO}: exit_status=${MERQURY_STATUS[${COMBO}]}"
+    done
+    echo "======================================================"
+} >&2
