@@ -48,29 +48,24 @@ P_CONTIGS_IN="${TEMP_DIR}/$(basename "${P_CONTIGS_IN}")"
 REF_GENOME="${TEMP_DIR}/$(basename "${REF_GENOME}" .gz)"
 
 #scaffold assemblies asm5
-ragtag.py scaffold --remove-small -f 10000 -d 100000 -i 0.5 \
-    -a 0.5 -s 0.5 --mm2-params '-x asm5' -t "${THREADS}" \
-    -o  "${RAGTAG_SCAFFOLD_DIR}" "${REF_GENOME}" "${P_CONTIGS_IN}"
+#run ragtag scaffold for a given (-f, -d) combination, into its own subdirectory
+run_ragtag_scaffold() {
+    local f_val="$1"
+    local d_val="$2"
+    local outdir="${RAGTAG_SCAFFOLD_DIR}/f${f_val}_d${d_val}"
 
-ragtag.py scaffold --remove-small -f 10000 -d 300000 -i 0.5 \
-    -a 0.5 -s 0.5 --mm2-params '-x asm5' -t "${THREADS}" \
-    -o  "${RAGTAG_SCAFFOLD_DIR}" "${REF_GENOME}" "${P_CONTIGS_IN}"
+    ragtag.py scaffold --remove-small -f "${f_val}" -d "${d_val}" -i 0.5 \
+        -a 0.5 -s 0.5 --mm2-params '-x asm5' -t "${THREADS}" \
+        -o "${outdir}" "${REF_GENOME}" "${P_CONTIGS_IN}" \
+        || { echo "ragtag scaffold failed for -f ${f_val} -d ${d_val}"; exit 1; }
+}
 
-ragtag.py scaffold --remove-small -f 10000 -d 500000 -i 0.5 \
-    -a 0.5 -s 0.5 --mm2-params '-x asm5' -t "${THREADS}" \
-    -o  "${RAGTAG_SCAFFOLD_DIR}" "${REF_GENOME}" "${P_CONTIGS_IN}"
-
-ragtag.py scaffold --remove-small -f 5000 -d 100000 -i 0.5 \
-    -a 0.5 -s 0.5 --mm2-params '-x asm5' -t "${THREADS}" \
-    -o  "${RAGTAG_SCAFFOLD_DIR}" "${REF_GENOME}" "${P_CONTIGS_IN}"
-
-ragtag.py scaffold --remove-small -f 5000 -d 300000 -i 0.5 \
-    -a 0.5 -s 0.5 --mm2-params '-x asm5' -t "${THREADS}" \
-    -o  "${RAGTAG_SCAFFOLD_DIR}" "${REF_GENOME}" "${P_CONTIGS_IN}"
-
-ragtag.py scaffold --remove-small -f 5000 -d 500000 -i 0.5 \
-    -a 0.5 -s 0.5 --mm2-params '-x asm5' -t "${THREADS}" \
-    -o  "${RAGTAG_SCAFFOLD_DIR}" "${REF_GENOME}" "${P_CONTIGS_IN}"
+#parameter sweep
+for f_val in 10000 5000; do
+    for d_val in 100000 300000 500000; do
+        run_ragtag_scaffold "${f_val}" "${d_val}"
+    done
+done
 
 
 
