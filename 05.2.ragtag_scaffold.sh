@@ -48,27 +48,49 @@ P_CONTIGS_IN="${TEMP_DIR}/$(basename "${P_CONTIGS_IN}")"
 REF_GENOME="${TEMP_DIR}/$(basename "${REF_GENOME}" .gz)"
 
 #scaffold assemblies asm5
-ragtag.py scaffold --remove-small -f 10000 -d 500000 -i 0.5 \
-    -a 0.5 -s 0.5 --mm2-params '-x asm5' -C -t "${THREADS}" \
+ragtag.py scaffold --remove-small -f 10000 -d 100000 -i 0.5 \
+    -a 0.5 -s 0.5 --mm2-params '-x asm5' -t "${THREADS}" \
     -o  "${RAGTAG_SCAFFOLD_DIR}" "${REF_GENOME}" "${P_CONTIGS_IN}"
 
-#deactivate ragtag and activate seqkit
-conda deactivate
-conda activate seqkit
+ragtag.py scaffold --remove-small -f 10000 -d 300000 -i 0.5 \
+    -a 0.5 -s 0.5 --mm2-params '-x asm5' -t "${THREADS}" \
+    -o  "${RAGTAG_SCAFFOLD_DIR}" "${REF_GENOME}" "${P_CONTIGS_IN}"
 
-# #perform for each output directory (asm5 and asm10)
-# for DIR in "${RAGTAG_SCAFFOLD_DIR_ASM5}" "${RAGTAG_SCAFFOLD_DIR_ASM10}";do
-    #remove unplaced contigs and place them in a separate file
-    cp "${RAGTAG_SCAFFOLD_DIR}/ragtag.scaffold.fasta" "${RAGTAG_SCAFFOLD_DIR}/ragtag.scaffold.fasta.tmp"
-    sed -n '/>Chr0_RagTag/,$p' "${RAGTAG_SCAFFOLD_DIR}/ragtag.scaffold.fasta.tmp" > "${RAGTAG_SCAFFOLD_DIR}/ragtag.scaffold.unplaced.fasta"
+ragtag.py scaffold --remove-small -f 10000 -d 500000 -i 0.5 \
+    -a 0.5 -s 0.5 --mm2-params '-x asm5' -t "${THREADS}" \
+    -o  "${RAGTAG_SCAFFOLD_DIR}" "${REF_GENOME}" "${P_CONTIGS_IN}"
 
-    #make fasta with chromosome scaffolds and reference unplaced
-    sed -n '/>Chr0_RagTag/q; p' "${RAGTAG_SCAFFOLD_DIR}/ragtag.scaffold.fasta.tmp" > "${RAGTAG_SCAFFOLD_DIR}/ragtag.scaffold.chromosomes.fasta"
-    rm -rf "${RAGTAG_SCAFFOLD_DIR}/ragtag.scaffold.fasta.tmp"
+ragtag.py scaffold --remove-small -f 5000 -d 100000 -i 0.5 \
+    -a 0.5 -s 0.5 --mm2-params '-x asm5' -t "${THREADS}" \
+    -o  "${RAGTAG_SCAFFOLD_DIR}" "${REF_GENOME}" "${P_CONTIGS_IN}"
 
-    #index the resulting ragtag.scaffold.fasta, ragtag.scaffold.chromosomes.fasta, and ragtag.scaffold.unplaced.fasta
-    for FASTA in ${RAGTAG_SCAFFOLD_DIR}/*.fasta;do
-        BASE=$(basename "${FASTA}" .fasta)
-        seqkit fx2tab --length --name --header-line "${FASTA}" > "${RAGTAG_SCAFFOLD_DIR}/${BASE}.lengths"
-    done
-# done
+ragtag.py scaffold --remove-small -f 5000 -d 300000 -i 0.5 \
+    -a 0.5 -s 0.5 --mm2-params '-x asm5' -t "${THREADS}" \
+    -o  "${RAGTAG_SCAFFOLD_DIR}" "${REF_GENOME}" "${P_CONTIGS_IN}"
+
+ragtag.py scaffold --remove-small -f 5000 -d 500000 -i 0.5 \
+    -a 0.5 -s 0.5 --mm2-params '-x asm5' -t "${THREADS}" \
+    -o  "${RAGTAG_SCAFFOLD_DIR}" "${REF_GENOME}" "${P_CONTIGS_IN}"
+
+
+
+# #deactivate ragtag and activate seqkit
+# conda deactivate
+# conda activate seqkit
+
+# # #perform for each output directory (asm5 and asm10)
+# # for DIR in "${RAGTAG_SCAFFOLD_DIR_ASM5}" "${RAGTAG_SCAFFOLD_DIR_ASM10}";do
+#     #remove unplaced contigs and place them in a separate file
+#     cp "${RAGTAG_SCAFFOLD_DIR}/ragtag.scaffold.fasta" "${RAGTAG_SCAFFOLD_DIR}/ragtag.scaffold.fasta.tmp"
+#     sed -n '/>Chr0_RagTag/,$p' "${RAGTAG_SCAFFOLD_DIR}/ragtag.scaffold.fasta.tmp" > "${RAGTAG_SCAFFOLD_DIR}/ragtag.scaffold.unplaced.fasta"
+
+#     #make fasta with chromosome scaffolds and reference unplaced
+#     sed -n '/>Chr0_RagTag/q; p' "${RAGTAG_SCAFFOLD_DIR}/ragtag.scaffold.fasta.tmp" > "${RAGTAG_SCAFFOLD_DIR}/ragtag.scaffold.chromosomes.fasta"
+#     rm -rf "${RAGTAG_SCAFFOLD_DIR}/ragtag.scaffold.fasta.tmp"
+
+#     #index the resulting ragtag.scaffold.fasta, ragtag.scaffold.chromosomes.fasta, and ragtag.scaffold.unplaced.fasta
+#     for FASTA in ${RAGTAG_SCAFFOLD_DIR}/*.fasta;do
+#         BASE=$(basename "${FASTA}" .fasta)
+#         seqkit fx2tab --length --name --header-line "${FASTA}" > "${RAGTAG_SCAFFOLD_DIR}/${BASE}.lengths"
+#     done
+# # done
