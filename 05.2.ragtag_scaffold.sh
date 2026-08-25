@@ -68,7 +68,7 @@ run_ragtag_scaffold() {
 }
 
 #parameter sweep
-for f_val in 10000 5000; do
+for f_val in 15000 20000; do
     for d_val in 100000 300000 500000; do
         run_ragtag_scaffold "${f_val}" "${d_val}"
     done
