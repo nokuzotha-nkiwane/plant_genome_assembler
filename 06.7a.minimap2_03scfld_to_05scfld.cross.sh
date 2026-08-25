@@ -29,7 +29,7 @@ ALIGN_03_05="${SCFLDS_ALN}/align_03_05"
 TEMP_DIR="${SCFLDS_ALN}/${PBS_JOBID}_temp"
 
 #parameter sweep values according to 05.2.ragtag_scaffold
-F_VALUES=(10000 5000)
+F_VALUES=(15000 20000)
 D_VALUES=(100000 300000 500000)
 
 mkdir -p "${TEMP_DIR}" "${ALIGN_03_05}"

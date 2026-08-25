@@ -83,7 +83,7 @@ run_busco() {
 }
 
 #parameter sweep values according to 05.2.ragtag_scaffold
-F_VALUES=(10000 5000)
+F_VALUES=(15000 20000)
 D_VALUES=(100000 300000 500000)
 
 if [[ "${RAGTAG_MODE}" == "correct" ]]; then

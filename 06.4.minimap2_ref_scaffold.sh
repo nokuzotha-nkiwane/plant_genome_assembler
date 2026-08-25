@@ -52,7 +52,7 @@ REF_IN=("${REF_GENOME_1}" "${REF_GENOME_2}")
 OUT_FILES=("${FULL_REF_DIR}" "${NO_UNPLACED_REF_DIR}")
 
 #parameter sweep values according to 05.2.ragtag_scaffold
-F_VALUES=(10000 5000)
+F_VALUES=(15000 20000)
 D_VALUES=(100000 300000 500000)
 
 #align one parameter combination's scaffolded chromosomes fasta against one reference
