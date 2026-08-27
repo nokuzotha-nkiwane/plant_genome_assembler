@@ -9,7 +9,7 @@
 #PBS -M PBS_EMAIL
 
 # kill execution at first error
-set -euxo pipefail 
+set -euxo pipefail
 
 # for evaluating variables in ~/.pbsrc
 source ~/.pbsrc
@@ -47,11 +47,11 @@ grep -v '^#' "${BUSCO_FULL_UNPLACED_SCAFFOLDS}" | awk -F'\t' '$2=="Complete"' > 
     || { echo "Failed to parse ${BUSCO_FULL_UNPLACED_SCAFFOLDS}"; exit 1; }
 
 # read missing_busco_list.tsv (BUSCO_MISSING_CHRSM_SCAFFOLDS) of unplaced scaffolds from line 4
-grep -v '^#' "${BUSCO_MISSING_CHRSM_SCAFFOLDS}" | awk -F'\t' '{print $1}' > "${TEMP_DIR}/missing_ids.list"
+grep -v '^#' "${BUSCO_MISSING_CHRSM_SCAFFOLDS}" | awk -F'\t' '{print $1}' > "${OUTPUT_DIR}/missing_ids.list"
 
 # read each line of list (single column list) and check if found in CMPLTE_FROM_UNPLACED_LIST
 # if found print entire line to CONSOLIDATED_MISSINGS_LIST
-awk -F'\t' 'NR==FNR {missing[$1]; next} $1 in missing' "${TEMP_DIR}/missing_ids.list" "${CMPLTE_FROM_UNPLACED_LIST}" > "${CONSOLIDATED_MISSINGS_LIST}" \
+awk -F'\t' 'NR==FNR {missing[$1]; next} $1 in missing' "${OUTPUT_DIR}/missing_ids.list" "${CMPLTE_FROM_UNPLACED_LIST}" > "${CONSOLIDATED_MISSINGS_LIST}" \
     || { echo "Failed to cross-reference BUSCO tables"; exit 1; }
 
 # in CONSOLIDATED_MISSINGS_LIST print third column with contig/sequence name to a list (unique_CONSOLIDATED_MISSINGS_LIST)
