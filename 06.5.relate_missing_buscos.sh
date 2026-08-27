@@ -66,6 +66,8 @@ fi
 
 #use the sorted list to extract the sequences from the orignal fasta (UNPLACED_SCAFFOLDS_FASTA) and print the matches to a
 #new fasta unique_CONSOLIDATED_MISSINGS_FASTA
+conda run -n seqkit seqkit grep -f "${unique_CONSOLIDATED_MISSINGS_LIST}" "${UNPLACED_SCAFFOLDS_FASTA}" > "${unique_CONSOLIDATED_MISSINGS_FASTA}" \
+    || { echo "seqkit grep failed"; exit 1; }
 
 #deactivate seqkit environment and activate minimap2
 conda deactivate
