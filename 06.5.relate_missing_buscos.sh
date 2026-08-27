@@ -9,7 +9,7 @@
 #PBS -M PBS_EMAIL
 
 # kill execution at first error
-set -euxo pipefail
+set -euxo pipefail 
 
 # for evaluating variables in ~/.pbsrc
 source ~/.pbsrc
@@ -19,7 +19,7 @@ module load app/miniconda/mamba
 conda activate seqkit
 
 #resources
-THREADS=23
+THREADS=21
 
 # directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
