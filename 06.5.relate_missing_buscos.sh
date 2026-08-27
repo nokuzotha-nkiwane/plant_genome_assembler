@@ -43,6 +43,8 @@ mkdir -p "${DGENIES_INPUT}"
 
 # read full_table.tsv (BUSCO_FULL_UNPLACED_SCAFFOLDS) of unplaced scaffolds from line 4
 #from col2 grep 'Complete' and print the whole line to CMPLTE_FROM_UNPLACED_LIST
+grep -v '^#' "${BUSCO_FULL_UNPLACED_SCAFFOLDS}" | awk -F'\t' '$2=="Complete"' > "${CMPLTE_FROM_UNPLACED_LIST}" \
+    || { echo "Failed to parse ${BUSCO_FULL_UNPLACED_SCAFFOLDS}"; exit 1; }
 
 # read missing_busco_list.tsv (BUSCO_MISSING_CHRSM_SCAFFOLDS) of unplaced scaffolds from line 4
 # read each line of list (single column list) and check if found in CMPLTE_FROM_UNPLACED_LIST
