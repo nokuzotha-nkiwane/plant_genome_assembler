@@ -50,7 +50,9 @@ grep -v '^#' "${BUSCO_FULL_UNPLACED_SCAFFOLDS}" | awk -F'\t' '$2=="Complete"' > 
 grep -v '^#' "${BUSCO_MISSING_CHRSM_SCAFFOLDS}" | awk -F'\t' '{print $1}' > "${TEMP_DIR}/missing_ids.list"
 
 # read each line of list (single column list) and check if found in CMPLTE_FROM_UNPLACED_LIST
-# if found  print entire line to CONSOLIDATED_MISSINGS_LIST
+# if found print entire line to CONSOLIDATED_MISSINGS_LIST
+awk -F'\t' 'NR==FNR {missing[$1]; next} $1 in missing' "${TEMP_DIR}/missing_ids.list" "${CMPLTE_FROM_UNPLACED_LIST}" > "${CONSOLIDATED_MISSINGS_LIST}" \
+    || { echo "Failed to cross-reference BUSCO tables"; exit 1; }
 
 # in CONSOLIDATED_MISSINGS_LIST print third column with contig/sequence name to a list (unique_CONSOLIDATED_MISSINGS_LIST)
 #sort and deduplicate list
