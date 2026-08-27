@@ -56,6 +56,14 @@ awk -F'\t' 'NR==FNR {missing[$1]; next} $1 in missing' "${TEMP_DIR}/missing_ids.
 
 # in CONSOLIDATED_MISSINGS_LIST print third column with contig/sequence name to a list (unique_CONSOLIDATED_MISSINGS_LIST)
 #sort and deduplicate list
+awk -F'\t' '{print $3}' "${CONSOLIDATED_MISSINGS_LIST}" | sort -u > "${unique_CONSOLIDATED_MISSINGS_LIST}"
+
+#if file empty emit a warning instead of silent failure
+if [[ ! -s "${unique_CONSOLIDATED_MISSINGS_LIST}" ]]; then
+    echo "No BUSCOs missing-in-chromosomes-but-complete-in-unplaced found — nothing to extract."
+    exit 0
+fi
+
 #use the sorted list to extract the sequences from the orignal fasta (UNPLACED_SCAFFOLDS_FASTA) and print the matches to a
 #new fasta unique_CONSOLIDATED_MISSINGS_FASTA
 
