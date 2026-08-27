@@ -66,7 +66,7 @@ fi
 
 #use the sorted list to extract the sequences from the orignal fasta (UNPLACED_SCAFFOLDS_FASTA) and print the matches to a
 #new fasta unique_CONSOLIDATED_MISSINGS_FASTA
-conda run -n seqkit seqkit grep -f "${unique_CONSOLIDATED_MISSINGS_LIST}" "${UNPLACED_SCAFFOLDS_FASTA}" > "${unique_CONSOLIDATED_MISSINGS_FASTA}" \
+seqkit grep -f "${unique_CONSOLIDATED_MISSINGS_LIST}" "${UNPLACED_SCAFFOLDS_FASTA}" > "${unique_CONSOLIDATED_MISSINGS_FASTA}" \
     || { echo "seqkit grep failed"; exit 1; }
 
 #deactivate seqkit environment and activate minimap2
@@ -74,9 +74,12 @@ conda deactivate
 conda activate helper-tools
 
 #run minimap2 on the new fasta unique_CONSOLIDATED_MISSINGS_FASTA and the reference REF_GENOME to produce sam and paf
-minimap2 -ax asm5 -t "${THREADS}" "${REF_GENOME}" "${unique_CONSOLIDATED_MISSINGS_FASTA}" > "${OUTPUT_DIR}/dSAMPLE_CLI_aln5.sam"
-minimap2 -cx asm5 --cs -t "${THREADS}" "${REF_GENOME}" "${unique_CONSOLIDATED_MISSINGS_FASTA}" > "${OUTPUT_DIR}/dSAMPLE_CLI_aln5.paf"
-
+minimap2 -cx asm5 --cs -t "${THREADS}" "${REF_GENOME}" "${unique_CONSOLIDATED_MISSINGS_FASTA}" > "${PAF_OUT}" \
+    || { echo "minimap2 PAF generation failed"; exit 1; }
+    
 #make a bam file file (should be sorted) to visualise in IGV after alignment
+minimap2 -ax asm5 -t "${THREADS}" "${REF_GENOME}" "${unique_CONSOLIDATED_MISSINGS_FASTA}" | samtools sort -@ "${THREADS}" -o "${SORTED_BAM}" - \
+    || { echo "minimap2/samtools sort failed"; exit 1; }
+samtools index "${SORTED_BAM}"
 
 #copy paf, unique_CONSOLIDATED_MISSINGS_FASTA and REF_GENOME to DGENIES_INPUT
