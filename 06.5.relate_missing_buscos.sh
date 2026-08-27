@@ -76,10 +76,11 @@ conda activate helper-tools
 #run minimap2 on the new fasta unique_CONSOLIDATED_MISSINGS_FASTA and the reference REF_GENOME to produce sam and paf
 minimap2 -cx asm5 --cs -t "${THREADS}" "${REF_GENOME}" "${unique_CONSOLIDATED_MISSINGS_FASTA}" > "${PAF_OUT}" \
     || { echo "minimap2 PAF generation failed"; exit 1; }
-    
+
 #make a bam file file (should be sorted) to visualise in IGV after alignment
 minimap2 -ax asm5 -t "${THREADS}" "${REF_GENOME}" "${unique_CONSOLIDATED_MISSINGS_FASTA}" | samtools sort -@ "${THREADS}" -o "${SORTED_BAM}" - \
     || { echo "minimap2/samtools sort failed"; exit 1; }
 samtools index "${SORTED_BAM}"
 
 #copy paf, unique_CONSOLIDATED_MISSINGS_FASTA and REF_GENOME to DGENIES_INPUT
+cp "${PAF_OUT}" "${unique_CONSOLIDATED_MISSINGS_FASTA}" "${REF_GENOME}" "${DGENIES_INPUT}/"
