@@ -1,21 +1,27 @@
 #!/bin/bash
-#PBS -l ncpus=4
-#PBS -l mem=8GB
+#PBS -l select=1:ncpus=23:mem=60GB
 #PBS -q bix
-#PBS -l walltime=4:00:00
+#PBS -l walltime=5:00:00
 #PBS -N SAMPLE_CLI_STEP_PBS
 #PBS -o OUTPUT_FILE_PBS
 #PBS -e ERROR_FILE_PBS
 #PBS -m be
 #PBS -M PBS_EMAIL
 
-#kill execution at first error
+# kill execution at first error
 set -euxo pipefail 
 
-#for evaluating variables in ~/.pbsrc
+# for evaluating variables in ~/.pbsrc
 source ~/.pbsrc
 
-#directories and files
+#load modules
+module load app/miniconda/mamba
+conda activate seqkit
+
+#resources
+THREADS=23
+
+# directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 REF_GENOME="${TOMATO_PATH}/data/reference_data/SL5.0.fasta.gz"
 ALL_RESULTS_DIR="${WORKDIR}/results"
@@ -28,4 +34,33 @@ CMPLTE_FROM_UNPLACED_LIST="${OUTPUT_DIR}/complete_from_full_unplaced.list"
 CONSOLIDATED_MISSINGS_LIST="${OUTPUT_DIR}/consoldated_missings.contigs.list"
 unique_CONSOLIDATED_MISSINGS_LIST="${OUTPUT_DIR}/unique_consoldated_missings.contigs.list"
 unique_CONSOLIDATED_MISSINGS_FASTA="${OUTPUT_DIR}/unique_consoldated_missings.fasta"
-DGENIES_INPUT="${OUTPUT_DIR}/dgenies input"
+DGENIES_INPUT="${OUTPUT_DIR}/dgenies_input"
+SORTED_BAM="${OUTPUT_DIR}/dSAMPLE_CLI_aln5.sorted.bam"
+PAF_OUT="${OUTPUT_DIR}/dSAMPLE_CLI_aln5.paf"
+
+# make dgenies input directory
+mkdir -p "${DGENIES_INPUT}"
+
+# read full_table.tsv (BUSCO_FULL_UNPLACED_SCAFFOLDS) of unplaced scaffolds from line 4
+#from col2 grep 'Complete' and print the whole line to CMPLTE_FROM_UNPLACED_LIST
+
+# read missing_busco_list.tsv (BUSCO_MISSING_CHRSM_SCAFFOLDS) of unplaced scaffolds from line 4
+# read each line of list (single column list) and check if found in CMPLTE_FROM_UNPLACED_LIST
+# if found  print entire line to CONSOLIDATED_MISSINGS_LIST
+
+# in CONSOLIDATED_MISSINGS_LIST print third column with contig/sequence name to a list (unique_CONSOLIDATED_MISSINGS_LIST)
+#sort and deduplicate list
+#use the sorted list to extract the sequences from the orignal fasta (UNPLACED_SCAFFOLDS_FASTA) and print the matches to a
+#new fasta unique_CONSOLIDATED_MISSINGS_FASTA
+
+#deactivate seqkit environment and activate minimap2
+conda deactivate
+conda activate helper-tools
+
+#run minimap2 on the new fasta unique_CONSOLIDATED_MISSINGS_FASTA and the reference REF_GENOME to produce sam and paf
+minimap2 -ax asm5 -t "${THREADS}" "${REF_GENOME}" "${unique_CONSOLIDATED_MISSINGS_FASTA}" > "${OUTPUT_DIR}/dSAMPLE_CLI_aln5.sam"
+minimap2 -cx asm5 --cs -t "${THREADS}" "${REF_GENOME}" "${unique_CONSOLIDATED_MISSINGS_FASTA}" > "${OUTPUT_DIR}/dSAMPLE_CLI_aln5.paf"
+
+#make a bam file file (should be sorted) to visualise in IGV after alignment
+
+#copy paf, unique_CONSOLIDATED_MISSINGS_FASTA and REF_GENOME to DGENIES_INPUT
