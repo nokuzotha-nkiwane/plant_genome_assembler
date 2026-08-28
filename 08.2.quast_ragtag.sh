@@ -32,6 +32,8 @@ REF_GENOME="${REF_DIR}/SL5.0.fasta.gz"
 REF_GFF3="${REF_DIR}/SL5.0.gff3.gz"
 QUAST_DIR="__RESULTS_DIR__"
 ALL_RESULTS_DIR="${WORKDIR}/results"
+RAGTAG_CORRECT_DIR="${ALL_RESULTS_DIR}/07.1.ragtag_correct"
+RAGATAG_SCAFFOLD_DIR="${ALL_RESULTS_DIR}/07.2.ragtag_scaffold"
 
 TEMP_DIR="${QUAST_DIR}/${PBS_JOBID}_temp"
 
@@ -76,13 +78,13 @@ F_VALUES=(5000 10000 15000 20000)
 D_VALUES=(100000 300000 500000)
 
 if [[ "${RAGTAG_MODE}" == "correct" ]]; then
-    run_quast "${ALL_RESULTS_DIR}/05.1.ragtag_correct/ragtag.correct.fasta" "correct"
+    run_quast "${RAGTAG_CORRECT_DIR}/ragtag.correct.fasta" "correct"
 
 elif [[ "${RAGTAG_MODE}" == "scaffold" ]]; then
     for F_VAL in "${F_VALUES[@]}"; do
         for D_VAL in "${D_VALUES[@]}"; do
             PREFIX="SAMPLE_CLI.f${F_VAL}_d${D_VAL}"
-            COMBO_STEP_DIR="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold/f${F_VAL}_d${D_VAL}"
+            COMBO_STEP_DIR="${RAGATAG_SCAFFOLD_DIR}/f${F_VAL}_d${D_VAL}"
             OUT_SUBDIR="f${F_VAL}_d${D_VAL}"
 
             run_quast "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.fasta" "${OUT_SUBDIR}/full"

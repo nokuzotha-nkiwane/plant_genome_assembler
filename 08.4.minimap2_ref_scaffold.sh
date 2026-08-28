@@ -30,7 +30,7 @@ REF_GENOME_2="${REF_DIR}/SL5.0.unplaced_removed.fasta.gz"
 REF_SCAFFOLD_ALN="__RESULTS_DIR__"
 FULL_REF_DIR="${REF_SCAFFOLD_ALN}/full_ref"
 NO_UNPLACED_REF_DIR="${REF_SCAFFOLD_ALN}/no_unplaced_ref"
-SCAFFOLD_STEP_DIR="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold"
+SCAFFOLD_STEP_DIR="${ALL_RESULTS_DIR}/07.2.ragtag_scaffold"
 TEMP_DIR="${REF_SCAFFOLD_ALN}/${PBS_JOBID}_temp"
 
 #make temp directory for fastas so the original ones are accessible to other scripts

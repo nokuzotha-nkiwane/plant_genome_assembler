@@ -27,6 +27,8 @@ WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 RAW_READS_GZ="${WORKDIR}/raw_reads/D260405-SAMPLE_CLI_HiFi.fastq.gz"
 MERQURY_DIR="__RESULTS_DIR__"
 ALL_RESULTS_DIR="${WORKDIR}/results"
+RAGTAG_CORRECT_DIR="${ALL_RESULTS_DIR}/07.1.ragtag_correct"
+RAGATAG_SCAFFOLD_DIR="${ALL_RESULTS_DIR}/07.2.ragtag_scaffold"
 
 #reuse the read k-mer database built once in 04.2a -- it's a property of the
 #raw reads, not of any particular assembly, so no separate ragtag prep step
@@ -86,7 +88,7 @@ run_merqury() {
 # the next appropriate one again
 
 if [[ "${RAGTAG_MODE}" == "correct" ]]; then
-    CONTIGS_IN="${ALL_RESULTS_DIR}/05.1.ragtag_correct/ragtag.correct.fasta"
+    CONTIGS_IN="${RAGTAG_CORRECT_DIR}/ragtag.correct.fasta"
     run_merqury "${CONTIGS_IN}" "correct" "mq_dSAMPLE_CLI_correct"
 
 elif [[ "${RAGTAG_MODE}" == "scaffold" ]]; then
@@ -96,7 +98,7 @@ elif [[ "${RAGTAG_MODE}" == "scaffold" ]]; then
     for F_VAL in "${F_VALUES[@]}"; do
         for D_VAL in "${D_VALUES[@]}"; do
             PREFIX="SAMPLE_CLI.f${F_VAL}_d${D_VAL}"
-            COMBO_STEP_DIR="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold/f${F_VAL}_d${D_VAL}"
+            COMBO_STEP_DIR="${RAGATAG_SCAFFOLD_DIR}/f${F_VAL}_d${D_VAL}"
             OUT_SUBDIR="f${F_VAL}_d${D_VAL}"
 
             run_merqury "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.fasta" "${OUT_SUBDIR}" "mq_${PREFIX}_full"
