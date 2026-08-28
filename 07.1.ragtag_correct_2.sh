@@ -30,6 +30,7 @@ ALL_RESULTS_DIR="${WORKDIR}/results"
 RAGTAG_CORRECT_DIR="__RESULTS_DIR__"
 HIFIASM_DIR="${ALL_RESULTS_DIR}/03.hifiasm"
 P_CONTIGS_IN="${HIFIASM_DIR}/dSAMPLE_CLI_primary_renamed.fa"
+unique_CONSOLIDATED_MISSINGS_LIST="${ALL_RESULTS_DIR}/06.5.relate_missing_buscos/unique_consoldated_missings.contigs.list"
 SKIP_TXT="${RAGTAG_CORRECT_DIR}/SAMPLE_CLI_skip.txt"
 TEMP_DIR="${RAGTAG_CORRECT_DIR}/${PBS_JOBID}_temp"
 
@@ -53,11 +54,7 @@ REF_GENOME="${TEMP_DIR}/$(basename "${REF_GENOME}" .gz)"
 RAW_READS_GZ="${TEMP_DIR}/$(basename "${RAW_READS_GZ}")"
 
 #make skip.txt file for contigs that should not be broken up
-
-
-
-
-
+awk -F'_' '{print $1"_"$2}' "${unique_CONSOLIDATED_MISSINGS_LIST}" | sort -u > "${SKIP_TXT}"
 
 #correct assemblies assemblies
 ragtag.py correct -R "${RAW_READS_GZ}" -T corr -j "${SKIP_TXT}" -t "${THREADS}" -o "${RAGTAG_CORRECT_DIR}" "${REF_GENOME}" "${P_CONTIGS_IN}"
