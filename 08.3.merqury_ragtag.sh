@@ -27,8 +27,8 @@ WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 RAW_READS_GZ="${WORKDIR}/raw_reads/D260405-SAMPLE_CLI_HiFi.fastq.gz"
 MERQURY_DIR="__RESULTS_DIR__"
 ALL_RESULTS_DIR="${WORKDIR}/results"
-RAGTAG_CORRECT_DIR="${ALL_RESULTS_DIR}/07.1.ragtag_correct"
-RAGATAG_SCAFFOLD_DIR="${ALL_RESULTS_DIR}/07.2.ragtag_scaffold"
+RAGTAG_CORRECT_DIR="${ALL_RESULTS_DIR}/07.1.ragtag_correct_2"
+RAGATAG_SCAFFOLD_DIR="${ALL_RESULTS_DIR}/07.2.ragtag_scaffold_2"
 
 #reuse the read k-mer database built once in 04.2a -- it's a property of the
 #raw reads, not of any particular assembly, so no separate ragtag prep step

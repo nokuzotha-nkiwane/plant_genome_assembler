@@ -27,7 +27,7 @@ REF_DIR="${TOMATO_PATH}/data/reference_data"
 REF_GENOME="${REF_DIR}/SL5.0.unplaced_removed.fasta.gz"
 ALL_RESULTS_DIR="${WORKDIR}/results"
 RAGTAG_SCAFFOLD_DIR="__RESULTS_DIR__"
-P_CONTIGS_IN="${ALL_RESULTS_DIR}/07.1.ragtag_correct/ragtag.correct.fasta"
+P_CONTIGS_IN="${ALL_RESULTS_DIR}/07.1.ragtag_correct_2/ragtag.correct.fasta"
 TEMP_DIR="${RAGTAG_SCAFFOLD_DIR}/${PBS_JOBID}_temp"
 
 #make temp directory to fastas to so the original ones are accessible to other scripts
