@@ -25,8 +25,8 @@ THREADS=23
 WORKDIR_03="${TOMATO_PATH}/03"
 WORKDIR_05="${TOMATO_PATH}/05"
 ASM_ASM_ALN="__RESULTS_DIR__"
-D03_CONTIGS_IN="${WORKDIR_03}/results/07.2.ragtag_scaffold_2/f15000_d500000/05.f15000_d500000.ragtag.scaffold.chromosomes"
-D05_CONTIGS_IN="${WORKDIR_05}/results/07.2.ragtag_scaffold_2/f15000_d500000/05.f15000_d500000.ragtag.scaffold.chromosomes"
+D03_CONTIGS_IN="${WORKDIR_03}/results/07.2.ragtag_scaffold_2/f15000_d500000/05.f15000_d500000.ragtag.scaffold.chromosomes.fasta"
+D05_CONTIGS_IN="${WORKDIR_05}/results/07.2.ragtag_scaffold_2/f15000_d500000/05.f15000_d500000.ragtag.scaffold.chromosomes.fasta"
 TEMP_DIR="${ASM_ASM_ALN}/${PBS_JOBID}_temp"
 ASM_05_03="${ASM_ASM_ALN}/scaffold_05_03"
 
