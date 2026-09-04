@@ -16,7 +16,7 @@ source ~/.pbsrc
 
 #load modules
 module load app/miniconda/mamba
-conda activate ragtag
+conda activate helper-tools
 
 #resource parameters
 THREADS=23
@@ -26,6 +26,7 @@ WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 REF_DIR="${TOMATO_PATH}/data/reference_data"
 REF_GENOME="${REF_DIR}/SL5.0.fasta.gz"
 RAW_READS_GZ="${WORKDIR}/raw_reads/D260405-SAMPLE_CLI_HiFi.fastq.gz"
+FILTERED_READS="${WORKDIR}/raw_reads/dSAMPLE_CLI_filtered.fastq.gz"
 ALL_RESULTS_DIR="${WORKDIR}/results"
 RAGTAG_CORRECT_DIR="__RESULTS_DIR__"
 HIFIASM_DIR="${ALL_RESULTS_DIR}/03.hifiasm"
@@ -38,10 +39,26 @@ mkdir -p "${TEMP_DIR}"
 #automatically remove TEMP_DIR whenever the script exits (normal or error)
 trap 'rm -rf "${TEMP_DIR}"' EXIT
 
+#filter raw reads
+if [[ -s "${FILTERED_READS}" ]]; then
+    echo "Found filtered reads; proceeding to minimap2"
+else
+    echo "Filtering raw reads"
+    #Filter on Q20 quality and minimum read length of 1000
+    filtlong \
+    --min_mean_q 20 \
+    --min_length 1000 \
+    "${RAW_READS_GZ}" | gzip > "${FILTERED_READS}" || { echo "Filtlong failed for ${RAW_READS_GZ}"; exit 1; }
+fi
+
+#deactivate conda env
+conda deactivate
+conda activate ragtag
+
 #copy fastas file to temporary directory
 cp "${P_CONTIGS_IN}" \
     "${REF_GENOME}" \
-    "${RAW_READS_GZ}" "${TEMP_DIR}/"
+    "${FILTERED_READS}" "${TEMP_DIR}/"
 
 #unzip reference fasta
 gzip -d "${TEMP_DIR}/$(basename "${REF_GENOME}")"
@@ -49,7 +66,7 @@ gzip -d "${TEMP_DIR}/$(basename "${REF_GENOME}")"
 #reassign variables to the temp directory versions
 P_CONTIGS_IN="${TEMP_DIR}/$(basename "${P_CONTIGS_IN}")"
 REF_GENOME="${TEMP_DIR}/$(basename "${REF_GENOME}" .gz)"
-RAW_READS_GZ="${TEMP_DIR}/$(basename "${RAW_READS_GZ}")"
+FILTERED_READS="${TEMP_DIR}/$(basename "${FILTERED_READS}")"
 
 #correct assemblies assemblies
-ragtag.py correct -R "${RAW_READS_GZ}" -T corr -t "${THREADS}" -o "${RAGTAG_CORRECT_DIR}" "${REF_GENOME}" "${P_CONTIGS_IN}"
+ragtag.py correct -R "${FILTERED_READS}" -T corr -t "${THREADS}" -o "${RAGTAG_CORRECT_DIR}" "${REF_GENOME}" "${P_CONTIGS_IN}"
