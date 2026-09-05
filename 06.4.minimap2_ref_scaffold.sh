@@ -51,8 +51,8 @@ REF_IN=("${REF_GENOME_1}" "${REF_GENOME_2}")
 OUT_FILES=("${FULL_REF_DIR}" "${NO_UNPLACED_REF_DIR}")
 
 #parameter sweep values according to 05.2.ragtag_scaffold (matches extract_and_index)
-F_VALUES=(15000 20000)
-D_VALUES=(100000 300000 500000)
+F_VALUES=(15000)
+D_VALUES=(500000)
 
 #track per-combo exit status so failures don't abort the rest of the sweep
 declare -A ALN_STATUS

@@ -83,8 +83,8 @@ run_busco() {
 }
 
 #parameter sweep values according to 05.2.ragtag_scaffold
-F_VALUES=(15000 20000)
-D_VALUES=(100000 300000 500000)
+F_VALUES=(15000)
+D_VALUES=(500000)
 
 if [[ "${RAGTAG_MODE}" == "correct" ]]; then
     run_busco "${ALL_RESULTS_DIR}/05.1.ragtag_correct/ragtag.correct.fasta"

@@ -90,8 +90,8 @@ if [[ "${RAGTAG_MODE}" == "correct" ]]; then
     run_merqury "${CONTIGS_IN}" "correct" "mq_dSAMPLE_CLI_correct"
 
 elif [[ "${RAGTAG_MODE}" == "scaffold" ]]; then
-    F_VALUES=(15000 20000)
-    D_VALUES=(100000 300000 500000)
+    F_VALUES=(15000)
+    D_VALUES=(500000)
 
     for F_VAL in "${F_VALUES[@]}"; do
         for D_VAL in "${D_VALUES[@]}"; do

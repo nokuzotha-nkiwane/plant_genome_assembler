@@ -68,8 +68,8 @@ run_ragtag_scaffold() {
 }
 
 #parameter sweep
-for f_val in 15000 20000; do
-    for d_val in 100000 300000 500000; do
+for f_val in 15000; do
+    for d_val in 500000; do
         run_ragtag_scaffold "${f_val}" "${d_val}"
     done
 done
@@ -99,8 +99,8 @@ extract_and_index() {
 }
 
 #run extraction/indexing for every parameter combination directory
-for f_val in 15000 20000; do
-    for d_val in 100000 300000 500000; do
+for f_val in 15000; do
+    for d_val in 500000; do
         extract_and_index "${f_val}" "${d_val}"
     done
 done
