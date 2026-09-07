@@ -49,3 +49,7 @@ ragtag.py agp2fa "${AGP}" "${INPUT_FASTA}" > "${OUTPUT_FASTA}"
 #replace the ragtag ending with something else so that when scaffolding to make new agp first and 6th column are different
 sed 's/_RagTag/_Chromosome/g' "${OUTPUT_FASTA}" > "${OUTPUT_FASTA_RENAMED}"
 rm "${OUTPUT_FASTA}"
+
+#run ragtag scaffold for new fasta
+ragtag.py scaffold --remove-small -f 15000 -d 500000 -i 0.5 -a 0.5 -s 0.5 --mm2-params '-x asm5' -t "${THREADS}" \
+    -o "${RAGTAG_OUTPUT_DIR}" "${REF_GENOME}" "${OUTPUT_FASTA_RENAMED}" || { echo "ragtag scaffold failed for sample d${SAMPLE}"; exit 1; }
