@@ -38,7 +38,7 @@ MINIMAP_PAF="${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI_to_ref_aln5.paf"
 DGENIES_INPUT="${RAGTAG_SCAFFOLD_DIR}/dgenies_input"
 
 #make dgenies input directory
-mkdir -p "${DGENIES_INPUT}"
+mkdir -p "${DGENIES_INPUT}" "${AGP2FASTA_DIR}"
 
 #check format of agp
 ragtag.py agpcheck "${AGP}" > "${AGP2FASTA_DIR}/agpcheck.txt"
