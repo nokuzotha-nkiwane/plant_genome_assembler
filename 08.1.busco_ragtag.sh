@@ -23,20 +23,12 @@ export _JAVA_OPTIONS="-Xmx8g"
 #resource parameters
 THREADS=23
 
-#which ragtag stage this run evaluates -- sed-substituted by submit.sh's
-#RAGTAG_MODE=correct|scaffold CLI argument. The two modes are independent for now
-#(scaffold runs on the raw hifiasm output, not the ragtag-corrected assembly); will
-#chain them once the best hifiasm config + correction step is settled
-RAGTAG_MODE="__RAGTAG_MODE__"
-
 #directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 ALL_RESULTS_DIR="${WORKDIR}/results"
 BUSCO_DIR="__RESULTS_DIR__"
 BUSCO_DB_DIR="${TOMATO_PATH}/data"
-RAGTAG_CORRECT_DIR="${ALL_RESULTS_DIR}/07.1.ragtag_correct_2"
-RAGATAG_SCAFFOLD_DIR="${ALL_RESULTS_DIR}/07.2.ragtag_scaffold_2"
-
+RAGATAG_SCAFFOLD_DIR="${ALL_RESULTS_DIR}/07.1.agp_correct/ragtag_output"
 TEMP_DIR="${BUSCO_DIR}/${PBS_JOBID}_temp"
 
 #make temp directory to fastas to so the original ones are accessible to other scripts
@@ -44,9 +36,6 @@ mkdir -p "${TEMP_DIR}"
 
 #automatically remove TEMP_DIR whenever the script exits (normal or error)
 trap 'rm -rf "${TEMP_DIR}"' EXIT
-
-#tracks exit status of each combination for end-of-run summary
-declare -A COMBO_STATUS
 
 ### what does declare mean
 # -A flag means "associative array"
@@ -60,14 +49,14 @@ run_busco() {
     [[ -s "${SRC_FASTA}" ]] || { echo "Missing fasta: ${SRC_FASTA}"; return 1; }
 
     cp "${SRC_FASTA}" "${TEMP_DIR}/"
-    local CONTIGS_IN="${TEMP_DIR}/$(basename "${SRC_FASTA}")"
+    local SCAFFOLD_IN="${TEMP_DIR}/$(basename "${SRC_FASTA}")"
 
     #extract base filename without extension for a unique output folder
     local BASE_NAME
-    BASE_NAME=$(basename "${CONTIGS_IN}" .fasta)
+    BASE_NAME=$(basename "${SCAFFOLD_IN}" .fasta)
 
     #check quality of assembled contigs
-    busco --in "${CONTIGS_IN}" \
+    busco --in "${SCAFFOLD_IN}" \
         -m genome \
         --offline \
         -l solanales_odb10 \
@@ -76,55 +65,22 @@ run_busco() {
         -f \
         -o "${BASE_NAME}_busco" \
         --out_path "${BUSCO_DIR}" \
-        || { echo "BUSCO failed for ${CONTIGS_IN}"; return 1; }
+        || { echo "BUSCO failed for ${SCAFFOLD_IN}"; return 1; }
 
-    echo "BUSCO for ${CONTIGS_IN} complete"
+    echo "BUSCO for ${SCAFFOLD_IN} complete"
 
     #free space in TEMP_DIR before the next combination
-    rm -f "${CONTIGS_IN}"
+    rm -f "${SCAFFOLD_IN}"
 }
 
-#parameter sweep values according to 05.2.ragtag_scaffold
-F_VALUES=(5000 10000 15000 20000)
-D_VALUES=(100000 300000 500000)
+# run for full output scaffold fasta
+run_busco "${RAGATAG_SCAFFOLD_DIR}/ragtag.scaffold.fasta"
 
-if [[ "${RAGTAG_MODE}" == "correct" ]]; then
-    run_busco "${RAGTAG_CORRECT_DIR}/ragtag.correct.fasta"
+# run for chromosomes only scaffold fasta
+run_busco "${RAGATAG_SCAFFOLD_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta"
 
-elif [[ "${RAGTAG_MODE}" == "scaffold" ]]; then
-    for F_VAL in "${F_VALUES[@]}"; do
-        for D_VAL in "${D_VALUES[@]}"; do
-            PREFIX="SAMPLE_CLI.f${F_VAL}_d${D_VAL}"
-            COMBO_STEP_DIR="${RAGATAG_SCAFFOLD_DIR}/f${F_VAL}_d${D_VAL}"
-
-            # run for full output scaffold fasta
-            run_busco "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.fasta"
-            COMBO_STATUS["f${F_VAL}_d${D_VAL}_full"]=$?
-
-            # run for chromosomes only scaffold fasta
-            run_busco "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.chromosomes.fasta"
-            COMBO_STATUS["f${F_VAL}_d${D_VAL}_chromosomes"]=$?
-
-            # run for unplaced chromosomes only scaffold fasta
-            run_busco "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.unplaced.fasta"
-            COMBO_STATUS["f${F_VAL}_d${D_VAL}_unplaced"]=$?
-        done
-    done
-
-else
-    echo "Error: RAGTAG_MODE must be 'correct' or 'scaffold', got: ${RAGTAG_MODE}"
-    exit 1
-fi
-
-echo "BUSCO (${RAGTAG_MODE}) complete"
-#log final exit status of each combination to the error log
-{
-    echo "===== BUSCO combination exit status summary ====="
-    for COMBO in "${!COMBO_STATUS[@]}"; do
-        echo "${COMBO}: exit_status=${COMBO_STATUS[${COMBO}]}"
-    done
-    echo "==================================================="
-} >&2
+# run for unplaced chromosomes only scaffold fasta
+run_busco "${RAGATAG_SCAFFOLD_DIR}/dSAMPLE_CLI.ragtag.scaffold.unplaced.fasta"
 
 ### why is it in braces?
 # without braces the actual outputs go to stout because that is the default stream
