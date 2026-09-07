@@ -45,3 +45,7 @@ ragtag.py agpcheck "${AGP}" > "${AGP2FASTA_DIR}/agpcheck.txt"
 
 #convert agp to fasta
 ragtag.py agp2fa "${AGP}" "${INPUT_FASTA}" > "${OUTPUT_FASTA}"
+
+#replace the ragtag ending with something else so that when scaffolding to make new agp first and 6th column are different
+sed 's/_RagTag/_Chromosome/g' "${OUTPUT_FASTA}" > "${OUTPUT_FASTA_RENAMED}"
+rm "${OUTPUT_FASTA}"
