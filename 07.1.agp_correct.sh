@@ -53,3 +53,13 @@ rm "${OUTPUT_FASTA}"
 #run ragtag scaffold for new fasta
 ragtag.py scaffold --remove-small -f 15000 -d 500000 -i 0.5 -a 0.5 -s 0.5 --mm2-params '-x asm5' -t "${THREADS}" \
     -o "${RAGTAG_OUTPUT_DIR}" "${REF_GENOME}" "${OUTPUT_FASTA_RENAMED}" || { echo "ragtag scaffold failed for sample d${SAMPLE}"; exit 1; }
+
+#deactivate env and activate minimap 2
+conda deactivate
+conda activate seqkit
+
+seqkit grep -n -r -p '_RagTag$' "${RAGTAG_OUTPUT_DIR}/ragtag.scaffold.fasta" > "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta"
+seqkit grep -v -n -r -p '_RagTag$' "${RAGTAG_OUTPUT_DIR}/ragtag.scaffold.fasta" > "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.unplaced.fasta"
+
+seqkit fx2tab --length --name --header-line "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta" \
+    > "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.lengths"
