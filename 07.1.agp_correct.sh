@@ -71,3 +71,9 @@ conda activate helper-tools
 #run minimap2 alignment
 minimap2 -x asm5 -t "${THREADS}" "${REF_GENOME}" "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta" > "${MINIMAP_PAF}"
 
+#gzip the output fasta
+gzip -k "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta"
+
+#move outputs to dgenies folder
+mv "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta.gz" "${MINIMAP_PAF}" "${DGENIES_INPUT}/"
+ln -s "${REF_GENOME}" "${DGENIES_INPUT}/"
