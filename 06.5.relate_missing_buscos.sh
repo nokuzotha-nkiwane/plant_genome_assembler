@@ -38,9 +38,13 @@ unique_CONSOLIDATED_MISSINGS_FASTA="${OUTPUT_DIR}/unique_consoldated_missings.fa
 DGENIES_INPUT="${OUTPUT_DIR}/dgenies_input"
 SORTED_BAM="${OUTPUT_DIR}/dSAMPLE_CLI_aln5.sorted.bam"
 PAF_OUT="${OUTPUT_DIR}/dSAMPLE_CLI_aln5.paf"
+AGP="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold"
 
 # make dgenies input directory
 mkdir -p "${DGENIES_INPUT}"
+
+#copy the ragtag agp that may need to be corrected
+cp ${AGP}/*.scaffold.agp "${OUTPUT_DIR}/ragtag.scaffold_to_correct.agp"
 
 # read full_table.tsv (BUSCO_FULL_UNPLACED_SCAFFOLDS) of unplaced scaffolds from line 4
 #from col2 grep 'Complete' and print the whole line to CMPLTE_FROM_UNPLACED_LIST
