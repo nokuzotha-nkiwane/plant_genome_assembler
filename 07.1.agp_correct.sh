@@ -39,3 +39,9 @@ DGENIES_INPUT="${RAGTAG_SCAFFOLD_DIR}/dgenies_input"
 
 #make dgenies input directory
 mkdir -p "${DGENIES_INPUT}"
+
+#check format of agp
+ragtag.py agpcheck "${AGP}" > "${AGP2FASTA_DIR}/agpcheck.txt"
+
+#convert agp to fasta
+ragtag.py agp2fa "${AGP}" "${INPUT_FASTA}" > "${OUTPUT_FASTA}"
