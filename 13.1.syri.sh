@@ -63,7 +63,7 @@ REF_SCAFFOLD_ALIGN() {
 
     #perform alignment visualisation
     cd "${OUT_DIR}"
-    syri -c "${INPUT_PAF}" -r "${REFERENCE}" -q "${SCAFFOLD_IN}" -p dSAMPLE_CLI -F P --cigar
+    syri -c "${INPUT_PAF}" -r "${REFERENCE}" -q "${SCAFFOLD_IN}" --prefix dSAMPLE_CLI -F P --cigar
 }
 
 #align the variable reference sequences to the scaffold
