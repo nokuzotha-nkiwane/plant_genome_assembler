@@ -80,14 +80,14 @@ run_alignment_and_dgenies_stage() {
     cp "${FASTA_SRC}" "${TEMP_DIR}/"
     local FASTA_IN="${TEMP_DIR}/$(basename "${FASTA_SRC}")"
 
-    minimap2 -ax asm5 -t "${THREADS}" "${REFERENCE}" "${FASTA_IN}" > "${COMBO_OUT_DIR}/${PREFIX}.aln5.sam"
+    minimap2 -ax asm5 -t "${THREADS}" --eqx "${REFERENCE}" "${FASTA_IN}" > "${COMBO_OUT_DIR}/${PREFIX}.aln5.sam"
     if [[ $? -ne 0 ]]; then
         echo "ERROR: minimap2 SAM alignment failed for ${PREFIX} vs $(basename "${REFERENCE}")"
         ALN_STATUS["${STATUS_KEY}"]="failed_sam"
         return 0
     fi
 
-    minimap2 -cx asm5 --cs -t "${THREADS}" "${REFERENCE}" "${FASTA_IN}" > "${COMBO_OUT_DIR}/${PREFIX}.aln5.paf"
+    minimap2 -cx asm5 --cs -t "${THREADS}" --eqx "${REFERENCE}" "${FASTA_IN}" > "${COMBO_OUT_DIR}/${PREFIX}.aln5.paf"
     if [[ $? -ne 0 ]]; then
         echo "ERROR: minimap2 PAF alignment failed for ${PREFIX} vs $(basename "${REFERENCE}")"
         ALN_STATUS["${STATUS_KEY}"]="failed_paf"
