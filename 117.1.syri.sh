@@ -1,4 +1,4 @@
-#!/bin/bash
+ #!/bin/bash
 #PBS -l select=1:ncpus=23:mem=60GB
 #PBS -q bix
 #PBS -l walltime=15:00:00
@@ -16,41 +16,46 @@ source ~/.pbsrc
 
 #load modules
 module load app/miniconda/mamba
-conda activate mummer
+conda activate syri
 
 #directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 ALL_RESULTS_DIR="${WORKDIR}/results"
 REF_DIR="${TOMATO_PATH}/data/reference_data"
-REF_GENOME_1="${REF_DIR}/SL5.0.fasta.gz"
-REF_GENOME_2="${REF_DIR}/SL5.0.unplaced_removed.fasta.gz"
+# REF_GENOME_1="${REF_DIR}/SL5.0.fasta.gz"
+REF_GENOME_2="${REF_DIR}/SL5.0.unplaced_removed.fasta"
 REF_SCAFFOLD_ALN="__RESULTS_DIR__"
-FULL_REF_DIR="${REF_SCAFFOLD_ALN}/full_ref"
+# FULL_REF_DIR="${REF_SCAFFOLD_ALN}/full_ref"
 NO_UNPLACED_REF_DIR="${REF_SCAFFOLD_ALN}/no_unplaced_ref"
-SCAFFOLD_IN="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold/ragtag.scaffold.chromosomes.fasta"
+AGP_CORRECT_DIR="${ALL_RESULTS_DIR}/07.1.agp_correct"
+SCAFFOLD_IN="${AGP_CORRECT_DIR}/ragtag_output/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta"
+INPUT_PAF="${AGP_CORRECT_DIR}/dgenies_input/dSAMPLE_CLI_to_ref_aln5.paf"
 TEMP_DIR="${REF_SCAFFOLD_ALN}/${PBS_JOBID}_temp"
 
 #make temp directory to fastas to so the original ones are accessible to other scripts
-mkdir -p "${TEMP_DIR}" "${FULL_REF_DIR}" "${NO_UNPLACED_REF_DIR}"
+mkdir -p "${TEMP_DIR}" "${NO_UNPLACED_REF_DIR}"
 
 #automatically remove TEMP_DIR whenever the script exits (normal or error)
 trap 'rm -rf "${TEMP_DIR}"' EXIT
 
 #copy input file to temporary directory
-cp "${REF_GENOME_1}" \
+cp "${INPUT_PAF}" \
     "${REF_GENOME_2}" \
     "${SCAFFOLD_IN}" "${TEMP_DIR}/"
 
 #reassign variables to the temp directory versions
-REF_GENOME_1="${TEMP_DIR}/$(basename "${REF_GENOME_1}")"
+INPUT_PAF="${TEMP_DIR}/$(basename "${INPUT_PAF}")"
 REF_GENOME_2="${TEMP_DIR}/$(basename "${REF_GENOME_2}")"
 SCAFFOLD_IN="${TEMP_DIR}/$(basename "${SCAFFOLD_IN}")"
 
-REF_IN=("${REF_GENOME_1}"
-    "${REF_GENOME_2}")
+# REF_IN=("${REF_GENOME_1}"
+#     "${REF_GENOME_2}")
+REF_IN=("${REF_GENOME_2}")
 
-OUT_FILES=("${FULL_REF_DIR}"
-    "${NO_UNPLACED_REF_DIR}")
+
+# OUT_FILES=("${FULL_REF_DIR}"
+#     "${NO_UNPLACED_REF_DIR}")
+OUT_FILES=("${NO_UNPLACED_REF_DIR}")
 
 #align scaffolded assembly reference
 REF_SCAFFOLD_ALIGN() {
@@ -58,7 +63,7 @@ REF_SCAFFOLD_ALIGN() {
 
     #perform alignment visualisation
     cd "${OUT_DIR}"
-    nucmer -r "${REFERENCE}" -q "${SCAFFOLD_IN}" -p dSAMPLE_CLI
+    syri -c "${INPUT_PAF}" -r "${REFERENCE}" -q "${SCAFFOLD_IN}" -p dSAMPLE_CLI -F P --cigar
 }
 
 #align the variable reference sequences to the scaffold
