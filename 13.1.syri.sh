@@ -48,6 +48,13 @@ INPUT_PAF="${TEMP_DIR}/$(basename "${INPUT_PAF}")"
 REF_GENOME_2="${TEMP_DIR}/$(basename "${REF_GENOME_2}")"
 SCAFFOLD_IN="${TEMP_DIR}/$(basename "${SCAFFOLD_IN}")"
 
+#rename bare-numeric chromosome headers in the reference FASTA (>1 -> >Chr1, etc.)
+sed -E -i 's/^>([0-9]+)$/>Chr\1/' "${REF_GENOME_2}"
+
+#rename paf out
+awk -F'\t' -v OFS='\t' '{ if ($6 ~ /^[0-9]+$/) $6 = "Chr" $6; print }' \
+    "${INPUT_PAF}" > "${INPUT_PAF}.renamed" && mv "${INPUT_PAF}.renamed" "${INPUT_PAF}"
+
 # REF_IN=("${REF_GENOME_1}"
 #     "${REF_GENOME_2}")
 REF_IN=("${REF_GENOME_2}")
