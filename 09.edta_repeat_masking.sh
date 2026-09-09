@@ -28,7 +28,7 @@ OUTPUT_DIR="__RESULTS_DIR__"
 REF_DIR="${TOMATO_PATH}/data/reference_data"
 CDS="${REF_DIR}/SL5.cds.fa.gz"
 RAGATAG_SCAFFOLD_FASTA="${ALL_RESULTS_DIR}/07.1.agp_correct/ragtag_output/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta"
-EDTA_IMAGE="/new-home/25086138/my_environments/edta_2/EDTA.sif"
+EDTA_IMAGE="/new-home/25086138/my_environments/edta/EDTA.sif"
 
 TEMP_DIR="${OUTPUT_DIR}/${PBS_JOBID}_temp"
 GENOME_BASENAME="$(basename "${RAGATAG_SCAFFOLD_FASTA}")"
