@@ -19,7 +19,7 @@ module load app/miniconda/mamba
 conda activate ragtag
 
 #resource allocation
-THREADS=32
+THREADS=20
 
 
 # directories and files
