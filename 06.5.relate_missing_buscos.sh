@@ -38,7 +38,7 @@ unique_CONSOLIDATED_MISSINGS_FASTA="${OUTPUT_DIR}/unique_consoldated_missings.fa
 DGENIES_INPUT="${OUTPUT_DIR}/dgenies_input"
 SORTED_BAM="${OUTPUT_DIR}/dSAMPLE_CLI_aln5.sorted.bam"
 PAF_OUT="${OUTPUT_DIR}/dSAMPLE_CLI_aln5.paf"
-AGP="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold"
+AGP="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold/f15000_d500000"
 
 # make dgenies input directory
 mkdir -p "${DGENIES_INPUT}"
