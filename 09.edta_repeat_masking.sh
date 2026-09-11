@@ -16,7 +16,8 @@ set -uxo pipefail
 source ~/.pbsrc
 
 #load modules
-module load app/apptainer/1.2.5
+module load app/miniconda/mamba
+conda activate edta
 
 #resource parameters
 THREADS=23
@@ -49,7 +50,7 @@ run_edta () {
 
     cd "${TEMP_DIR}" || return 1
 
-    singularity exec "${EDTA_IMAGE}" EDTA.pl "$@"
+    EDTA.pl "$@"
     local edta_status=$?
 
     #move everything EDTA produced out, except the two input copies, leaving temp dir clean for the next combo
