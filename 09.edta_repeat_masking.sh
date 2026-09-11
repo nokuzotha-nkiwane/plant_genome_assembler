@@ -29,6 +29,19 @@ REF_DIR="${TOMATO_PATH}/data/reference_data"
 CDS="${REF_DIR}/SL5.cds.fa.gz"
 RAGATAG_SCAFFOLD_FASTA="${ALL_RESULTS_DIR}/07.1.agp_correct/ragtag_output/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta"
 EDTA_IMAGE="/new-home/25086138/my_environments/edta/EDTA.sif"
+TOOL_ENV="/usr/local/bin/"
+
+# EDTA dependency paths (as seen inside the EDTA.sif container, not the host)
+EDTA_DEP_OPTS=(
+    --repeatmodeler "${TOOL_ENV}"
+    --repeatmasker "${TOOL_ENV}"
+    --annosine "${TOOL_ENV}"
+    --ltrretriever "${TOOL_ENV}"
+    --step all
+    --anno 1
+    --evaluate 1
+    -t "${THREADS}"
+)
 
 TEMP_DIR="${OUTPUT_DIR}/${PBS_JOBID}_temp"
 GENOME_BASENAME="dSAMPLE_CLI.fasta"
@@ -45,11 +58,23 @@ declare -A run_status
 
 run_edta () {
     local outdir="$1"; shift
+    local logfile="${TEMP_DIR}/edta.log"
+
     mkdir -p "${outdir}"
 
     cd "${TEMP_DIR}" || return 1
 
-    singularity exec --env RMBLAST_DIR=/usr/local/bin "${EDTA_IMAGE}" EDTA.pl "$@"
+    singularity exec --pid --env RMBLAST_DIR=/usr/local/bin "${EDTA_IMAGE}" EDTA.pl "$@"  >>(tee "${logfile}") 2>&1 &
+    local edta_pid=$!
+
+    while kill -0 "${edta_pid}" 2>/dev/null; do
+        if grep -qiw "error" "${logfile}"; then
+            kill -TERM "${edta_pid}"
+            wait "${edta_pid}" 2>/dev/null
+            return 1
+        fi
+        sleep 30
+    done
     local edta_status=$?
 
     #move everything EDTA produced out, except the two input copies, leaving temp dir clean for the next combo
@@ -63,14 +88,14 @@ run_edta () {
     return "${edta_status}"
 }
 
-# run_edta "${OUTPUT_DIR}/edta_basic" --genome "${GENOME_BASENAME}" --step all --anno 1 --evaluate 1 -t "${THREADS}"
+# run_edta "${OUTPUT_DIR}/edta_basic" --genome "${GENOME_BASENAME}" "${EDTA_DEP_OPTS[@]}"
 # run_status[basic]=$?
-# run_edta "${OUTPUT_DIR}/edta_cds" --genome "${GENOME_BASENAME}" --step all --anno 1 --evaluate 1 -t "${THREADS}" --cds "${CDS_BASENAME}"
+# run_edta "${OUTPUT_DIR}/edta_cds" --genome "${GENOME_BASENAME}" " --cds "${CDS_BASENAME}" "${EDTA_DEP_OPTS[@]}"
 # run_status[cds]=$?
-run_edta "${OUTPUT_DIR}/edta_sensitive" --genome "${GENOME_BASENAME}" --step all --sensitive 1 --anno 1 --evaluate 1 -t "${THREADS}"
+run_edta "${OUTPUT_DIR}/edta_sensitive" --genome "${GENOME_BASENAME}" --sensitive 1 "${EDTA_DEP_OPTS[@]}"
 run_status[sensitive]=$?
-run_edta "${OUTPUT_DIR}/edta_sensitive_cds" --genome "${GENOME_BASENAME}" --step all --sensitive 1 --anno 1 --evaluate 1 -t "${THREADS}" --cds "${CDS_BASENAME}"
-run_status[sensitive_cds]=$?
+# run_edta "${OUTPUT_DIR}/edta_sensitive_cds" --genome "${GENOME_BASENAME}" --sensitive 1 --cds "${CDS_BASENAME}" "${EDTA_DEP_OPTS[@]}"
+# run_status[sensitive_cds]=$?
 
 { for k in "${!run_status[@]}";do
     echo "${k}: ${run_status[${k}]}"
