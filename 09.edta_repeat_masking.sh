@@ -19,7 +19,7 @@ source ~/.pbsrc
 module load app/apptainer/1.2.5
 
 #resource parameters
-THREADS=23
+THREADS=64
 
 #directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
