@@ -31,7 +31,7 @@ RAGATAG_SCAFFOLD_FASTA="${ALL_RESULTS_DIR}/07.1.agp_correct/ragtag_output/dSAMPL
 EDTA_IMAGE="/new-home/25086138/my_environments/edta/EDTA.sif"
 
 TEMP_DIR="${OUTPUT_DIR}/${PBS_JOBID}_temp"
-GENOME_BASENAME="$(basename "${RAGATAG_SCAFFOLD_FASTA}")"
+GENOME_BASENAME="dSAMPLE_CLI.fasta"
 CDS_BASENAME="$(basename "${CDS}")"
 
 trap 'rm -rf "${TEMP_DIR}"' EXIT
@@ -53,24 +53,24 @@ run_edta () {
     local edta_status=$?
 
     #move everything EDTA produced out, except the two input copies, leaving temp dir clean for the next combo
-    find "${TEMP_DIR}" -mindepth 1 -maxdepth 1 \
-    ! -name "${GENOME_BASENAME}" \
-    ! -name "${CDS_BASENAME}" \
-    -exec mv -t "${outdir}/" {} +
+    cp "${TEMP_DIR}"/* "${outdir}/"
+    sleep 10
 
-    sleep 30
+    #copy input files back to temp dir for next round
+    cp "${outdir}/${CDS_BASENAME}" "${outdir}/${GENOME_BASENAME}" "${TEMP_DIR}/"
+    sleep 10
 
     return "${edta_status}"
 }
 
-run_edta "${OUTPUT_DIR}/edta_basic" --genome "${GENOME_BASENAME}" --step all --anno 1 --evaluate 1 -t "${THREADS}"
-run_status[basic]=$?
+# run_edta "${OUTPUT_DIR}/edta_basic" --genome "${GENOME_BASENAME}" --step all --anno 1 --evaluate 1 -t "${THREADS}"
+# run_status[basic]=$?
 # run_edta "${OUTPUT_DIR}/edta_cds" --genome "${GENOME_BASENAME}" --step all --anno 1 --evaluate 1 -t "${THREADS}" --cds "${CDS_BASENAME}"
 # run_status[cds]=$?
-# run_edta "${OUTPUT_DIR}/edta_sensitive" --genome "${GENOME_BASENAME}" --step all --sensitive 1 --anno 1 --evaluate 1 -t "${THREADS}"
-# run_status[sensitive]=$?
-# run_edta "${OUTPUT_DIR}/edta_sensitive_cds" --genome "${GENOME_BASENAME}" --step all --sensitive 1 --anno 1 --evaluate 1 -t "${THREADS}" --cds "${CDS_BASENAME}"
-# run_status[sensitive_cds]=$?
+run_edta "${OUTPUT_DIR}/edta_sensitive" --genome "${GENOME_BASENAME}" --step all --sensitive 1 --anno 1 --evaluate 1 -t "${THREADS}"
+run_status[sensitive]=$?
+run_edta "${OUTPUT_DIR}/edta_sensitive_cds" --genome "${GENOME_BASENAME}" --step all --sensitive 1 --anno 1 --evaluate 1 -t "${THREADS}" --cds "${CDS_BASENAME}"
+run_status[sensitive_cds]=$?
 
 { for k in "${!run_status[@]}";do
     echo "${k}: ${run_status[${k}]}"
