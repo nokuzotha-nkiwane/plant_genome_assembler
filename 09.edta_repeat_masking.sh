@@ -10,7 +10,7 @@
 #PBS -M PBS_EMAIL
 
 #allow sweep to continue past individual failures (no -e); trace + unset-var protection retained
-set -uxo pipefail
+set -euxo pipefail
 
 #for evaluating variables in ~/.pbsrc
 source ~/.pbsrc
