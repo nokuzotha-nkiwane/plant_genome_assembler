@@ -1,6 +1,6 @@
 #!/bin/bash
-#PBS -l ncpus=24
-#PBS -l mem=60GB
+#PBS -l ncpus=12
+#PBS -l mem=20GB
 #PBS -q bix
 #PBS -l walltime=12:00:00
 #PBS -N SAMPLE_CLI_STEP_PBS
@@ -21,7 +21,7 @@ conda activate busco_6.1.0
 export _JAVA_OPTIONS="-Xmx8g"
 
 #resource parameters
-THREADS=23
+THREADS=12
 
 #which ragtag stage this run evaluates -- sed-substituted by submit.sh's
 #RAGTAG_MODE=correct|scaffold CLI argument. The two modes are independent for now
