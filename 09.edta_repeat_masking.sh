@@ -54,7 +54,7 @@ run_edta () {
     local edta_status=$?
 
     #move everything EDTA produced out, except the two input copies, leaving temp dir clean for the next combo
-    cp "${TEMP_DIR}"/* "${outdir}/"
+    cp -r "${TEMP_DIR}"/* "${outdir}/"
     sleep 10
 
     #copy input files back to temp dir for next round
