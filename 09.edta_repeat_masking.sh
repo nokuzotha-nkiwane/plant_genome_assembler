@@ -9,7 +9,7 @@
 #PBS -m be
 #PBS -M PBS_EMAIL
 
-#allow sweep to continue past individual failures (no -e); trace + unset-var protection retained
+#kill execution at first error
 set -euxo pipefail
 
 #for evaluating variables in ~/.pbsrc
@@ -49,15 +49,15 @@ run_edta () {
 
     cd "${TEMP_DIR}" || return 1
 
-    singularity exec "${EDTA_IMAGE}" EDTA.pl "$@"
+    singularity exec --env RMBLAST_DIR=/usr/local/bin "${EDTA_IMAGE}" EDTA.pl "$@"
     local edta_status=$?
 
     #move everything EDTA produced out, except the two input copies, leaving temp dir clean for the next combo
-    cp -r "${TEMP_DIR}"/* "${outdir}/"
+    mv "${TEMP_DIR}"/* "${outdir}/"
     sleep 10
 
     #copy input files back to temp dir for next round
-    cp "${outdir}/${CDS_BASENAME}" "${outdir}/${GENOME_BASENAME}" "${TEMP_DIR}/"
+    mv "${outdir}/${CDS_BASENAME}" "${outdir}/${GENOME_BASENAME}" "${TEMP_DIR}/"
     sleep 10
 
     return "${edta_status}"
