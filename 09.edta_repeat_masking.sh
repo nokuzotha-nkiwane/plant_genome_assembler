@@ -61,27 +61,26 @@ run_edta () {
     local logfile="${TEMP_DIR}/edta.log"
 
     mkdir -p "${outdir}"
-
     cd "${TEMP_DIR}" || return 1
 
-    singularity exec --pid --env RMBLAST_DIR=/usr/local/bin "${EDTA_IMAGE}" EDTA.pl "$@"  >>(tee "${logfile}") 2>&1 &
+    singularity exec --pid --env RMBLAST_DIR=/usr/local/bin "${EDTA_IMAGE}" EDTA.pl "$@" > >(tee -a "${logfile}") 2>&1 &
     local edta_pid=$!
 
     while kill -0 "${edta_pid}" 2>/dev/null; do
-        if grep -qiw "error" "${logfile}"; then
+        if grep -qE "^ERROR|FATAL|die at" "${logfile}"; then
             kill -TERM "${edta_pid}"
             wait "${edta_pid}" 2>/dev/null
             return 1
         fi
-        sleep 30
+        sleep 10
     done
+
+    wait "${edta_pid}"
     local edta_status=$?
 
-    #move everything EDTA produced out, except the two input copies, leaving temp dir clean for the next combo
     mv "${TEMP_DIR}"/* "${outdir}/"
     sleep 10
 
-    #copy input files back to temp dir for next round
     mv "${outdir}/${CDS_BASENAME}" "${outdir}/${GENOME_BASENAME}" "${TEMP_DIR}/"
     sleep 10
 
