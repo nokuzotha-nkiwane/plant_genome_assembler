@@ -32,7 +32,7 @@ RAGATAG_SCAFFOLD_FASTA="${ALL_RESULTS_DIR}/07.1.agp_correct/ragtag_output/dSAMPL
 # TOOL_ENV="/usr/local/bin/"
 
 cd "${OUTPUT_DIR}"
-EDTA.pl --genome "${RAGATAG_SCAFFOLD_FASTA}" --sensitive 1 --anno 1 -t 80 > >(tee -a "${logfile}") 2>&1 &
+EDTA.pl --genome "${RAGATAG_SCAFFOLD_FASTA}" --sensitive 1 --anno 1 -t "${THREADS}" > >(tee -a "${logfile}") 2>&1 &
 edta_pid=$!
 
 while kill -0 "${edta_pid}" 2>/dev/null; do
