@@ -1,6 +1,6 @@
 #!/bin/bash
-#PBS -l ncpus=80
-#PBS -l mem=100GB
+#PBS -l ncpus=64
+#PBS -l mem=80GB
 #PBS -q bix
 #PBS -l walltime=96:00:00
 #PBS -o OUTPUT_FILE_PBS
