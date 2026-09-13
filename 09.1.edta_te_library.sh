@@ -35,11 +35,22 @@ cd "${OUTPUT_DIR}"
 EDTA.pl --genome "${RAGATAG_SCAFFOLD_FASTA}" --sensitive 1 --anno 1 -t "${THREADS}" > >(tee -a "${logfile}") 2>&1 &
 edta_pid=$!
 
+#write a log for edta monitoring
 while kill -0 "${edta_pid}" 2>/dev/null; do
     if grep -qE "^ERROR|FATAL|die at" "${logfile}"; then
         kill -TERM "${edta_pid}"
         wait "${edta_pid}" 2>/dev/null
-        return 1
+        exit 1
     fi
     sleep 10
 done
+
+#check that the final command exited with a 0 exit code and flag if it didn't
+#done because PBS will return 0 exit code for successfully reaching end of the script
+#but not necessarily a successful completion of underlying command/script
+wait "${edta_pid}"
+exit_code=$?
+if [[ ${exit_code} -ne 0 ]]; then
+    echo "EDTA exited with status ${exit_code}" >> "${logfile}"
+    exit "${exit_code}"
+fi
