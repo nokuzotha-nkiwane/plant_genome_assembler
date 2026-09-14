@@ -26,10 +26,10 @@ OUTPUT_DIR="__RESULTS_DIR__"
 logfile="${OUTPUT_DIR}/edta_soft_masking.log"
 RAGATAG_SCAFFOLD_FASTA="${ALL_RESULTS_DIR}/07.1.agp_correct/ragtag_output/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta"
 TE_LIB="${ALL_RESULTS_DIR}/09.edta_repeat_masking/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta.mod.EDTA.anno/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta.mod.EDTA.TEanno.out"
+MASKING_SCRIPT="/new-home/apps2/mambaforge/envs/EDTA2/share/EDTA/bin/make_masked.pl"
 
-#TODO check that make_masked.pl is actually called like this (interactive session)
 #TODO check minlen parameter is it basedon the the sumfile outputs? Is it a default hte creator recommended? Whats its basis?
-perl ../util/make_masked.pl -genome "${RAGATAG_SCAFFOLD_FASTA}" -minlen 80 -hardmask 0 -t "${THREADS}" -rmout "${TE_LIB}" > >(tee -a "${logfile}") 2>&1 &
+perl "${MASKING_SCRIPT}" -genome "${RAGATAG_SCAFFOLD_FASTA}" -minlen 80 -hardmask 0 -t "${THREADS}" -rmout "${TE_LIB}" > >(tee -a "${logfile}") 2>&1 &
 edta_pid=$!
 
 #write a log for edta monitoring
