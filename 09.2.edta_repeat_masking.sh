@@ -32,15 +32,17 @@ MASKING_SCRIPT="/new-home/apps2/mambaforge/envs/EDTA2/share/EDTA/bin/make_masked
 touch "${logfile}"
 
 #TODO check minlen parameter is it basedon the the sumfile outputs? Is it a default hte creator recommended? Whats its basis?
-perl "${MASKING_SCRIPT}" -genome "${RAGATAG_SCAFFOLD_FASTA}" -minlen 80 -hardmask 0 -t "${THREADS}" -rmout "${TE_LIB}" > >(tee -a "${logfile}") 2>&1 &
-edta_pid=$!
+perl "${MASKING_SCRIPT}" -genome "${RAGATAG_SCAFFOLD_FASTA}" -minlen 80 -hardmask 0 -t "${THREADS}" -rmout "${TE_LIB}" 
 
-#write a log for edta monitoring
-while kill -0 "${edta_pid}" 2>/dev/null; do
-    if grep -qE "^ERROR|FATAL|die at" "${logfile}"; then
-        kill -TERM "${edta_pid}"
-        wait "${edta_pid}" 2>/dev/null
-        exit 1
-    fi
-    sleep 10
-done
+# > >(tee -a "${logfile}") 2>&1 &
+# edta_pid=$!
+
+# #write a log for edta monitoring
+# while kill -0 "${edta_pid}" 2>/dev/null; do
+#     if grep -qE "^ERROR|FATAL|die at" "${logfile}"; then
+#         kill -TERM "${edta_pid}"
+#         wait "${edta_pid}" 2>/dev/null
+#         exit 1
+#     fi
+#     sleep 10
+# done
