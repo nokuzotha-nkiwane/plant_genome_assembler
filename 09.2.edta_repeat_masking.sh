@@ -1,8 +1,8 @@
 #!/bin/bash
-#PBS -l select=1:ncpus=64:mem=80GB
+#PBS -l ncpus=8
+#PBS -l mem=20GB
 #PBS -q bix
-#PBS -l walltime=72:00:00
-#PBS -N SAMPLE_CLI_STEP_PBS
+#PBS -l walltime=8:00:00
 #PBS -o OUTPUT_FILE_PBS
 #PBS -e ERROR_FILE_PBS
 #PBS -m be
@@ -18,7 +18,7 @@ source ~/.pbsrc
 module load app/EDTA2/2.2.2
 
 #resource parameters
-THREADS=64
+THREADS=8
 
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 ALL_RESULTS_DIR="${WORKDIR}/results"
