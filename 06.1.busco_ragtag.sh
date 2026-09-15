@@ -1,7 +1,7 @@
 #!/bin/bash
 #PBS -l ncpus=12
 #PBS -l mem=20GB
-#PBS -q day
+#PBS -q bix
 #PBS -l walltime=4:00:00
 #PBS -N SAMPLE_CLI_STEP_PBS
 #PBS -o OUTPUT_FILE_PBS
