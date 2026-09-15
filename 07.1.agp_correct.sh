@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -l select=1:ncpus=15:mem=40GB
+#PBS -l select=1:ncpus=8:mem=20GB
 #PBS -q bix
 #PBS -l walltime=4:00:00
 #PBS -N SAMPLE_CLI_STEP_PBS
@@ -19,7 +19,7 @@ module load app/miniconda/mamba
 conda activate ragtag
 
 #resource allocation
-THREADS=15
+THREADS=8
 
 # directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
