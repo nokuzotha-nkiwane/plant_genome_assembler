@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -l select=1:ncpus=15:mem=40GB
+#PBS -l select=1:ncpus=8:mem=20GB
 #PBS -q bix
 #PBS -l walltime=4:00:00
 #PBS -N SAMPLE_CLI_STEP_PBS
@@ -19,14 +19,12 @@ module load app/miniconda/mamba
 conda activate ragtag
 
 #resource allocation
-THREADS=20
+THREADS=8
 
 # directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 REF_DIR="${TOMATO_PATH}/data/reference_data"
 REF_GENOME="${REF_DIR}/SL5.0.unplaced_removed.fasta.gz"
-READS="${WORKDIR}/raw_reads/D260405-SAMPLE_CLI_HiFi.fastq.gz"
-FILTERED_READS="${WORKDIR}/raw_reads/dSAMPLE_CLI_filtered.fastq.gz"
 ALL_RESULTS_DIR="${WORKDIR}/results"
 RAGTAG_SCAFFOLD_DIR="__RESULTS_DIR__"
 INPUT_FASTA="${ALL_RESULTS_DIR}/05.1.ragtag_correct/ragtag.correct.fasta"
@@ -35,15 +33,11 @@ AGP2FASTA_DIR="${RAGTAG_SCAFFOLD_DIR}/agp2fasta"
 OUTPUT_FASTA="${AGP2FASTA_DIR}/corrected.fasta"
 OUTPUT_FASTA_RENAMED="${AGP2FASTA_DIR}/dSAMPLE_CLI.renamed_corrected.fasta"
 RAGTAG_OUTPUT_DIR="${RAGTAG_SCAFFOLD_DIR}/ragtag_output"
-WHOLE_BAM="${RAGTAG_SCAFFOLD_DIR}/correction_checks/dSAMPLE_CLI_whole.bam"
 MINIMAP_PAF="${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI_to_ref_aln5.paf"
 DGENIES_INPUT="${RAGTAG_SCAFFOLD_DIR}/dgenies_input"
 
-#chromosomes to be corrected
-CORRECTION_CHROMOSOMES=()
-
 #make dgenies input directory
-mkdir -p "${DGENIES_INPUT}" "${AGP2FASTA_DIR}" "${RAGTAG_SCAFFOLD_DIR}/correction_checks"
+mkdir -p "${DGENIES_INPUT}" "${AGP2FASTA_DIR}"
 
 #check format of agp
 ragtag.py agpcheck "${AGP}" > "${AGP2FASTA_DIR}/agpcheck.txt"
@@ -82,43 +76,3 @@ gzip -k "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta"
 #move outputs to dgenies folder
 mv "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta.gz" "${MINIMAP_PAF}" "${DGENIES_INPUT}/"
 ln -s "${REF_GENOME}" "${DGENIES_INPUT}/"
-
-#filter reads if needed
-if [[ -s "${FILTERED_READS}" ]]; then
-    echo "Found filtered reads; proceeding to minimap2"
-else
-    echo "Filtering raw reads"
-    filtlong \
-    --min_mean_q 20 \
-    --min_length 8000 \
-    "${READS}" | gzip -k > "${FILTERED_READS}" || { echo "Filtlong failed for ${READS}"; exit 1; }
-fi
-
-#align reads to the whole scaffolded assembly once
-conda deactivate
-conda activate pbmm2
-
-
-mkdir -p "$(dirname "${WHOLE_BAM}")"
-
-pbmm2 align --sort -J "${THREADS}" --bam-index BAI "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta" "${FILTERED_READS}" "${WHOLE_BAM}"
-
-extract_region(){
-    local CHRSM="$1"
-    local OUTPUT_DIR="${RAGTAG_SCAFFOLD_DIR}/correction_checks/chromosome_${CHRSM}"
-    local OUTPUT_BAM="${OUTPUT_DIR}/dSAMPLE_CLI_chromosome_${CHRSM}.bam"
-
-    mkdir -p "${OUTPUT_DIR}"
-
-    conda deactivate
-    conda activate helper-tools
-
-    samtools view -b "${WHOLE_BAM}" "${CHRSM}_RagTag" > "${OUTPUT_BAM}"
-    samtools index "${OUTPUT_BAM}"
-}
-
-
-# run function to correct chromosomes
-for CHR in "${CORRECTION_CHROMOSOMES[@]}"; do
-    extract_region "${CHR}"
-done
