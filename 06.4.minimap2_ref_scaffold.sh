@@ -104,7 +104,7 @@ run_alignment_and_dgenies_stage() {
         ALN_STATUS["${STATUS_KEY}"]="failed_gzip"
         return 0
     fi
-    mv "${FASTA_IN}.gz" "${DGENIES_INPUT_DIR}/"
+    ln -s "${FASTA_IN}.gz" "${DGENIES_INPUT_DIR}/"
 
     ALN_STATUS["${STATUS_KEY}"]="ok"
 }
