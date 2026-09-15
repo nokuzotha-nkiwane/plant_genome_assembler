@@ -31,13 +31,10 @@ FILTERED_READS="${WORKDIR}/raw_reads/dSAMPLE_CLI_filtered.fastq.gz"
 ALL_RESULTS_DIR="${WORKDIR}/results"
 PBMM2_SCAFFOLD_DIR="__RESULTS_DIR__"
 RAGTAG_OUTPUT_DIR="${ALL_RESULTS_DIR}/07.1.agp_correct/ragtag_output"
-WHOLE_BAM="${PBMM2_SCAFFOLD_DIR}/correction_checks/dSAMPLE_CLI_whole.bam"
+WHOLE_BAM="${PBMM2_SCAFFOLD_DIR}/dSAMPLE_CLI_whole.bam"
 
 #chromosomes to be corrected
 CORRECTION_CHROMOSOMES=()
-
-#make dgenies input directory
-mkdir -p "${RAGTAG_SCAFFOLD_DIR}/correction_checks"
 
 #filter reads if needed
 if [[ -s "${FILTERED_READS}" ]]; then
@@ -63,13 +60,18 @@ conda activate helper-tools
 #function to extract regions matching to chromosomes of interest
 extract_region(){
     local CHRSM="$1"
-    local OUTPUT_DIR="${RAGTAG_SCAFFOLD_DIR}/correction_checks/chromosome_${CHRSM}"
+    local OUTPUT_DIR="${PBMM2_SCAFFOLD_DIR}/chromosome_${CHRSM}"
     local OUTPUT_BAM="${OUTPUT_DIR}/dSAMPLE_CLI_chromosome_${CHRSM}.bam"
+    local OUTPUT_FASTA="${OUTPUT_DIR}/dSAMPLE_CLI_chromosome_${CHRSM}.fasta"
 
     mkdir -p "${OUTPUT_DIR}"
 
+    #extract region in bam
     samtools view -b "${WHOLE_BAM}" "${CHRSM}_RagTag" > "${OUTPUT_BAM}"
     samtools index "${OUTPUT_BAM}"
+
+    #extract fasta sequence
+    samtools faidx "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta" "${CHRSM}_RagTag" > "${OUTPUT_FASTA}"
 }
 
 
