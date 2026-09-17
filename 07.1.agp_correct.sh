@@ -54,12 +54,17 @@ rm "${OUTPUT_FASTA}"
 ragtag.py scaffold --remove-small -f 15000 -d 500000 -i 0.5 -a 0.5 -s 0.5 --mm2-params '-x asm5' -t "${THREADS}" \
     -o "${RAGTAG_OUTPUT_DIR}" "${REF_GENOME}" "${OUTPUT_FASTA_RENAMED}" || { echo "ragtag scaffold failed for sample dSAMPLE_CLI"; exit 1; }
 
+#make a copy of the output fasta and agp to make it easier to differentiate the two samples when used together
+mv "${RAGTAG_OUTPUT_DIR}/ragtag.scaffold.fasta" "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.fasta"
+mv "${RAGTAG_OUTPUT_DIR}/ragtag.scaffold.agp" "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.agp"
+mv "${RAGTAG_OUTPUT_DIR}/ragtag.scaffold.asm.paf" "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.asm.paf"
+
 #deactivate env and activate minimap 2
 conda deactivate
 conda activate seqkit
 
-seqkit grep -n -r -p '_RagTag$' "${RAGTAG_OUTPUT_DIR}/ragtag.scaffold.fasta" > "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta"
-seqkit grep -v -n -r -p '_RagTag$' "${RAGTAG_OUTPUT_DIR}/ragtag.scaffold.fasta" > "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.unplaced.fasta"
+seqkit grep -n -r -p '_RagTag$' "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.fasta" > "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta"
+seqkit grep -v -n -r -p '_RagTag$' "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.fasta" > "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.unplaced.fasta"
 
 seqkit fx2tab --length --name --header-line "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta" \
     > "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.lengths"
@@ -70,12 +75,12 @@ conda activate helper-tools
 
 #run minimap2 alignment
 minimap2 -cx asm5 -t "${THREADS}" --eqx "${REF_GENOME}" "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta" > "${MINIMAP_PAF}"
-minimap2 -cx asm5 -t "${THREADS}" --eqx "${REF_GENOME}" "${RAGTAG_OUTPUT_DIR}/ragtag.scaffold.fasta" > "${MINIMAP_PAF_2}"
+minimap2 -cx asm5 -t "${THREADS}" --eqx "${REF_GENOME}" "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.fasta" > "${MINIMAP_PAF_2}"
 
 #gzip the output fasta
 gzip -k "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta"
-gzip -k "${RAGTAG_OUTPUT_DIR}/ragtag.scaffold.fasta"
+gzip -k "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.fasta"
 
 #move outputs to dgenies folder
-mv "${RAGTAG_OUTPUT_DIR}/ragtag.scaffold.fasta.gz" "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta.gz" "${MINIMAP_PAF}" "${MINIMAP_PAF_2}" "${DGENIES_INPUT}/"
+mv "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.fasta.gz" "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta.gz" "${MINIMAP_PAF}" "${MINIMAP_PAF_2}" "${DGENIES_INPUT}/"
 ln -s "${REF_GENOME}" "${DGENIES_INPUT}/"
