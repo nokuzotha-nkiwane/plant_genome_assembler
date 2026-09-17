@@ -39,17 +39,17 @@ mkdir -p "${TEMP_DIR}"
 #automatically remove TEMP_DIR whenever the script exits (normal or error)
 trap 'rm -rf "${TEMP_DIR}"' EXIT
 
-#filter raw reads
-if [[ -s "${FILTERED_READS}" ]]; then
-    echo "Found filtered reads; proceeding to minimap2"
-else
-    echo "Filtering raw reads"
-    #Filter on Q20 quality and minimum read length of 1000
-    filtlong \
-    --min_mean_q 20 \
-    --min_length 1000 \
-    "${RAW_READS_GZ}" | gzip > "${FILTERED_READS}" || { echo "Filtlong failed for ${RAW_READS_GZ}"; exit 1; }
-fi
+# #filter raw reads
+# if [[ -s "${FILTERED_READS}" ]]; then
+#     echo "Found filtered reads; proceeding to minimap2"
+# else
+#     echo "Filtering raw reads"
+#     #Filter on Q20 quality and minimum read length of 1000
+#     filtlong \
+#     --min_mean_q 20 \
+#     --min_length 1000 \
+#     "${RAW_READS_GZ}" | gzip > "${FILTERED_READS}" || { echo "Filtlong failed for ${RAW_READS_GZ}"; exit 1; }
+# fi
 
 #deactivate conda env
 conda deactivate
@@ -58,7 +58,7 @@ conda activate ragtag
 #copy fastas file to temporary directory
 cp "${P_CONTIGS_IN}" \
     "${REF_GENOME}" \
-    "${FILTERED_READS}" "${TEMP_DIR}/"
+    "${RAW_READS_GZ}" "${TEMP_DIR}/"
 
 #unzip reference fasta
 gzip -d "${TEMP_DIR}/$(basename "${REF_GENOME}")"
@@ -66,7 +66,7 @@ gzip -d "${TEMP_DIR}/$(basename "${REF_GENOME}")"
 #reassign variables to the temp directory versions
 P_CONTIGS_IN="${TEMP_DIR}/$(basename "${P_CONTIGS_IN}")"
 REF_GENOME="${TEMP_DIR}/$(basename "${REF_GENOME}" .gz)"
-FILTERED_READS="${TEMP_DIR}/$(basename "${FILTERED_READS}")"
+RAW_READS_GZ="${TEMP_DIR}/$(basename "${RAW_READS_GZ}")"
 
 #correct assemblies assemblies
-ragtag.py correct -R "${FILTERED_READS}" -T corr -t "${THREADS}" -o "${RAGTAG_CORRECT_DIR}" "${REF_GENOME}" "${P_CONTIGS_IN}"
+ragtag.py correct -R "${RAW_READS_GZ}" -T corr -t "${THREADS}" -o "${RAGTAG_CORRECT_DIR}" "${REF_GENOME}" "${P_CONTIGS_IN}"
