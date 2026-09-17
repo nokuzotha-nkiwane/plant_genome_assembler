@@ -16,7 +16,6 @@ source ~/.pbsrc
 
 #resource allocation
 THREADS=36
-MIN_MAPQ=30
 
 
 #load modules
@@ -49,21 +48,14 @@ else
 fi
 
 #align reads to the whole scaffolded assembly once
-#use pbmm2
-# conda deactivate
-# conda activate pbmm2
-# pbmm2 align --sort -J "${THREADS}" --bam-index BAI "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta" "${FILTERED_READS}" "${WHOLE_BAM}"
+conda deactivate
+conda activate pbmm2
 
-#use minimap2
-minimap2 -ax map-hifi -t "${THREADS}" --secondary=no -N 1 -p 0.8 --eqx "${REF_FASTA}" "${FILTERED_READS}" > "${SAM_OUTPUT}"
+pbmm2 align --sort -J "${THREADS}" --bam-index BAI "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta" "${FILTERED_READS}" "${WHOLE_BAM}"
 
-#Convert SAM to BAM with mapping quality filter (Q30)
-samtools view -b -q "${MIN_MAPQ}" -F 2308 -@ "${THREADS}" "${SAM_OUTPUT}" | \
-    samtools sort -@ "${THREADS}" -o "${BAM_OUTPUT}"
-
-# #deactivate pbmm2 conda environment
-# conda deactivate
-# conda activate helper-tools
+#deactivate pbmm2 conda environment
+conda deactivate
+conda activate helper-tools
 
 #function to extract regions matching to chromosomes of interest
 extract_region(){
