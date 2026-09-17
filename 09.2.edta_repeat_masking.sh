@@ -1,8 +1,8 @@
 #!/bin/bash
-#PBS -l ncpus=8
-#PBS -l mem=20GB
+#PBS -l ncpus=2
+#PBS -l mem=8GB
 #PBS -q bix
-#PBS -l walltime=8:00:00
+#PBS -l walltime=1:00:00
 #PBS -o OUTPUT_FILE_PBS
 #PBS -e ERROR_FILE_PBS
 #PBS -m be
@@ -28,11 +28,11 @@ RAGATAG_SCAFFOLD_FASTA="${ALL_RESULTS_DIR}/07.1.agp_correct/ragtag_output/dSAMPL
 TE_LIB="${ALL_RESULTS_DIR}/09.edta_repeat_masking/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta.mod.EDTA.anno/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta.mod.EDTA.TEanno.out"
 MASKING_SCRIPT="/new-home/apps2/mambaforge/envs/EDTA2/share/EDTA/bin/make_masked.pl"
 
-#make log file
-touch "${logfile}"
+# #make log file
+# touch "${logfile}"
 
 #TODO check minlen parameter is it basedon the the sumfile outputs? Is it a default hte creator recommended? Whats its basis?
-perl "${MASKING_SCRIPT}" -genome "${RAGATAG_SCAFFOLD_FASTA}" -minlen 80 -hardmask 0 -t "${THREADS}" -rmout "${TE_LIB}" 
+perl "${MASKING_SCRIPT}" -genome "${RAGATAG_SCAFFOLD_FASTA}" -minlen 80 -hardmask 0 -t "${THREADS}" -rmout "${TE_LIB}"
 
 # > >(tee -a "${logfile}") 2>&1 &
 # edta_pid=$!
