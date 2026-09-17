@@ -19,7 +19,7 @@ module load app/miniconda/mamba
 conda activate ragtag
 
 #resource parameters
-THREADS=36
+THREADS=26
 
 #directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
