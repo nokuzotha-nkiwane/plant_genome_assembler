@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -l select=1:ncpus=36:mem=40GB
+#PBS -l select=1:ncpus=23:mem=40GB
 #PBS -q bix
 #PBS -l walltime=8:00:00
 #PBS -N SAMPLE_CLI_STEP_PBS
@@ -24,17 +24,17 @@ conda activate helper-tools
 
 # directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
-REF_DIR="${TOMATO_PATH}/data/reference_data"
-REF_GENOME="${REF_DIR}/SL5.0.unplaced_removed.fasta.gz"
 READS="${WORKDIR}/raw_reads/D260405-SAMPLE_CLI_HiFi.fastq.gz"
 FILTERED_READS="${WORKDIR}/raw_reads/dSAMPLE_CLI_filtered.fastq.gz"
 ALL_RESULTS_DIR="${WORKDIR}/results"
-PBMM2_SCAFFOLD_DIR="__RESULTS_DIR__"
+READ_SCAFFOLD_ALN_DIR="__RESULTS_DIR__"
 RAGTAG_OUTPUT_DIR="${ALL_RESULTS_DIR}/07.1.agp_correct/ragtag_output"
-WHOLE_BAM="${PBMM2_SCAFFOLD_DIR}/dSAMPLE_CLI_whole.bam"
+INPUT_FASTA="${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta"
+WHOLE_BAM="${READ_SCAFFOLD_ALN_DIR}/dSAMPLE_CLI_whole.bam"
 
 #chromosomes to be corrected
 CORRECTION_CHROMOSOMES=()
+MIN_MAPQ=30
 
 #filter reads if needed
 if [[ -s "${FILTERED_READS}" ]]; then
@@ -48,19 +48,26 @@ else
 fi
 
 #align reads to the whole scaffolded assembly once
-conda deactivate
-conda activate pbmm2
+# #use pbmm2
+# conda deactivate
+# conda activate pbmm2
+# pbmm2 align --sort -J "${THREADS}" --bam-index BAI "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta" "${FILTERED_READS}" "${WHOLE_BAM}"
 
-pbmm2 align --sort -J "${THREADS}" --bam-index BAI "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta" "${FILTERED_READS}" "${WHOLE_BAM}"
+#use minimap2
+minimap2 -ax map-hifi -t "${THREADS}" --secondary=no -N 1 -p 0.8 --eqx "${INPUT_FASTA}" "${FILTERED_READS}" | \
+    samtools view -b -q "${MIN_MAPQ}" -F 2308 -@ "${THREADS}" - | \
+    samtools sort -@ "${THREADS}" -o "${WHOLE_BAM}" -
 
-#deactivate pbmm2 conda environment
-conda deactivate
-conda activate helper-tools
+samtools index "${WHOLE_BAM}"
+
+# #deactivate pbmm2 conda environment
+# conda deactivate
+# conda activate helper-tools
 
 #function to extract regions matching to chromosomes of interest
 extract_region(){
     local CHRSM="$1"
-    local OUTPUT_DIR="${PBMM2_SCAFFOLD_DIR}/chromosome_${CHRSM}"
+    local OUTPUT_DIR="${READ_SCAFFOLD_ALN_DIR}/chromosome_${CHRSM}"
     local OUTPUT_BAM="${OUTPUT_DIR}/dSAMPLE_CLI_chromosome_${CHRSM}.bam"
     local OUTPUT_FASTA="${OUTPUT_DIR}/dSAMPLE_CLI_chromosome_${CHRSM}.fasta"
 
@@ -71,7 +78,7 @@ extract_region(){
     samtools index "${OUTPUT_BAM}"
 
     #extract fasta sequence
-    samtools faidx "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta" "${CHRSM}_RagTag" > "${OUTPUT_FASTA}"
+    samtools faidx "${INPUT_FASTA}" "${CHRSM}_RagTag" > "${OUTPUT_FASTA}"
 }
 
 
