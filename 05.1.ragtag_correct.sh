@@ -1,12 +1,12 @@
-#!/bin/bash
-#PBS -l select=1:ncpus=23:mem=40GB
+#PBS -l ncpus=36
+#PBS -l mem=80GB
 #PBS -q bix
-#PBS -l walltime=36:00:00
-#PBS -N SAMPLE_CLI_STEP_PBS
+#PBS -l walltime=8:00:00
 #PBS -o OUTPUT_FILE_PBS
 #PBS -e ERROR_FILE_PBS
 #PBS -m be
 #PBS -M PBS_EMAIL
+
 
 #kill execution at first error
 set -euxo pipefail 
