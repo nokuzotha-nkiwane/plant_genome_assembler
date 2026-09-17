@@ -1,5 +1,5 @@
-#PBS -l ncpus=30
-#PBS -l mem=60GB
+#PBS -l ncpus=26
+#PBS -l mem=40GB
 #PBS -q bix
 #PBS -l walltime=8:00:00
 #PBS -o OUTPUT_FILE_PBS
@@ -19,7 +19,7 @@ module load app/miniconda/mamba
 conda activate ragtag
 
 #resource parameters
-THREADS=30
+THREADS=26
 
 #directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
