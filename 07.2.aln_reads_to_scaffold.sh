@@ -15,7 +15,7 @@ set -euxo pipefail
 source ~/.pbsrc
 
 #resource allocation
-THREADS=36
+THREADS=23
 
 
 #load modules
