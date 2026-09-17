@@ -1,5 +1,5 @@
-#PBS -l ncpus=36
-#PBS -l mem=80GB
+#PBS -l ncpus=26
+#PBS -l mem=40GB
 #PBS -q bix
 #PBS -l walltime=8:00:00
 #PBS -o OUTPUT_FILE_PBS
@@ -16,10 +16,10 @@ source ~/.pbsrc
 
 #load modules
 module load app/miniconda/mamba
-conda activate helper-tools
+conda activate ragtag
 
 #resource parameters
-THREADS=23
+THREADS=36
 
 #directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
@@ -51,9 +51,9 @@ trap 'rm -rf "${TEMP_DIR}"' EXIT
 #     "${RAW_READS_GZ}" | gzip > "${FILTERED_READS}" || { echo "Filtlong failed for ${RAW_READS_GZ}"; exit 1; }
 # fi
 
-#deactivate conda env
-conda deactivate
-conda activate ragtag
+# #deactivate conda env
+# conda deactivate
+# conda activate ragtag
 
 #copy fastas file to temporary directory
 cp "${P_CONTIGS_IN}" \
