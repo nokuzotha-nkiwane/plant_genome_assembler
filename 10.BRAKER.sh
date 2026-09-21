@@ -47,4 +47,6 @@ snakemake \
     --singularity-prefix "${OUTPUT_DIR}/.singularity_cache" \
     --singularity-args "-B ${TOMATO_PATH}" \
     --latency-wait 120 \
-    --restart-times 2
+    --restart-times 2 \
+    --printshellcmds \
+    2>&1 | tee -a "${OUTPUT_DIR}/snakemake_run.log"
