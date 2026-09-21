@@ -21,6 +21,7 @@ conda activate my_python
 # cd ~/my_environments
 source /new-home/25086138/my_environments/snakemake_env/bin/activate
 module load app/apptainer/1.2.5
+export _JAVA_OPTIONS="-Xmx8g"
 
 #resource parameters
 THREADS=64
