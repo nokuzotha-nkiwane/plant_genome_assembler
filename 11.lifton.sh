@@ -2,7 +2,7 @@
 #PBS -l ncpus=24
 #PBS -l mem=60GB
 #PBS -q bix
-#PBS -l walltime=12:00:00
+#PBS -l walltime=96:00:00
 #PBS -N SAMPLE_CLI_STEP_PBS
 #PBS -o OUTPUT_FILE_PBS
 #PBS -e ERROR_FILE_PBS
@@ -16,8 +16,9 @@ set -uxo pipefail
 source ~/.pbsrc
 
 #load modules
+#need to use a python version later than the 3.6 found on the hpc
 module load app/miniconda/mamba
-conda activate helper-tools
+conda activate my_python
 
 #resource parameters
 THREADS=23
@@ -26,8 +27,21 @@ THREADS=23
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 ALL_RESULTS_DIR="${WORKDIR}/results"
 REF_DIR="${TOMATO_PATH}/data/reference_data"
-REF_GENOME_1="${REF_DIR}/SL5.0.fasta.gz"
+REF_GENOME="${REF_DIR}/SL5.0.fasta.gz"
+REF_GFF3="${REF_DIR}/SL5.0.gff3"
+SCAFFOLD_FASTA="${ALL_RESULTS_DIR}/07.1.agp_correct/ragtag_output/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta"
+OUTPUT_DIR="__RESULTS_DIR__"
 
-#make temp directory for fastas so the original ones are accessible to other scripts
+
+#get basename for output file
+BASENAME=$(basename "${SCAFFOLD_FASTA}" .fasta)
 
 #run command
+lifton -o "${BASENAME}.lifton.gff3" -mm2_options "-ax asm5 --end-bonus 5 --eqx -N 50 -p 0.5" \
+    -cds \
+    -t "${THREADS}" \
+    --validate-output \
+    -g "${REF_GFF3}" \
+    --verbose \
+    "${SCAFFOLD_FASTA}" "${REF_GENOME}" 2>&1 | \
+    tee -a "${OUTPUT_DIR}/dSAMPLE_CLI_lifton.log"
