@@ -1,6 +1,6 @@
 #!/bin/bash
-#PBS -l ncpus=24
-#PBS -l mem=60GB
+#PBS -l ncpus=64
+#PBS -l mem=80GB
 #PBS -q bix
 #PBS -l walltime=12:00:00
 #PBS -N SAMPLE_CLI_STEP_PBS
@@ -9,25 +9,41 @@
 #PBS -m be
 #PBS -M PBS_EMAIL
 
-#allow sweep to continue past individual failures (no -e); trace + unset-var protection retained
-set -uxo pipefail
+#exit at errors
+set -euxo pipefail
 
 #for evaluating variables in ~/.pbsrc
 source ~/.pbsrc
 
 #load modules
 module load app/miniconda/mamba
-conda activate helper-tools
+conda activate my_python
+# cd ~/my_environments
+source /new-home/25086138/my_environments/snakemake_env/bin/activate
 
 #resource parameters
-THREADS=23
+THREADS=64
 
 #directories and files
-WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
-ALL_RESULTS_DIR="${WORKDIR}/results"
-REF_DIR="${TOMATO_PATH}/data/reference_data"
-REF_GENOME_1="${REF_DIR}/SL5.0.fasta.gz"
+OUTPUT_DIR="__RESULTS_DIR__"
+SAMPLESHEET="${TOMATO_PATH}/SAMPLE_CLI/results/10a.braker_prep/dSAMPLE_CLI_samplesheet.csv"
+CONFIG_INI="${TOMATO_PATH}/SAMPLE_CLI/results/10a.braker_prep/config.ini.dSAMPLE_CLI"
 
-#make temp directory for fastas so the original ones are accessible to other scripts
+#move to output directory
+cd "${OUTPUT_DIR}"
+cp "${SAMPLESHEET}" "${OUTPUT_DIR}/"
+cp "${CONFIG_INI}" "${OUTPUT_DIR}/config.ini"
 
-#run command
+#run command 
+#sge_logs should be in OUTPUT_DIR
+mkdir -p "${OUTPUT_DIR}/sge_logs"
+
+snakemake \
+    --default-resources \
+    --cores "${THREADS}" \
+    --snakefile /new-home/25086138/my_environments/BRAKER4/Snakefile \
+    --use-singularity \
+    --singularity-prefix "${OUTPUT_DIR}/.singularity_cache" \
+    --singularity-args "-B ${TOMATO_PATH}" \
+    --latency-wait 120 \
+    --restart-times 2
