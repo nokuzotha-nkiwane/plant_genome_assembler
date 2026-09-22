@@ -1,16 +1,16 @@
 #!/bin/bash
-#PBS -l ncpus=24
-#PBS -l mem=60GB
+#PBS -l ncpus=8
+#PBS -l mem=16GB
 #PBS -q bix
-#PBS -l walltime=96:00:00
+#PBS -l walltime=4:00:00
 #PBS -N SAMPLE_CLI_STEP_PBS
 #PBS -o OUTPUT_FILE_PBS
 #PBS -e ERROR_FILE_PBS
 #PBS -m be
 #PBS -M PBS_EMAIL
 
-#allow sweep to continue past individual failures (no -e); trace + unset-var protection retained
-set -uxo pipefail
+#exit at errors
+set -euxo pipefail
 
 #for evaluating variables in ~/.pbsrc
 source ~/.pbsrc
@@ -21,7 +21,7 @@ module load app/miniconda/mamba
 conda activate lifton
 
 #resource parameters
-THREADS=23
+THREADS=8
 
 #directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
