@@ -19,6 +19,7 @@ source ~/.pbsrc
 #need to use a python version later than the 3.6 found on the hpc
 module load app/miniconda/mamba
 conda activate my_python
+conda activate lifton
 
 #resource parameters
 THREADS=23
