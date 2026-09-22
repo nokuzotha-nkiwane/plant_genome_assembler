@@ -37,11 +37,10 @@ OUTPUT_DIR="__RESULTS_DIR__"
 BASENAME=$(basename "${SCAFFOLD_FASTA}" .fasta)
 
 #run command
-lifton -o "${BASENAME}.lifton.gff3" -mm2_options "-ax asm5 --end-bonus 5 --eqx -N 50 -p 0.5" \
+lifton -o "${BASENAME}.lifton.gff3" -mm2_options "-x asm5" \
     -cds \
     -t "${THREADS}" \
     --validate-output \
     -g "${REF_GFF3}" \
     --verbose \
-    "${SCAFFOLD_FASTA}" "${REF_GENOME}" 2>&1 | \
-    tee -a "${OUTPUT_DIR}/dSAMPLE_CLI_lifton.log"
+    "${SCAFFOLD_FASTA}" "${REF_GENOME}" 2>&1 | tee -a "${OUTPUT_DIR}/dSAMPLE_CLI_lifton.log"
