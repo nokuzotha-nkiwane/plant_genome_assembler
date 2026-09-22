@@ -31,7 +31,14 @@ REF_GENOME="${REF_DIR}/SL5.0.fasta"
 REF_GFF3="${REF_DIR}/SL5.0.gff3"
 SCAFFOLD_FASTA="${ALL_RESULTS_DIR}/07.1.agp_correct/ragtag_output/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta"
 OUTPUT_DIR="__RESULTS_DIR__"
+TEMP_DIR="${OUTPUT_DIR}/${PBS_JOBID}_temp"
 
+
+#make temp directory to fastas to so the original ones are accessible to other scripts
+mkdir -p "${TEMP_DIR}"
+
+#automatically remove TEMP_DIR whenever the script exits (normal or error)
+trap 'rm -rf "${TEMP_DIR}"' EXIT
 
 #get basename for output file
 BASENAME=$(basename "${SCAFFOLD_FASTA}" .fasta)
@@ -39,6 +46,7 @@ BASENAME=$(basename "${SCAFFOLD_FASTA}" .fasta)
 #run command
 lifton -o "${BASENAME}.lifton.gff3" -mm2_options "-x asm5" \
     -cds \
+    -dir "${TEMP_DIR}" \
     -t "${THREADS}" \
     --validate-output \
     -g "${REF_GFF3}" \
