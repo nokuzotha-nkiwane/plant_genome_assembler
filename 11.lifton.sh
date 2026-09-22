@@ -43,6 +43,9 @@ trap 'rm -rf "${TEMP_DIR}"' EXIT
 #get basename for output file
 BASENAME=$(basename "${SCAFFOLD_FASTA}" .fasta)
 
+#cd into working directory before running (to drop files)
+cd "${OUTPUT_DIR}"
+
 #run command
 lifton -o "${BASENAME}.lifton.gff3" -mm2_options "-x asm5" \
     -cds \
