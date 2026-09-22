@@ -64,7 +64,7 @@ run_quast() {
 }
 
 # run for full output scaffold fasta
-run_quast "${RAGATAG_SCAFFOLD_DIR}/ragtag.scaffold.fasta" "${QUAST_DIR}/full"
+run_quast "${RAGATAG_SCAFFOLD_DIR}/dSAMPLE_CLI.ragtag.scaffold.fasta" "${QUAST_DIR}/full"
 
 # run for chromosomes only scaffold fasta
 run_quast "${RAGATAG_SCAFFOLD_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta" "${QUAST_DIR}/chromosomes"

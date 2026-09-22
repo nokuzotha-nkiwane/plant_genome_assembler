@@ -74,7 +74,7 @@ run_busco() {
 }
 
 # run for full output scaffold fasta
-run_busco "${RAGATAG_SCAFFOLD_DIR}/ragtag.scaffold.fasta"
+run_busco "${RAGATAG_SCAFFOLD_DIR}/dSAMPLE_CLI.ragtag.scaffold.fasta"
 
 # run for chromosomes only scaffold fasta
 run_busco "${RAGATAG_SCAFFOLD_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta"
