@@ -36,6 +36,7 @@ RAGTAG_OUTPUT_DIR="${RAGTAG_SCAFFOLD_DIR}/ragtag_output"
 MINIMAP_PAF="${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI_to_ref_aln5.paf"
 MINIMAP_PAF_2="${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI_w-unplaced_to_ref_aln5.paf"
 DGENIES_INPUT="${RAGTAG_SCAFFOLD_DIR}/dgenies_input"
+UNPLACED_LIST="${AGP2FASTA_DIR}/dSAMPLE_CLI_unplaced_ids.txt"
 
 #make dgenies input directory
 mkdir -p "${DGENIES_INPUT}" "${AGP2FASTA_DIR}"
@@ -50,8 +51,12 @@ ragtag.py agp2fa "${AGP}" "${INPUT_FASTA}" > "${OUTPUT_FASTA}"
 sed 's/_RagTag/_Chromosome/g' "${OUTPUT_FASTA}" > "${OUTPUT_FASTA_RENAMED}"
 rm "${OUTPUT_FASTA}"
 
+#make list of unplaced contigs to not be included scaffold fasta
+awk '$1 !~ /_RagTag$/ {print $1}' "${AGP}" > "${UNPLACED_LIST}"
+
 #run ragtag scaffold for new fasta
 ragtag.py scaffold --remove-small -f 15000 -d 500000 -i 0.5 -a 0.5 -s 0.5 --mm2-params '-x asm5' -t "${THREADS}" \
+    -j "${UNPLACED_LIST}" -C \
     -o "${RAGTAG_OUTPUT_DIR}" "${REF_GENOME}" "${OUTPUT_FASTA_RENAMED}" || { echo "ragtag scaffold failed for sample dSAMPLE_CLI"; exit 1; }
 
 #make a copy of the output fasta and agp to make it easier to differentiate the two samples when used together
