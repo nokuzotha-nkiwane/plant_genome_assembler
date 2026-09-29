@@ -8,6 +8,12 @@
 #PBS -m be
 #PBS -M PBS_EMAIL
 
+#kill execution at first error
+set -uxo pipefail
+
+#for evaluating variables in ~/.pbsrc
+source ~/.pbsrc
+
 #resource allocation
 THREADS=23
 
