@@ -19,7 +19,7 @@ module load app/agat/1.4.1
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 ALL_RESULTS_DIR="${WORKDIR}/results"
 ANNOTATION_DIR="__RESULTS_DIR__"
-INPUT_FASTA="${WORKDIR}/dSAMPLE_CLI.f15000_d500000.ragtag.scaffold.chromosomes.fasta"
+INPUT_FASTA="${ALL_RESULTS_DIR}/07.1.agp_correct/ragtag_output/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta"
 REF_GFF3="${TOMATO_PATH}/data/reference_data/SL5.0.gff3"
 LIFTON_GFF3="${ALL_RESULTS_DIR}/11.lifton/dSAMPLE_CLI.ragtag.scaffold.chromosomes.lifton.gff3"
 BRAKER_GFF3="${ALL_RESULTS_DIR}/10.BRAKER/output/dSAMPLE_CLI/results/braker.gff3"
