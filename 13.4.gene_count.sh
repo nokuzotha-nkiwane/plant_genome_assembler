@@ -20,7 +20,7 @@ JOBS=5
 #directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 ALL_RESULTS_DIR="${WORKDIR}/results"
-ANNOTATION_DIR="RESULTS_DIR"
+DENSITY_DIR="__RESULTS_DIR__"
 INPUT_FASTA="${ALL_RESULTS_DIR}/07.1.agp_correct/ragtag_output/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta"
 REF_FASTA="${TOMATO_PATH}/data/reference_data/SL5.0.fasta"
 REF_GFF3="${TOMATO_PATH}/data/reference_data/SL5.0.gff3"
@@ -29,8 +29,6 @@ BRAKER_GFF3="${ALL_RESULTS_DIR}/10.BRAKER/output/dSAMPLE_CLI/results/braker.gff3
 AEGIS_LIFTON_GFF3="${ALL_RESULTS_DIR}/12.aegis/aegis_merge/liftoff/dSAMPLE_CLI_consolidated_LIFTON_first.gff3"
 AEGIS_BRAKER_GFF3="${ALL_RESULTS_DIR}/12.aegis/aegis_merge/braker/dSAMPLE_CLI_consolidated_BRAKER_first.gff3"
 
-DENSITY_DIR="${ANNOTATION_DIR}/gene_density"
-mkdir -p "${DENSITY_DIR}"
 cd "${DENSITY_DIR}"
 
 # awk: chromosome lengths from a FASTA (name <tab> length)
