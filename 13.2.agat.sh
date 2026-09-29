@@ -29,8 +29,8 @@ INPUT_FASTA="${ALL_RESULTS_DIR}/07.1.agp_correct/ragtag_output/dSAMPLE_CLI.ragta
 REF_GFF3="${TOMATO_PATH}/data/reference_data/SL5.0.gff3"
 LIFTON_GFF3="${ALL_RESULTS_DIR}/11.lifton/dSAMPLE_CLI.ragtag.scaffold.chromosomes.lifton.gff3"
 BRAKER_GFF3="${ALL_RESULTS_DIR}/10.BRAKER/output/dSAMPLE_CLI/results/braker.gff3"
-AEGIS_LIFTON_GFF3="${ALL_RESULTS_DIR}/12.aegis_merge/liftoff/dSAMPLE_CLI_consolidated_LIFTON_first.gff3"
-AEGIS_BRAKER_GFF3="${ALL_RESULTS_DIR}/12.aegis_merge/braker/dSAMPLE_CLI_consolidated_BRAKER_first.gff3"
+AEGIS_LIFTON_GFF3="${ALL_RESULTS_DIR}/12.aegis/aegis_merge/liftoff/dSAMPLE_CLI_consolidated_LIFTON_first.gff3"
+AEGIS_BRAKER_GFF3="${ALL_RESULTS_DIR}/12.aegis/aegis_merge/braker/dSAMPLE_CLI_consolidated_BRAKER_first.gff3"
 
 #make output directory
 mkdir -p "${ANNOTATION_DIR}"
