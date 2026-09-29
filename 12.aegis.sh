@@ -48,7 +48,7 @@ singularity run -B "${TOMATO_PATH}" "${AEGIS_SIF}" aegis overlap "${BRAKER_GFF3}
     --output-dir "${OVERLAP_OUTPUT}"
 
 #merge annotation files
-touch "${OUTPUT_DIR}/aegis_overlap/dir_names_according_to_which_gff3_was_first_in_command.note"
+touch "${OUTPUT_DIR}/aegis_merge/dir_names_according_to_which_gff3_was_first_in_command.note"
 
 #preference given to BRAKER annotation
 singularity run -B "${TOMATO_PATH}" "${AEGIS_SIF}" aegis merge "${BRAKER_GFF3}" "${LIFTON_GFF3}" \
