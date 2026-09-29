@@ -35,6 +35,7 @@ OUTPUT_FASTA_RENAMED="${AGP2FASTA_DIR}/dSAMPLE_CLI.renamed_corrected.fasta"
 RAGTAG_OUTPUT_DIR="${RAGTAG_SCAFFOLD_DIR}/ragtag_output"
 MINIMAP_PAF="${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI_to_ref_aln5.paf"
 MINIMAP_PAF_2="${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI_w-unplaced_to_ref_aln5.paf"
+MINIMAP_PAF_3="${RAGTAG_OUTPUT_DIR}/ref_to_dSAMPLE_CLI_aln5.paf"
 DGENIES_INPUT="${RAGTAG_SCAFFOLD_DIR}/dgenies_input"
 UNPLACED_LIST="${AGP2FASTA_DIR}/dSAMPLE_CLI_unplaced_ids.txt"
 
@@ -81,11 +82,12 @@ conda activate helper-tools
 #run minimap2 alignment
 minimap2 -cx asm5 -t "${THREADS}" --eqx "${REF_GENOME}" "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta" > "${MINIMAP_PAF}"
 minimap2 -cx asm5 -t "${THREADS}" --eqx "${REF_GENOME}" "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.fasta" > "${MINIMAP_PAF_2}"
+minimap2 -cx asm5 -t "${THREADS}" --eqx "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta" "${REF_GENOME}"> "${MINIMAP_PAF_3}"
 
 #gzip the output fasta
 gzip -k "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta"
 gzip -k "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.fasta"
 
 #move outputs to dgenies folder
-mv "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.fasta.gz" "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta.gz" "${MINIMAP_PAF}" "${MINIMAP_PAF_2}" "${DGENIES_INPUT}/"
+mv "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.fasta.gz" "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta.gz" "${MINIMAP_PAF}" "${MINIMAP_PAF_2}" "${MINIMAP_PAF_3}" "${DGENIES_INPUT}/"
 ln -s "${REF_GENOME}" "${DGENIES_INPUT}/"
