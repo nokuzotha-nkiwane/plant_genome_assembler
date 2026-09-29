@@ -1,4 +1,4 @@
-#!/bin/bash
+!/bin/bash
 #PBS -l select=1:ncpus=23:mem=60GB
 #PBS -q bix
 #PBS -l walltime=8:00:00
@@ -37,12 +37,12 @@ D05_CHRSM_SCFLD_GZ="${WORKDIR_05}/results/07.1.agp_correct/dgenies_input/d05.rag
 D05_UNPLACED_SCFLD="${WORKDIR_05}/results/07.1.agp_correct/ragtag_output/d05.ragtag.scaffold.unplaced.fasta"
 
 # array of each samples files
-SAMPLE_03=("${D03_FULL_SCFLD}" "${D03_CHRSM_SCFLD}" "${D03_UNPLACED_SCFLD}")
-SAMPLE_05=("${D05_FULL_SCFLD}" "${D05_CHRSM_SCFLD}" "${D05_UNPLACED_SCFLD}")
+SAMPLE_03=("${D03_CHRSM_SCFLD}" "${D03_UNPLACED_SCFLD}")
+SAMPLE_05=("${D05_CHRSM_SCFLD}" "${D05_UNPLACED_SCFLD}")
 
 # array of gzipped files for full and chromosome scaffold files
-SAMPLE_03_GZ=("${D03_FULL_SCFLD_GZ}" "${D03_CHRSM_SCFLD_GZ}" "")
-SAMPLE_05_GZ=("${D05_FULL_SCFLD_GZ}" "${D05_CHRSM_SCFLD_GZ}" "")
+SAMPLE_03_GZ=("${D03_CHRSM_SCFLD_GZ}" "")
+SAMPLE_05_GZ=("${D05_CHRSM_SCFLD_GZ}" "")
 
 # function to run alignments
 run_alignment(){
