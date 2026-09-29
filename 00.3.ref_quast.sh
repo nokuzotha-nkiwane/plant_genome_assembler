@@ -31,7 +31,7 @@ ALL_RESULTS_DIR="${WORKDIR}/results"
 #run quast on a single contigs fasta, staged to TEMP_DIR first
 #check quality of the ragtag assembly
 quast.py "${REF_GENOME}" \
-    -o "${RUN_OUT_DIR}" \
+    -o "${QUAST_DIR}" \
     --plots-format pdf \
     -t "${THREADS}" \
     || { echo "QUAST failed for ${REF_GENOME}"; exit 1; }
