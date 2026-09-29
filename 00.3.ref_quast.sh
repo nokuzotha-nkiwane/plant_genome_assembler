@@ -32,8 +32,6 @@ ALL_RESULTS_DIR="${WORKDIR}/results"
 #check quality of the ragtag assembly
 quast.py "${REF_GENOME}" \
     -o "${RUN_OUT_DIR}" \
-    --large \
-    -b \
     --plots-format pdf \
     -t "${THREADS}" \
     || { echo "QUAST failed for ${REF_GENOME}"; exit 1; }
