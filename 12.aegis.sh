@@ -43,7 +43,7 @@ else
 fi
 
 #check level of overlap first
-singularity run "${AEGIS_SIF}" aegis overlap "${BRAKER_GFF3}" "${LIFTON_GFF3}" \
+singularity run -B "${TOMATO_PATH}" "${AEGIS_SIF}" aegis overlap "${BRAKER_GFF3}" "${LIFTON_GFF3}" \
     --original-annotation-files NA,"${REF_GFF3}" \
     --output-dir "${OVERLAP_OUTPUT}"
 
@@ -51,9 +51,11 @@ singularity run "${AEGIS_SIF}" aegis overlap "${BRAKER_GFF3}" "${LIFTON_GFF3}" \
 touch "${OUTPUT_DIR}/aegis_overlap/dir_names_according_to_which_gff3_was_first_in_command.note"
 
 #preference given to BRAKER annotation
-singularity run "${AEGIS_SIF}" aegis merge "${BRAKER_GFF3}" "${LIFTON_GFF3}" --output-dir "${MERGE_BRAKER_OUTPUT}" --output-file dSAMPLE_CLI_consolidated_BRAKER_first 2>&1 | \
+singularity run -B "${TOMATO_PATH}" "${AEGIS_SIF}" aegis merge "${BRAKER_GFF3}" "${LIFTON_GFF3}" \
+    --output-dir "${MERGE_BRAKER_OUTPUT}" --output-file dSAMPLE_CLI_consolidated_BRAKER_first 2>&1 | \
     tee -a "${MERGE_BRAKER_OUTPUT}/dSAMPLE_CLI_aegis_BRAKER_first.log"
 
 #preference given to Lifton annotation
-singularity run "${AEGIS_SIF}" aegis merge "${LIFTON_GFF3}" "${BRAKER_GFF3}" --output-dir "${MERGE_LIFTON_OUTPUT}" --output-file dSAMPLE_CLI_consolidated_LIFTON_first 2>&1 | \
+singularity run -B "${TOMATO_PATH}" "${AEGIS_SIF}" aegis merge "${LIFTON_GFF3}" "${BRAKER_GFF3}" \
+    --output-dir "${MERGE_LIFTON_OUTPUT}" --output-file dSAMPLE_CLI_consolidated_LIFTON_first 2>&1 | \
     tee -a "${MERGE_LIFTON_OUTPUT}/dSAMPLE_CLI_aegis_LIFTON_first.log"
