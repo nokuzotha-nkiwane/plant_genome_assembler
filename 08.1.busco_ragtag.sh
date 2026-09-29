@@ -80,7 +80,7 @@ run_busco "${RAGATAG_SCAFFOLD_DIR}/dSAMPLE_CLI.ragtag.scaffold.fasta"
 run_busco "${RAGATAG_SCAFFOLD_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta"
 
 # run for unplaced chromosomes only scaffold fasta
-run_busco "${RAGATAG_SCAFFOLD_DIR}/dSAMPLE_CLI.ragtag.scaffold.unplaced.fasta"
+# run_busco "${RAGATAG_SCAFFOLD_DIR}/dSAMPLE_CLI.ragtag.scaffold.unplaced.fasta"
 
 ### why is it in braces?
 # without braces the actual outputs go to stout because that is the default stream
