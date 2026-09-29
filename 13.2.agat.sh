@@ -9,19 +9,20 @@
 #PBS -M PBS_EMAIL
 
 #kill execution at first error
-set -uxo pipefail
+set -euxo pipefail
 
 #for evaluating variables in ~/.pbsrc
 source ~/.pbsrc
 
-#resource allocation
-THREADS=23
+#resource allocation: AGAT jobs are single-threaded, so this is the number of
+#concurrent jobs. Keep modest because AGAT loads whole GFFs into RAM.
+JOBS=8
 
 #load modules
 module load app/agat/1.4.1
+module load app/parallel/parallel
 
 # directories and files
-
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 ALL_RESULTS_DIR="${WORKDIR}/results"
 ANNOTATION_DIR="__RESULTS_DIR__"
@@ -36,42 +37,34 @@ AEGIS_BRAKER_GFF3="${ALL_RESULTS_DIR}/12.aegis/aegis_merge/braker/dSAMPLE_CLI_co
 mkdir -p "${ANNOTATION_DIR}"
 cd "${ANNOTATION_DIR}"
 
-#get basenames of each
-LIFTON_BASENAME="dSAMPLE_CLI.lifton"
-BRAKER_BASENAME="dSAMPLE_CLI.braker"
-REF_BASENAME="SL5.0"
-AEGIS_LIFTON_BASENAME="dSAMPLE_CLI.aegis_lifton"
-AEGIS_BRAKER_BASENAME="dSAMPLE_CLI.aegis_braker"
+# manifest: basename <tab> gff3 path
+MANIFEST="${ANNOTATION_DIR}/manifest.tsv"
+printf '%s\t%s\n' \
+  "SL5.0"                    "${REF_GFF3}" \
+  "dSAMPLE_CLI.lifton"       "${LIFTON_GFF3}" \
+  "dSAMPLE_CLI.braker"       "${BRAKER_GFF3}" \
+  "dSAMPLE_CLI.aegis_lifton" "${AEGIS_LIFTON_GFF3}" \
+  "dSAMPLE_CLI.aegis_braker" "${AEGIS_BRAKER_GFF3}" > "${MANIFEST}"
 
-#check syntax, duplicate IDs
-# agat_convert_sp_gxf2gxf.pl --gff "${REF_GFF3}" --cpu "${THREADS}" -o "${ANNOTATION_DIR}/${REF_BASENAME}.agat.gff3"
-# agat_convert_sp_gxf2gxf.pl --gff "${LIFTON_GFF3}" --cpu "${THREADS}" -o "${ANNOTATION_DIR}/${LIFTON_BASENAME}.agat.gff3"
-# agat_convert_sp_gxf2gxf.pl --gff "${BRAKER_GFF3}" --cpu "${THREADS}" -o "${ANNOTATION_DIR}/${BRAKER_BASENAME}.agat.gff3"
-# agat_convert_sp_gxf2gxf.pl --gff "${AEGIS_LIFTON_GFF3}" --cpu "${THREADS}" -o "${ANNOTATION_DIR}/${AEGIS_LIFTON_BASENAME}.agat.gff3"
-# agat_convert_sp_gxf2gxf.pl --gff "${AEGIS_BRAKER_GFF3}" --cpu "${THREADS}" -o "${ANNOTATION_DIR}/${AEGIS_BRAKER_BASENAME}.agat.gff3"
+# build the list of independent commands (one per line)
+CMDS="${ANNOTATION_DIR}/stage1.cmds"
+: > "${CMDS}"
+while IFS=$'\t' read -r name gff; do
+  # syntax check / duplicate ID fix
+  echo "agat_convert_sp_gxf2gxf.pl --gff ${gff} -o ${ANNOTATION_DIR}/${name}.agat.gff3" >> "${CMDS}"
+  # genic content statistics
+  echo "agat_sp_statistics.pl --gff ${gff} -o ${ANNOTATION_DIR}/${name}.gene_stats.txt" >> "${CMDS}"
+  # sequences are extracted for the annotations only, not the reference
+  if [[ "${name}" != "SL5.0" ]]; then
+    echo "agat_sp_extract_sequences.pl --gff ${gff} -f ${INPUT_FASTA} -t cds -o ${ANNOTATION_DIR}/${name}.cds.fasta" >> "${CMDS}"
+    echo "agat_sp_extract_sequences.pl --gff ${gff} -f ${INPUT_FASTA} -t cds -p -o ${ANNOTATION_DIR}/${name}.proteins.fasta" >> "${CMDS}"
+  fi
+done < "${MANIFEST}"
 
-#get genic content statistics (for comparing gene count, mean gene, CDS, exon and intron lengths among other spicy things)
-agat_sp_statistics.pl --gff "${REF_GFF3}" -o "${ANNOTATION_DIR}/${REF_BASENAME}.gene_stats.txt"
-agat_sp_statistics.pl --gff "${LIFTON_GFF3}" -o "${ANNOTATION_DIR}/${LIFTON_BASENAME}.gene_stats.txt"
-agat_sp_statistics.pl --gff "${BRAKER_GFF3}" -o "${ANNOTATION_DIR}/${BRAKER_BASENAME}.gene_stats.txt"
-agat_sp_statistics.pl --gff "${AEGIS_LIFTON_GFF3}" -o "${ANNOTATION_DIR}/${AEGIS_LIFTON_BASENAME}.gene_stats.txt"
-agat_sp_statistics.pl --gff "${AEGIS_BRAKER_GFF3}" -o "${ANNOTATION_DIR}/${AEGIS_BRAKER_BASENAME}.gene_stats.txt"
+# Stage 1: 14 independent jobs (5 convert + 5 stats + 4 cds + 4 protein = 18)
+parallel -j "${JOBS}" --joblog "${ANNOTATION_DIR}/stage1.joblog" --halt soon,fail=1 < "${CMDS}"
 
-#get genic content statistics for agat gff3 (for comparing gene count, mean gene, CDS, exon and intron lengths among other spicy things)
-agat_sp_statistics.pl --gff "${REF_GFF3}" -o "${ANNOTATION_DIR}/${REF_BASENAME}.agat.gene_stats.txt"
-agat_sp_statistics.pl --gff "${LIFTON_GFF3}" -o "${ANNOTATION_DIR}/${LIFTON_BASENAME}.agat.gene_stats.txt"
-agat_sp_statistics.pl --gff "${BRAKER_GFF3}" -o "${ANNOTATION_DIR}/${BRAKER_BASENAME}.agat.gene_stats.txt"
-agat_sp_statistics.pl --gff "${AEGIS_LIFTON_GFF3}" -o "${ANNOTATION_DIR}/${AEGIS_LIFTON_BASENAME}.agat.gene_stats.txt"
-agat_sp_statistics.pl --gff "${AEGIS_BRAKER_GFF3}" -o "${ANNOTATION_DIR}/${AEGIS_BRAKER_BASENAME}.agat.gene_stats.txt"
-
-#extract cds
-agat_sp_extract_sequences.pl --gff "${LIFTON_GFF3}" -f "${INPUT_FASTA}" -t cds -o "${ANNOTATION_DIR}/${LIFTON_BASENAME}.cds.fasta"
-agat_sp_extract_sequences.pl --gff "${BRAKER_GFF3}" -f "${INPUT_FASTA}" -t cds -o "${ANNOTATION_DIR}/${BRAKER_BASENAME}.cds.fasta"
-agat_sp_extract_sequences.pl --gff "${AEGIS_LIFTON_GFF3}" -f "${INPUT_FASTA}" -t cds -o "${ANNOTATION_DIR}/${AEGIS_LIFTON_BASENAME}.cds.fasta"
-agat_sp_extract_sequences.pl --gff "${AEGIS_BRAKER_GFF3}" -f "${INPUT_FASTA}" -t cds -o "${ANNOTATION_DIR}/${AEGIS_BRAKER_BASENAME}.cds.fasta"
-
-#extract protein sequences
-agat_sp_extract_sequences.pl --gff "${LIFTON_GFF3}" -f "${INPUT_FASTA}" -t cds -p -o "${ANNOTATION_DIR}/${LIFTON_BASENAME}.proteins.fasta"
-agat_sp_extract_sequences.pl --gff "${BRAKER_GFF3}" -f "${INPUT_FASTA}" -t cds -p -o "${ANNOTATION_DIR}/${BRAKER_BASENAME}.proteins.fasta"
-agat_sp_extract_sequences.pl --gff "${AEGIS_LIFTON_GFF3}" -f "${INPUT_FASTA}" -t cds -p -o "${ANNOTATION_DIR}/${AEGIS_LIFTON_BASENAME}.proteins.fasta"
-agat_sp_extract_sequences.pl --gff "${AEGIS_BRAKER_GFF3}" -f "${INPUT_FASTA}" -t cds -p -o "${ANNOTATION_DIR}/${AEGIS_BRAKER_BASENAME}.proteins.fasta"
+# Stage 2: stats on the AGAT-cleaned GFFs (needs the stage 1 conversions)
+cut -f1 "${MANIFEST}" | parallel -j "${JOBS}" \
+  --joblog "${ANNOTATION_DIR}/stage2.joblog" --halt soon,fail=1 \
+  "agat_sp_statistics.pl --gff ${ANNOTATION_DIR}/{}.agat.gff3 -o ${ANNOTATION_DIR}/{}.agat.gene_stats.txt"
