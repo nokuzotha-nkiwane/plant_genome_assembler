@@ -20,6 +20,7 @@ module load app/miniconda/mamba
 conda activate busco_6.1.0
 export _JAVA_OPTIONS="-Xmx8g"
 
+
 #resource parameters
 THREADS=23
 
@@ -28,5 +29,32 @@ WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 ALL_RESULTS_DIR="${WORKDIR}/results"
 BUSCO_DIR="__RESULTS_DIR__"
 BUSCO_DB_DIR="${TOMATO_PATH}/data"
-REF_GENOME="${ALL_RESULTS_DIR}/07.1.agp_correct/ragtag_output"
-TEMP_DIR="${BUSCO_DIR}/${PBS_JOBID}_temp"
+REF_DIR="${BUSCO_DB_DIR}/reference_data"
+REF_GENOME="${REF_DIR}/SL5.0.fasta"
+REF_PEPTIDE="${REF_DIR}/SL5.pep.fa"
+
+#get basenmae of fasta
+BASE_NAME="SL5.0"
+cd "${BUSCO_DIR}"
+
+# check quality of assembled contigs for each haplotype
+busco --in "${REF_GENOME}" \
+    -m genome \
+    --offline \
+    -l solanales_odb10 \
+    --download_path "${BUSCO_DB_DIR}" \
+    -c "${THREADS}" \
+    -f \
+    -o "${BASE_NAME}_nucleotide_busco" \
+    --out_path "${BUSCO_DIR}"
+
+# check quality of assembled contigs for each haplotype
+busco --in "${REF_PEPTIDE}" \
+    -m protein \
+    --offline \
+    -l solanales_odb10 \
+    --download_path "${BUSCO_DB_DIR}" \
+    -c "${THREADS}" \
+    -f \
+    -o "${BASE_NAME}_protein_busco" \
+    --out_path "${BUSCO_DIR}"
