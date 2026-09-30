@@ -23,7 +23,7 @@ THREADS=23
 #directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 REF_DIR="${TOMATO_PATH}/data/reference_data"
-REF_GENOME="${REF_DIR}/SL5.0.fasta.gz"
+REF_GENOME="${REF_DIR}/SL5.0.unplaced_removed.fasta"
 REF_GFF3="${REF_DIR}/SL5.0.gff3.gz"
 QUAST_DIR="__RESULTS_DIR__"
 ALL_RESULTS_DIR="${WORKDIR}/results"

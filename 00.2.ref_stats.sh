@@ -30,7 +30,7 @@ ALL_RESULTS_DIR="${WORKDIR}/results"
 BUSCO_DIR="__RESULTS_DIR__"
 BUSCO_DB_DIR="${TOMATO_PATH}/data"
 REF_DIR="${BUSCO_DB_DIR}/reference_data"
-REF_GENOME="${REF_DIR}/SL5.0.fasta"
+REF_GENOME="${REF_DIR}/SL5.0.unplaced_removed.fasta"
 REF_PEPTIDE="${REF_DIR}/SL5.pep.fa"
 
 #get basenmae of fasta
