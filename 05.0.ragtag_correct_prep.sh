@@ -20,6 +20,7 @@ module load app/parallel/parallel
 
 #resource parameters
 THREADS=26
+JOBS=4
 
 #directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
