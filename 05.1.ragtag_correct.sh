@@ -1,15 +1,14 @@
 #PBS -l ncpus=26
-#PBS -l mem=40GB
+#PBS -l mem=80GB
 #PBS -q bix
-#PBS -l walltime=8:00:00
+#PBS -l walltime=144:00:00
 #PBS -o OUTPUT_FILE_PBS
 #PBS -e ERROR_FILE_PBS
 #PBS -m be
 #PBS -M PBS_EMAIL
 
-
 #kill execution at first error
-set -euxo pipefail 
+set -euxo pipefail
 
 #for evaluating variables in ~/.pbsrc
 source ~/.pbsrc
@@ -21,52 +20,66 @@ conda activate ragtag
 #resource parameters
 THREADS=26
 
+#read length thresholds: 1000 to 8000 in steps of 1000
+MIN_LENGTHS=(1000 2000 3000 4000 5000 6000 7000 8000)
+
 #directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 REF_DIR="${TOMATO_PATH}/data/reference_data"
 REF_GENOME="${REF_DIR}/SL5.0.fasta.gz"
-RAW_READS_GZ="${WORKDIR}/raw_reads/D260405-SAMPLE_CLI_HiFi.fastq.gz"
-FILTERED_READS="${WORKDIR}/raw_reads/dSAMPLE_CLI_filtered.fastq.gz"
+RAW_READS_DIR="${WORKDIR}/raw_reads"
+FILTERED_READS_DIR="${RAW_READS_DIR}/filtered_reads"
 ALL_RESULTS_DIR="${WORKDIR}/results"
 RAGTAG_CORRECT_DIR="__RESULTS_DIR__"
 HIFIASM_DIR="${ALL_RESULTS_DIR}/03.hifiasm"
 P_CONTIGS_IN="${HIFIASM_DIR}/dSAMPLE_CLI_primary_renamed.fa"
 TEMP_DIR="${RAGTAG_CORRECT_DIR}/${PBS_JOBID}_temp"
 
-#make temp directory to fastas to so the original ones are accessible to other scripts
+#filtered read path for a given threshold
+filtered_path() {
+    echo "${FILTERED_READS_DIR}/dSAMPLE_CLI_filtered_minlen${1}.fastq.gz"
+}
+
+#pre-flight: all filtered reads must exist before any 16 h run starts
+for MIN_LEN in "${MIN_LENGTHS[@]}"; do
+    [[ -s "$(filtered_path "${MIN_LEN}")" ]] \
+        || { echo "Missing $(filtered_path "${MIN_LEN}"); run the filtration job first"; exit 1; }
+done
+
+#make temp directory so the original files stay accessible to other scripts
 mkdir -p "${TEMP_DIR}"
 
 #automatically remove TEMP_DIR whenever the script exits (normal or error)
 trap 'rm -rf "${TEMP_DIR}"' EXIT
 
-# #filter raw reads
-# if [[ -s "${FILTERED_READS}" ]]; then
-#     echo "Found filtered reads; proceeding to minimap2"
-# else
-#     echo "Filtering raw reads"
-#     #Filter on Q20 quality and minimum read length of 1000
-#     filtlong \
-#     --min_mean_q 20 \
-#     --min_length 1000 \
-#     "${RAW_READS_GZ}" | gzip > "${FILTERED_READS}" || { echo "Filtlong failed for ${RAW_READS_GZ}"; exit 1; }
-# fi
-
-# #deactivate conda env
-# conda deactivate
-# conda activate ragtag
-
-#copy fastas file to temporary directory
-cp "${P_CONTIGS_IN}" \
-    "${REF_GENOME}" \
-    "${RAW_READS_GZ}" "${TEMP_DIR}/"
-
-#unzip reference fasta
+# copy the shared inputs to TEMP_DIR once
+cp "${P_CONTIGS_IN}" "${REF_GENOME}" "${TEMP_DIR}/"
 gzip -d "${TEMP_DIR}/$(basename "${REF_GENOME}")"
 
-#reassign variables to the temp directory versions
 P_CONTIGS_IN="${TEMP_DIR}/$(basename "${P_CONTIGS_IN}")"
 REF_GENOME="${TEMP_DIR}/$(basename "${REF_GENOME}" .gz)"
-RAW_READS_GZ="${TEMP_DIR}/$(basename "${RAW_READS_GZ}")"
 
-#correct assemblies assemblies
-ragtag.py correct -R "${RAW_READS_GZ}" -T corr -t "${THREADS}" -o "${RAGTAG_CORRECT_DIR}" "${REF_GENOME}" "${P_CONTIGS_IN}"
+# RagTag correct for each threshold, each in its own output directory
+for MIN_LEN in "${MIN_LENGTHS[@]}"; do
+    THRESH_OUT="${RAGTAG_CORRECT_DIR}/minlen_${MIN_LEN}"
+
+    #skip thresholds that already finished
+    if [[ -s "${THRESH_OUT}/ragtag.correct.fasta" ]]; then
+        echo "RagTag output already present for min length ${MIN_LEN}; skipping"
+        continue
+    fi
+
+    echo "RagTag correct with reads filtered at min length ${MIN_LEN}"
+    READS_TMP="${TEMP_DIR}/$(basename "$(filtered_path "${MIN_LEN}")")"
+    cp "$(filtered_path "${MIN_LEN}")" "${READS_TMP}"
+
+    ragtag.py correct \
+        -R "${READS_TMP}" \
+        -T corr \
+        -t "${THREADS}" \
+        -o "${THRESH_OUT}" \
+        "${REF_GENOME}" "${P_CONTIGS_IN}"
+
+    #free temp space before the next threshold
+    rm -f "${READS_TMP}"
+done
