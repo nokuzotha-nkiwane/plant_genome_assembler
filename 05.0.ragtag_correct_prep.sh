@@ -29,6 +29,7 @@ RAW_READS_DIR="${WORKDIR}/raw_reads"
 FILTERED_READS_DIR="${RAW_READS_DIR}/filtered_reads"
 RAW_READS_GZ="${RAW_READS_DIR}/D260405-SAMPLE_CLI_HiFi.fastq.gz"
 ALL_RESULTS_DIR="${WORKDIR}/results"
+RAGTAG_CORRECT_DIR="__RESULTS_DIR__"
 TEMP_DIR="${RAGTAG_CORRECT_DIR}/${PBS_JOBID}_temp"
 
 #read length thresholds: 1000 to 8000 in steps of 1000
