@@ -70,16 +70,11 @@ for MIN_LEN in "${MIN_LENGTHS[@]}"; do
     fi
 
     echo "RagTag correct with reads filtered at min length ${MIN_LEN}"
-    READS_TMP="${TEMP_DIR}/$(basename "$(filtered_path "${MIN_LEN}")")"
-    cp "$(filtered_path "${MIN_LEN}")" "${READS_TMP}"
 
     ragtag.py correct \
-        -R "${READS_TMP}" \
+        -R "$(filtered_path "${MIN_LEN}")" \
         -T corr \
         -t "${THREADS}" \
         -o "${THRESH_OUT}" \
-        "${REF_GENOME}" "${P_CONTIGS_IN}"
-
-    #free temp space before the next threshold
-    rm -f "${READS_TMP}"
+        "${REF_GENOME}" "${P_CONTIGS_IN}"wha
 done
