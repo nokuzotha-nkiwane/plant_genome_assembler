@@ -76,5 +76,5 @@ for MIN_LEN in "${MIN_LENGTHS[@]}"; do
         -T corr \
         -t "${THREADS}" \
         -o "${THRESH_OUT}" \
-        "${REF_GENOME}" "${P_CONTIGS_IN}"wha
+        "${REF_GENOME}" "${P_CONTIGS_IN}"
 done
