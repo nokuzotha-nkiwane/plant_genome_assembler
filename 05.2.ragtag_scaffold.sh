@@ -70,6 +70,7 @@ scaffold_one() {
 
     #combos are only queued if unfinished, so a leftover outdir is a partial run
     rm -rf "${outdir}"
+    mkdir -p "$(dirname "${outdir}")"
 
     ragtag.py scaffold --remove-small -f "${f_val}" -d "${d_val}" -i 0.5 \
         -a 0.5 -s 0.5 --mm2-params '-x asm5' -t "${THREADS}" \
