@@ -1,7 +1,7 @@
 #!/bin/bash
-#PBS -l select=1:ncpus=23:mem=60GB
+#PBS -l select=1:ncpus=16:mem=100GB
 #PBS -q bix
-#PBS -l walltime=48:00:00
+#PBS -l walltime=24:00:00
 #PBS -N SAMPLE_CLI_STEP_PBS
 #PBS -o OUTPUT_FILE_PBS
 #PBS -e ERROR_FILE_PBS
@@ -17,9 +17,11 @@ source ~/.pbsrc
 
 #load modules
 module load app/QUAST/5.3.0
+module load app/parallel/parallel
 
 #resource parameters
-THREADS=23
+THREADS=5
+JOBS=3
 
 #read length thresholds used for ragtag correct
 MIN_LENGTHS=(1000 2000 3000 4000 5000 6000 7000 8000)
