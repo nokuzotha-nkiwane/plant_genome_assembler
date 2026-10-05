@@ -1,8 +1,8 @@
 #!/bin/bash
-#PBS -l ncpus=12
-#PBS -l mem=20GB
+#PBS -l ncpus=24
+#PBS -l mem=32GB
 #PBS -q bix
-#PBS -l walltime=48:00:00
+#PBS -l walltime=12:00:00
 #PBS -N SAMPLE_CLI_STEP_PBS
 #PBS -o OUTPUT_FILE_PBS
 #PBS -e ERROR_FILE_PBS
@@ -17,11 +17,13 @@ source ~/.pbsrc
 
 #load modules
 module load app/miniconda/mamba
+module load app/parallel/parallel
 conda activate busco_6.1.0
 export _JAVA_OPTIONS="-Xmx8g"
 
 #resource parameters
-THREADS=12
+THREADS=4
+JOBS=6
 
 #read length thresholds used for ragtag correct
 MIN_LENGTHS=(1000 2000 3000 4000 5000 6000 7000 8000)
@@ -54,6 +56,7 @@ declare -A COMBO_STATUS
 
 #run busco on a single contigs fasta, staged to TEMP_DIR first
 run_busco() {
+    set -euo pipefail
     local SRC_FASTA="$1"
 
     [[ -s "${SRC_FASTA}" ]] || { echo "Missing fasta: ${SRC_FASTA}"; return 1; }
@@ -75,45 +78,51 @@ run_busco() {
         -f \
         -o "${BASE_NAME}_busco" \
         --out_path "${BUSCO_DIR}" \
-        || { echo "BUSCO failed for ${CONTIGS_IN}"; return 1; }
+        || { echo "BUSCO failed for ${CONTIGS_IN}"; rm -f "${CONTIGS_IN}"; return 1; }
 
     echo "BUSCO for ${CONTIGS_IN} complete"
 
-    #free space in TEMP_DIR before the next combination
+    #free space in TEMP_DIR
     rm -f "${CONTIGS_IN}"
 }
 
+#parallel runs each command through $SHELL, which must be bash for exported functions
+export SHELL="$(type -p bash)"
+export -f run_busco
+export BUSCO_DIR BUSCO_DB_DIR TEMP_DIR THREADS
+
+#build the list of independent commands (one fasta per line)
+TASKS="${BUSCO_DIR}/busco.tasks"
+: > "${TASKS}"
 for MIN_LEN in "${MIN_LENGTHS[@]}"; do
     for F_VAL in "${F_VALUES[@]}"; do
         for D_VAL in "${D_VALUES[@]}"; do
             PREFIX="SAMPLE_CLI.minlen${MIN_LEN}.f${F_VAL}_d${D_VAL}"
             COMBO_STEP_DIR="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold/minlen_${MIN_LEN}/f${F_VAL}_d${D_VAL}"
-            KEY="minlen${MIN_LEN}_f${F_VAL}_d${D_VAL}"
 
-            # run for full output scaffold fasta
-            run_busco "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.fasta"
-            COMBO_STATUS["${KEY}_full"]=$?
-
-            # run for chromosomes only scaffold fasta
-            run_busco "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.chromosomes.fasta"
-            COMBO_STATUS["${KEY}_chromosomes"]=$?
-
-            # run for unplaced chromosomes only scaffold fasta
-            run_busco "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.unplaced.fasta"
-            COMBO_STATUS["${KEY}_unplaced"]=$?
+            echo "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.fasta"             >> "${TASKS}"
+            echo "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.chromosomes.fasta" >> "${TASKS}"
+            echo "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.unplaced.fasta"    >> "${TASKS}"
         done
     done
 done
 
+#--halt never: one failed fasta must not stop the others
+JOBLOG="${BUSCO_DIR}/busco.joblog"
+rm -f "${JOBLOG}"
+parallel -j "${JOBS}" --joblog "${JOBLOG}" --halt never run_busco {} < "${TASKS}"
+PARALLEL_RC=$?
+
 echo "BUSCO complete"
-#log final exit status of each combination to the error log
+
+#log final exit status of each fasta to the error log
 {
-    echo "===== BUSCO combination exit status summary ====="
-    for COMBO in "${!COMBO_STATUS[@]}"; do
-        echo "${COMBO}: exit_status=${COMBO_STATUS[${COMBO}]}"
-    done
-    echo "==================================================="
+    echo "===== BUSCO exit status summary ====="
+    awk -F'\t' 'NR>1 {print $9": exit_status="$7}' "${JOBLOG}"
+    echo "====================================="
 } >&2
+
+exit "${PARALLEL_RC}"
 
 ### why is it in braces?
 # without braces the actual outputs go to stout because that is the default stream

@@ -49,6 +49,7 @@ declare -A QUAST_STATUS
 
 #run quast on a single contigs fasta, staged to TEMP_DIR first
 run_quast() {
+    set -euo pipefail
     local SRC_FASTA="$1"
     local OUT_SUBDIR="$2"
 
@@ -66,41 +67,50 @@ run_quast() {
         -o "${RUN_OUT_DIR}" \
         -e -k --circos --plots-format pdf \
         -t "${THREADS}" \
-        || { echo "QUAST failed for ${CONTIGS_IN}"; return 1; }
+        || { echo "QUAST failed for ${CONTIGS_IN}"; rm -f "${CONTIGS_IN}"; return 1; }
 
     echo "QUAST for ${CONTIGS_IN} complete"
 
-    #free space in TEMP_DIR before the next fasta
+    #free space in TEMP_DIR
     rm -f "${CONTIGS_IN}"
 }
 
+#parallel runs each command through $SHELL, which must be bash for exported functions
+export SHELL="$(type -p bash)"
+export -f run_quast
+export QUAST_DIR REF_GENOME REF_GFF3 TEMP_DIR THREADS
+
+#build the list of independent commands (one per line: fasta  output_subdir)
+TASKS="${QUAST_DIR}/quast.tasks"
+: > "${TASKS}"
 for MIN_LEN in "${MIN_LENGTHS[@]}"; do
     for F_VAL in "${F_VALUES[@]}"; do
         for D_VAL in "${D_VALUES[@]}"; do
             PREFIX="SAMPLE_CLI.minlen${MIN_LEN}.f${F_VAL}_d${D_VAL}"
             COMBO_STEP_DIR="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold/minlen_${MIN_LEN}/f${F_VAL}_d${D_VAL}"
             OUT_SUBDIR="minlen_${MIN_LEN}/f${F_VAL}_d${D_VAL}"
-            KEY="minlen${MIN_LEN}_f${F_VAL}_d${D_VAL}"
 
-            run_quast "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.fasta" "${OUT_SUBDIR}/full"
-            QUAST_STATUS["${KEY}_full"]=$?
-
-            run_quast "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.chromosomes.fasta" "${OUT_SUBDIR}/chromosomes"
-            QUAST_STATUS["${KEY}_chromosomes"]=$?
-
-            run_quast "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.unplaced.fasta" "${OUT_SUBDIR}/unplaced"
-            QUAST_STATUS["${KEY}_unplaced"]=$?
+            printf '%s %s\n' "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.fasta"             "${OUT_SUBDIR}/full"        >> "${TASKS}"
+            printf '%s %s\n' "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.chromosomes.fasta" "${OUT_SUBDIR}/chromosomes" >> "${TASKS}"
+            printf '%s %s\n' "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.unplaced.fasta"    "${OUT_SUBDIR}/unplaced"    >> "${TASKS}"
         done
     done
 done
+
+#--halt never: one failed fasta must not stop the others
+JOBLOG="${QUAST_DIR}/quast.joblog"
+rm -f "${JOBLOG}"
+parallel -j "${JOBS}" --colsep ' ' --joblog "${JOBLOG}" --halt never \
+    run_quast {1} {2} < "${TASKS}"
+PARALLEL_RC=$?
 
 echo "QUAST complete"
 
 #log final exit status of each fasta to the error log
 {
-    echo "===== QUAST combination exit status summary ====="
-    for COMBO in "${!QUAST_STATUS[@]}"; do
-        echo "${COMBO}: exit_status=${QUAST_STATUS[${COMBO}]}"
-    done
-    echo "==================================================="
+    echo "===== QUAST exit status summary ====="
+    awk -F'\t' 'NR>1 {print $9": exit_status="$7}' "${JOBLOG}"
+    echo "====================================="
 } >&2
+
+exit "${PARALLEL_RC}"
