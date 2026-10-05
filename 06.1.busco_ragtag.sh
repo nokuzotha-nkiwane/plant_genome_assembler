@@ -2,7 +2,7 @@
 #PBS -l ncpus=12
 #PBS -l mem=20GB
 #PBS -q bix
-#PBS -l walltime=4:00:00
+#PBS -l walltime=48:00:00
 #PBS -N SAMPLE_CLI_STEP_PBS
 #PBS -o OUTPUT_FILE_PBS
 #PBS -e ERROR_FILE_PBS
@@ -23,11 +23,12 @@ export _JAVA_OPTIONS="-Xmx8g"
 #resource parameters
 THREADS=12
 
-#which ragtag stage this run evaluates -- sed-substituted by submit.sh's
-#RAGTAG_MODE=correct|scaffold CLI argument. The two modes are independent for now
-#(scaffold runs on the raw hifiasm output, not the ragtag-corrected assembly); will
-#chain them once the best hifiasm config + correction step is settled
-RAGTAG_MODE="__RAGTAG_MODE__"
+#read length thresholds used for ragtag correct
+MIN_LENGTHS=(1000 2000 3000 4000 5000 6000 7000 8000)
+
+#parameter sweep values according to 05.2.ragtag_scaffold
+F_VALUES=(15000)
+D_VALUES=(500000)
 
 #directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
@@ -82,39 +83,29 @@ run_busco() {
     rm -f "${CONTIGS_IN}"
 }
 
-#parameter sweep values according to 05.2.ragtag_scaffold
-F_VALUES=(15000)
-D_VALUES=(500000)
-
-if [[ "${RAGTAG_MODE}" == "correct" ]]; then
-    run_busco "${ALL_RESULTS_DIR}/05.1.ragtag_correct/ragtag.correct.fasta"
-
-elif [[ "${RAGTAG_MODE}" == "scaffold" ]]; then
+for MIN_LEN in "${MIN_LENGTHS[@]}"; do
     for F_VAL in "${F_VALUES[@]}"; do
         for D_VAL in "${D_VALUES[@]}"; do
-            PREFIX="SAMPLE_CLI.f${F_VAL}_d${D_VAL}"
-            COMBO_STEP_DIR="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold/f${F_VAL}_d${D_VAL}"
+            PREFIX="SAMPLE_CLI.minlen${MIN_LEN}.f${F_VAL}_d${D_VAL}"
+            COMBO_STEP_DIR="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold/minlen_${MIN_LEN}/f${F_VAL}_d${D_VAL}"
+            KEY="minlen${MIN_LEN}_f${F_VAL}_d${D_VAL}"
 
             # run for full output scaffold fasta
             run_busco "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.fasta"
-            COMBO_STATUS["f${F_VAL}_d${D_VAL}_full"]=$?
+            COMBO_STATUS["${KEY}_full"]=$?
 
             # run for chromosomes only scaffold fasta
             run_busco "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.chromosomes.fasta"
-            COMBO_STATUS["f${F_VAL}_d${D_VAL}_chromosomes"]=$?
+            COMBO_STATUS["${KEY}_chromosomes"]=$?
 
             # run for unplaced chromosomes only scaffold fasta
             run_busco "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.unplaced.fasta"
-            COMBO_STATUS["f${F_VAL}_d${D_VAL}_unplaced"]=$?
+            COMBO_STATUS["${KEY}_unplaced"]=$?
         done
     done
+done
 
-else
-    echo "Error: RAGTAG_MODE must be 'correct' or 'scaffold', got: ${RAGTAG_MODE}"
-    exit 1
-fi
-
-echo "BUSCO (${RAGTAG_MODE}) complete"
+echo "BUSCO complete"
 #log final exit status of each combination to the error log
 {
     echo "===== BUSCO combination exit status summary ====="
