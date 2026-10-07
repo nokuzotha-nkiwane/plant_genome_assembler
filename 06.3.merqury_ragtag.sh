@@ -1,7 +1,7 @@
 #!/bin/bash
-#PBS -l select=1:ncpus=23:mem=60GB
+#PBS -l select=1:ncpus=24:mem=40GB
 #PBS -q bix
-#PBS -l walltime=14:00:00
+#PBS -l walltime=8:00:00
 #PBS -N SAMPLE_CLI_STEP_PBS
 #PBS -o OUTPUT_FILE_PBS
 #PBS -e ERROR_FILE_PBS
@@ -14,19 +14,26 @@ set -euxo pipefail
 #for evaluating variables in ~/.pbsrc
 source ~/.pbsrc
 
-#load modules version 1.4.1
+#load modules
 module load app/miniconda/mamba
+module load app/parallel/parallel
 conda activate merqury
 
-#which ragtag stage this run evaluates -- sed-substituted by submit.sh's
-#RAGTAG_MODE=correct|scaffold CLI argument (see 06.1.busco_ragtag.sh)
-RAGTAG_MODE="__RAGTAG_MODE__"
+THREADS=4
+JOBS=6
 
 #directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 RAW_READS_GZ="${WORKDIR}/raw_reads/D260405-SAMPLE_CLI_HiFi.fastq.gz"
 MERQURY_DIR="__RESULTS_DIR__"
 ALL_RESULTS_DIR="${WORKDIR}/results"
+
+#read length thresholds used for ragtag correct
+MIN_LENGTHS=(1000 2000 3000 4000 5000 6000 7000 8000)
+
+#parameter sweep values according to 05.2.ragtag_scaffold
+F_VALUES=(15000)
+D_VALUES=(500000)
 
 #reuse the read k-mer database built once in 04.2a -- it's a property of the
 #raw reads, not of any particular assembly, so no separate ragtag prep step
@@ -37,7 +44,7 @@ TEMP_DIR="${MERQURY_DIR}/${PBS_JOBID}_temp"
 mkdir -p "${TEMP_DIR}"
 trap 'rm -rf "${TEMP_DIR}"' EXIT
 
-#check if meryl database for reads made (shared across all combos, checked once)
+#check if meryl database for reads made (shared across all runs, checked once)
 if [[ ! -d "${MERYL_DB}" ]]; then
     echo "ERROR: Meryl database empty or missing: ${MERYL_DB}"
     exit 1
@@ -47,11 +54,10 @@ if [[ ! -s "${RAW_READS_GZ}" ]]; then
     exit 1
 fi
 
-declare -A MERQURY_STATUS
-
 #run merqury on a single fasta, staged to its own TEMP_DIR subdir, output
-#isolated in its own MERQURY_DIR subdir so parallel prefixes never collide
+#isolated in its own MERQURY_DIR subdir so concurrent runs never collide
 run_merqury() {
+    set -euo pipefail
     local SRC_FASTA="$1"
     local OUT_SUBDIR="$2"
     local OUT_PREFIX="$3"
@@ -71,57 +77,48 @@ run_merqury() {
     (
         cd "${RUN_OUT_DIR}" && \
         ${MERQURY}/merqury.sh "${MERYL_DB}" "${CONTIGS_IN}" "${OUT_PREFIX}"
-    ) || { echo "Merqury failed for ${CONTIGS_IN}"; return 1; }
+    ) || { echo "Merqury failed for ${CONTIGS_IN}"; rm -rf "${RUN_TEMP}"; return 1; }
 
     echo "Merqury for ${CONTIGS_IN} complete"
-    rm -f "${CONTIGS_IN}"
+    rm -rf "${RUN_TEMP}"
 }
 
-#### what does the "subshell keeps the cd scoped to this run only" mean?
-# with 18 sequential runs just using cd outside a subshell would have the remainder
-# of the script working in the directory cd into first and merqury would drop everything
-# in there
-# the subsehell makes the workdir that script works from the same only that subshell
-# breaks away. once its done the script returns to the initial workdir to subshell into
-# the next appropriate one again
+#parallel runs each command through $SHELL, which must be bash for exported functions
+export SHELL="$(type -p bash)"
+export -f run_merqury
+export MERQURY MERQURY_DIR MERYL_DB TEMP_DIR
 
-if [[ "${RAGTAG_MODE}" == "correct" ]]; then
-    CONTIGS_IN="${ALL_RESULTS_DIR}/05.1.ragtag_correct/ragtag.correct.fasta"
-    run_merqury "${CONTIGS_IN}" "correct" "mq_dSAMPLE_CLI_correct"
-
-elif [[ "${RAGTAG_MODE}" == "scaffold" ]]; then
-    F_VALUES=(15000)
-    D_VALUES=(500000)
-
+#build the list of independent commands (one per line: fasta  output_subdir  prefix)
+TASKS="${MERQURY_DIR}/merqury.tasks"
+: > "${TASKS}"
+for MIN_LEN in "${MIN_LENGTHS[@]}"; do
     for F_VAL in "${F_VALUES[@]}"; do
         for D_VAL in "${D_VALUES[@]}"; do
-            PREFIX="SAMPLE_CLI.f${F_VAL}_d${D_VAL}"
-            COMBO_STEP_DIR="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold/f${F_VAL}_d${D_VAL}"
-            OUT_SUBDIR="f${F_VAL}_d${D_VAL}"
+            PREFIX="SAMPLE_CLI.minlen${MIN_LEN}.f${F_VAL}_d${D_VAL}"
+            COMBO_STEP_DIR="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold/minlen_${MIN_LEN}/f${F_VAL}_d${D_VAL}"
+            OUT_SUBDIR="minlen_${MIN_LEN}/f${F_VAL}_d${D_VAL}"
 
-            run_merqury "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.fasta" "${OUT_SUBDIR}" "mq_${PREFIX}_full"
-            MERQURY_STATUS["f${F_VAL}_d${D_VAL}_full"]=$?
-
-            run_merqury "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.chromosomes.fasta" "${OUT_SUBDIR}" "mq_${PREFIX}_chromosomes"
-            MERQURY_STATUS["f${F_VAL}_d${D_VAL}_chromosomes"]=$?
-
-            run_merqury "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.unplaced.fasta" "${OUT_SUBDIR}" "mq_${PREFIX}_unplaced"
-            MERQURY_STATUS["f${F_VAL}_d${D_VAL}_unplaced"]=$?
+            printf '%s %s %s\n' "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.fasta"             "${OUT_SUBDIR}/full"        "mq_${PREFIX}_full"        >> "${TASKS}"
+            printf '%s %s %s\n' "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.chromosomes.fasta" "${OUT_SUBDIR}/chromosomes" "mq_${PREFIX}_chromosomes" >> "${TASKS}"
+            printf '%s %s %s\n' "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.unplaced.fasta"    "${OUT_SUBDIR}/unplaced"    "mq_${PREFIX}_unplaced"    >> "${TASKS}"
         done
     done
+done
 
-else
-    echo "Error: RAGTAG_MODE must be 'correct' or 'scaffold', got: ${RAGTAG_MODE}"
-    exit 1
-fi
+#--halt never: one failed fasta must not stop the others
+JOBLOG="${MERQURY_DIR}/merqury.joblog"
+rm -f "${JOBLOG}"
+parallel -j "${JOBS}" --colsep ' ' --joblog "${JOBLOG}" --halt never \
+    run_merqury {1} {2} {3} < "${TASKS}"
+PARALLEL_RC=$?
 
-echo "Merqury (${RAGTAG_MODE}) complete"
+echo "Merqury complete"
 
-#log final exit status of each fasta to the error log (scaffold mode only)
+#log final exit status of each fasta to the error log
 {
-    echo "===== Merqury combination exit status summary ====="
-    for COMBO in "${!MERQURY_STATUS[@]}"; do
-        echo "${COMBO}: exit_status=${MERQURY_STATUS[${COMBO}]}"
-    done
-    echo "======================================================"
+    echo "===== Merqury exit status summary ====="
+    awk -F'\t' 'NR>1 {print $9": exit_status="$7}' "${JOBLOG}"
+    echo "======================================="
 } >&2
+
+exit "${PARALLEL_RC}"
