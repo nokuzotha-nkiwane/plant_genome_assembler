@@ -21,13 +21,16 @@ conda activate ragtag
 #resource allocation
 THREADS=8
 
+#read length threshold used for the ragtag/busco inputs
+MINLEN=8000
+
 # directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 REF_DIR="${TOMATO_PATH}/data/reference_data"
 REF_GENOME="${REF_DIR}/SL5.0.unplaced_removed.fasta.gz"
 ALL_RESULTS_DIR="${WORKDIR}/results"
 RAGTAG_SCAFFOLD_DIR="__RESULTS_DIR__"
-INPUT_FASTA="${ALL_RESULTS_DIR}/05.1.ragtag_correct/minlen_5000/ragtag.correct.fasta"
+INPUT_FASTA="${ALL_RESULTS_DIR}/05.1.ragtag_correct/minlen_${MINLEN}/ragtag.correct.fasta"
 AGP="${ALL_RESULTS_DIR}/06.5.relate_missing_buscos/ragtag.scaffold_corrected.agp"
 AGP2FASTA_DIR="${RAGTAG_SCAFFOLD_DIR}/agp2fasta"
 OUTPUT_FASTA="${AGP2FASTA_DIR}/corrected.fasta"
