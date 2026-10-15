@@ -23,7 +23,7 @@ conda activate seqkit
 THREADS=4
 
 #read length threshold used for the ragtag/busco inputs
-MINLEN=5000
+MINLEN=8000
 PREFIX="SAMPLE_CLI.minlen${MINLEN}.f15000_d500000"
 
 # directories and files
