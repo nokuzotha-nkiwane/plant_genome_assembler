@@ -2,7 +2,7 @@
 #PBS -l ncpus=4
 #PBS -l mem=8GB
 #PBS -q bix
-#PBS -l walltime=1:00:00
+#PBS -l walltime=4:00:00
 #PBS -N SAMPLE_CLI_STEP_PBS
 #PBS -o OUTPUT_FILE_PBS
 #PBS -e ERROR_FILE_PBS
