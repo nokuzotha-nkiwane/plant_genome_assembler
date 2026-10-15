@@ -29,7 +29,7 @@ ALL_RESULTS_DIR="${WORKDIR}/results"
 REF_DIR="${TOMATO_PATH}/data/reference_data"
 REF_GENOME="${REF_DIR}/SL5.0.fasta"
 REF_GFF3="${REF_DIR}/SL5.0.gff3"
-SCAFFOLD_FASTA="${ALL_RESULTS_DIR}/07.1.agp_correct/ragtag_output/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta"
+SCAFFOLD_FASTA="${ALL_RESULTS_DIR}/07.1.agp_correct/ragtag_output/dSAMPLE_CLI.ragtag.scaffold.fasta"
 OUTPUT_DIR="__RESULTS_DIR__"
 TEMP_DIR="${OUTPUT_DIR}/${PBS_JOBID}_temp"
 

@@ -38,8 +38,8 @@ cd "${BUSCO_DIR}"
 NAMES=(
   "dSAMPLE_CLI.lifton"
   "dSAMPLE_CLI.braker"
-  "dSAMPLE_CLI.aegis_lifton"
-  "dSAMPLE_CLI.aegis_braker"
+  # "dSAMPLE_CLI.aegis_lifton"
+  # "dSAMPLE_CLI.aegis_braker"
 )
 
 COMMON="--offline -l ${LINEAGE} --download_path ${BUSCO_DB_DIR} -c ${BUSCO_CPU} -f --out_path ${BUSCO_DIR}"
