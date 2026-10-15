@@ -36,16 +36,16 @@ WHOLE_BAM="${READ_SCAFFOLD_ALN_DIR}/dSAMPLE_CLI_whole.bam"
 CORRECTION_CHROMOSOMES=(1 2 3 4 5 6 7 8 9 10 11 12)
 MIN_MAPQ=30
 
-#filter reads if needed
-if [[ -s "${FILTERED_READS}" ]]; then
-    echo "Found filtered reads; proceeding to minimap2"
-else
-    echo "Filtering raw reads"
-    filtlong \
-    --min_mean_q 20 \
-    --min_length 8000 \
-    "${READS}" | gzip -k > "${FILTERED_READS}" || { echo "Filtlong failed for ${READS}"; exit 1; }
-fi
+# #filter reads if needed
+# if [[ -s "${FILTERED_READS}" ]]; then
+#     echo "Found filtered reads; proceeding to minimap2"
+# else
+#     echo "Filtering raw reads"
+#     filtlong \
+#     --min_mean_q 20 \
+#     --min_length 8000 \
+#     "${READS}" | gzip -k > "${FILTERED_READS}" || { echo "Filtlong failed for ${READS}"; exit 1; }
+# fi
 
 #align reads to the whole scaffolded assembly once
 # #use pbmm2
