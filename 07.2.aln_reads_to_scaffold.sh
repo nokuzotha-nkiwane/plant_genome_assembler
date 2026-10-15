@@ -25,33 +25,35 @@ conda activate helper-tools
 # directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 READS="${WORKDIR}/raw_reads/D260405-SAMPLE_CLI_HiFi.fastq.gz"
-FILTERED_READS="${WORKDIR}/raw_reads/dSAMPLE_CLI_filtered.fastq.gz"
+MIN_MEAN_Q=30
+MIN_LENGTH=4000
+FILTERED_READS="${WORKDIR}/raw_reads/filtered_reads_CLI_HAPLOTYPE_q${MIN_MEAN_Q}_minlen${MIN_LENGTH}.fq.gz"
 ALL_RESULTS_DIR="${WORKDIR}/results"
 READ_SCAFFOLD_ALN_DIR="__RESULTS_DIR__"
 RAGTAG_OUTPUT_DIR="${ALL_RESULTS_DIR}/07.1.agp_correct/ragtag_output"
-INPUT_FASTA="${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta"
+INPUT_FASTA="${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.fasta"
 WHOLE_BAM="${READ_SCAFFOLD_ALN_DIR}/dSAMPLE_CLI_whole.bam"
 
 #chromosomes to be corrected
 CORRECTION_CHROMOSOMES=(1 2 3 4 5 6 7 8 9 10 11 12)
 MIN_MAPQ=30
 
-# #filter reads if needed
-# if [[ -s "${FILTERED_READS}" ]]; then
-#     echo "Found filtered reads; proceeding to minimap2"
-# else
-#     echo "Filtering raw reads"
-#     filtlong \
-#     --min_mean_q 20 \
-#     --min_length 8000 \
-#     "${READS}" | gzip -k > "${FILTERED_READS}" || { echo "Filtlong failed for ${READS}"; exit 1; }
-# fi
+#filter reads if needed
+if [[ -s "${FILTERED_READS}" ]]; then
+    echo "Found filtered reads; proceeding to minimap2"
+else
+    echo "Filtering raw reads"
+    filtlong \
+    --min_mean_q "${MIN_MEAN_Q}" \
+    --min_length "${MIN_LENGTH}" \
+    "${READS}" | gzip -k > "${FILTERED_READS}" || { echo "Filtlong failed for ${READS}"; exit 1; }
+fi
 
 #align reads to the whole scaffolded assembly once
 # #use pbmm2
 # conda deactivate
 # conda activate pbmm2
-# pbmm2 align --sort -J "${THREADS}" --bam-index BAI "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta" "${FILTERED_READS}" "${WHOLE_BAM}"
+# pbmm2 align --sort -J "${THREADS}" --bam-index BAI "${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.fasta" "${FILTERED_READS}" "${WHOLE_BAM}"
 
 #use minimap2
 minimap2 -ax map-hifi -t "${THREADS}" --secondary=no -N 1 -p 0.8 --eqx "${INPUT_FASTA}" "${FILTERED_READS}" | \
