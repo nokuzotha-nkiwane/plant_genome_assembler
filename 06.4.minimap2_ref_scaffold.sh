@@ -21,6 +21,9 @@ conda activate helper-tools
 #resource parameters
 THREADS=23
 
+#read length threshold used for the ragtag scaffold inputs
+MINLEN=5000
+
 #directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 ALL_RESULTS_DIR="${WORKDIR}/results"
@@ -61,7 +64,7 @@ declare -A ALN_STATUS
 #write sam+paf, then stage paf + gzipped query fasta into dgenies_input for that reference
 run_alignment_and_dgenies_stage() {
     local REFERENCE="$1" OUT_DIR="$2" F_VAL="$3" D_VAL="$4" FASTA_SRC="$5"
-    local COMBO_STEP_DIR="${SCAFFOLD_STEP_DIR}/f${F_VAL}_d${D_VAL}"
+    local COMBO_STEP_DIR="${SCAFFOLD_STEP_DIR}/minlen_${MINLEN}/f${F_VAL}_d${D_VAL}"
     local COMBO_OUT_DIR="${OUT_DIR}/f${F_VAL}_d${D_VAL}"
     local DGENIES_INPUT_DIR="${OUT_DIR}/dgenies_input"
     local PREFIX
@@ -133,8 +136,8 @@ for i in "${!REF_IN[@]}"; do
 
     for F_VAL in "${F_VALUES[@]}"; do
         for D_VAL in "${D_VALUES[@]}"; do
-            COMBO_STEP_DIR="${SCAFFOLD_STEP_DIR}/f${F_VAL}_d${D_VAL}"
-            PREFIX="SAMPLE_CLI.f${F_VAL}_d${D_VAL}"
+            COMBO_STEP_DIR="${SCAFFOLD_STEP_DIR}/minlen_${MINLEN}/f${F_VAL}_d${D_VAL}"
+            PREFIX="SAMPLE_CLI.minlen${MINLEN}.f${F_VAL}_d${D_VAL}"
 
             FASTAS=(
                 "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.fasta"
