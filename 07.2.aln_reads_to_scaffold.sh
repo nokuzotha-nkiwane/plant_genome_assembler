@@ -30,13 +30,13 @@ MIN_LENGTH=3000
 FILTERED_READS="${WORKDIR}/raw_reads/filtered_reads_CLI_HAPLOTYPE_q${MIN_MEAN_Q}_minlen${MIN_LENGTH}.fq.gz"
 ALL_RESULTS_DIR="${WORKDIR}/results"
 READ_SCAFFOLD_ALN_DIR="__RESULTS_DIR__"
-# RAGTAG_OUTPUT_DIR="${ALL_RESULTS_DIR}/07.1.agp_correct/ragtag_output"
-INPUT_FASTA="${WORKDIR}/raw_reads/9_RagTag.fasta"
-WHOLE_BAM="${READ_SCAFFOLD_ALN_DIR}/9_RagTag.bam"
+RAGTAG_OUTPUT_DIR="${ALL_RESULTS_DIR}/07.1.agp_correct/ragtag_output"
+INPUT_FASTA="${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta"
+WHOLE_BAM="${READ_SCAFFOLD_ALN_DIR}/dSAMPLE_CLI_whole.bam"
 
 #chromosomes to be corrected
 CORRECTION_CHROMOSOMES=(1 2 3 4 5 6 7 8 9 10 11 12)
-MIN_MAPQ=20
+MIN_MAPQ=30
 
 #filter reads if needed
 if [[ -s "${FILTERED_READS}" ]]; then
@@ -68,17 +68,24 @@ samtools index "${WHOLE_BAM}"
 # conda activate helper-tools
 
 #function to extract regions matching to chromosomes of interest
-# extract_region(){
-#     local CHRSM="$1"
-#     local OUTPUT_BAM="${READ_SCAFFOLD_ALN_DIR}/dSAMPLE_CLI_chromosome_${CHRSM}.bam"
+extract_region(){
+    local CHRSM="$1"
+    local OUTPUT_DIR="${READ_SCAFFOLD_ALN_DIR}/chromosome_${CHRSM}"
+    local OUTPUT_BAM="${OUTPUT_DIR}/dSAMPLE_CLI_chromosome_${CHRSM}.bam"
+    local OUTPUT_FASTA="${OUTPUT_DIR}/dSAMPLE_CLI_chromosome_${CHRSM}.fasta"
 
-#     #extract region in bam
-#     samtools view -b "${WHOLE_BAM}" "${CHRSM}_RagTag" > "${OUTPUT_BAM}"
-#     samtools index "${OUTPUT_BAM}"
-# }
+    mkdir -p "${OUTPUT_DIR}"
+
+    #extract region in bam
+    samtools view -b "${WHOLE_BAM}" "${CHRSM}_RagTag" > "${OUTPUT_BAM}"
+    samtools index "${OUTPUT_BAM}"
+
+    #extract fasta sequence
+    samtools faidx "${INPUT_FASTA}" "${CHRSM}_RagTag" > "${OUTPUT_FASTA}"
+}
 
 
-# # run function to correct chromosomes
-# for CHR in "${CORRECTION_CHROMOSOMES[@]}"; do
-#     extract_region "${CHR}"
-# done
+# run function to correct chromosomes
+for CHR in "${CORRECTION_CHROMOSOMES[@]}"; do
+    extract_region "${CHR}"
+done
