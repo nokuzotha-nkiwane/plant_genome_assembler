@@ -26,7 +26,7 @@ conda activate helper-tools
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 READS="${WORKDIR}/raw_reads/D260405-SAMPLE_CLI_HiFi.fastq.gz"
 MIN_MEAN_Q=20
-MIN_LENGTH=4000
+MIN_LENGTH=3000
 FILTERED_READS="${WORKDIR}/raw_reads/filtered_reads_CLI_HAPLOTYPE_q${MIN_MEAN_Q}_minlen${MIN_LENGTH}.fq.gz"
 ALL_RESULTS_DIR="${WORKDIR}/results"
 READ_SCAFFOLD_ALN_DIR="__RESULTS_DIR__"
@@ -38,16 +38,16 @@ WHOLE_BAM="${READ_SCAFFOLD_ALN_DIR}/9_RagTag.bam"
 CORRECTION_CHROMOSOMES=(1 2 3 4 5 6 7 8 9 10 11 12)
 MIN_MAPQ=20
 
-# #filter reads if needed
-# if [[ -s "${FILTERED_READS}" ]]; then
-#     echo "Found filtered reads; proceeding to minimap2"
-# else
-#     echo "Filtering raw reads"
-#     filtlong \
-#     --min_mean_q "${MIN_MEAN_Q}" \
-#     --min_length "${MIN_LENGTH}" \
-#     "${READS}" | gzip -k > "${FILTERED_READS}" || { echo "Filtlong failed for ${READS}"; exit 1; }
-# fi
+#filter reads if needed
+if [[ -s "${FILTERED_READS}" ]]; then
+    echo "Found filtered reads; proceeding to minimap2"
+else
+    echo "Filtering raw reads"
+    filtlong \
+    --min_mean_q "${MIN_MEAN_Q}" \
+    --min_length "${MIN_LENGTH}" \
+    "${READS}" | gzip -k > "${FILTERED_READS}" || { echo "Filtlong failed for ${READS}"; exit 1; }
+fi
 
 #align reads to the whole scaffolded assembly once
 # #use pbmm2
