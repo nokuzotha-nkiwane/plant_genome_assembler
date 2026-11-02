@@ -31,7 +31,7 @@ FILTERED_READS="${WORKDIR}/raw_reads/filtered_reads_CLI_HAPLOTYPE_q${MIN_MEAN_Q}
 ALL_RESULTS_DIR="${WORKDIR}/results"
 READ_SCAFFOLD_ALN_DIR="__RESULTS_DIR__"
 RAGTAG_OUTPUT_DIR="${ALL_RESULTS_DIR}/07.1.agp_correct/ragtag_output"
-INPUT_FASTA="${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta"
+INPUT_FASTA="${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.fasta"
 WHOLE_BAM="${READ_SCAFFOLD_ALN_DIR}/dSAMPLE_CLI_whole.bam"
 
 #chromosomes to be corrected
@@ -66,6 +66,8 @@ samtools index "${WHOLE_BAM}"
 # #deactivate pbmm2 conda environment
 # conda deactivate
 # conda activate helper-tools
+
+add minimum aligned length to filter reads that align (samtools)
 
 #function to extract regions matching to chromosomes of interest
 extract_region(){
