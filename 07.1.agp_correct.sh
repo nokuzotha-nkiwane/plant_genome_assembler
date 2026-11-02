@@ -16,6 +16,7 @@ source ~/.pbsrc
 
 #load modules
 module load app/miniconda/mamba
+module load app/parallel/parallel
 conda activate ragtag
 
 #resource allocation
@@ -76,7 +77,7 @@ scaffold_one() {
     set -euo pipefail
     local f_val="$1" d_val="$2" i_val="$3" a_val="$4" s_val="$5"
     local tag="f${f_val}_d${d_val}_i${i_val}_a${a_val}_s${s_val}"
-    local outdir="${RAGTAG_OUTPUT_DIR}/f${f_val}_d${d_val}/i${i_val}_a${a_val}_s${i_val}"
+    local outdir="${RAGTAG_OUTPUT_DIR}/f${f_val}_d${d_val}/i${i_val}_a${a_val}_s${s_val}"
     local prefix="dSAMPLE_CLI.${tag}"
     local worker_tmp="${TEMP_DIR}/${prefix}"
     local contigs="${worker_tmp}/contigs.fasta"
@@ -111,23 +112,12 @@ scaffold_one() {
          END { if (seq_name != "") print seq_name, seq_length }' \
         "${scaffold_fasta}" > "${lengths_file}.tmp"
 
-    rm -f "${scaffold_fasta}" "${outdir}/${prefix}".ragtag.scaffold.asm.*
     mv "${lengths_file}.tmp" "${lengths_file}"
     rm -rf "${worker_tmp}"
 }
 
 export -f scaffold_one
 export OUTPUT_FASTA_RENAMED RAGTAG_OUTPUT_DIR SHARED_REF TEMP_DIR UNPLACED_LIST THREADS
-
-lengths_complete() {
-    local lengths_file="$1"
-    [[ -s "${lengths_file}" ]] || return 1
-    awk -F '\t' '
-        NR == 1 && $1 == "name" && $2 == "length" { header = 1; next }
-        NF >= 2 && $1 != "" && $2 ~ /^[0-9]+$/ { row = 1 }
-        END { exit !(header && row) }
-    ' "${lengths_file}"
-}
 
 COMBOS="${RAGTAG_OUTPUT_DIR}/scaffold.combos"
 : > "${COMBOS}"
@@ -136,12 +126,6 @@ for f_val in "${F_VALS[@]}"; do
         for i_val in "${I_VALS[@]}"; do
             for a_val in "${A_VALS[@]}"; do
                 for s_val in "${S_VALS[@]}"; do
-                    PREFIX="dSAMPLE_CLI.f${f_val}_d${d_val}_i${i_val}_a${a_val}_s${s_val}"
-                    DONE="${RAGTAG_OUTPUT_DIR}/f${f_val}_d${d_val}/i${i_val}_a${a_val}_s${i_val}/${PREFIX}.ragtag.scaffold.lengths"
-                    if lengths_complete "${DONE}"; then
-                        echo "Scaffold output already present for ${PREFIX}; skipping"
-                        continue
-                    fi
                     printf '%s %s %s %s %s\n' "${f_val}" "${d_val}" "${i_val}" "${a_val}" "${s_val}" >> "${COMBOS}"
                 done
             done
@@ -150,6 +134,14 @@ for f_val in "${F_VALS[@]}"; do
 done
 
 echo "Combinations queued: $(wc -l < "${COMBOS}")"
+
+###############################################################################
+# Stage 1: ragtag scaffold + measure lengths (ragtag env)
+###############################################################################
+set +u
+conda activate ragtag
+set -u
+
 parallel -j "${JOBS}" --colsep ' ' --joblog "${RAGTAG_OUTPUT_DIR}/stage1.joblog" \
     --halt soon,fail=1 scaffold_one {1} {2} {3} {4} {5} < "${COMBOS}"
 
@@ -165,10 +157,10 @@ for f_val in "${F_VALS[@]}"; do
         for i_val in "${I_VALS[@]}"; do
             for a_val in "${A_VALS[@]}"; do
                 for s_val in "${S_VALS[@]}"; do
-                    OUTDIR="${RAGTAG_OUTPUT_DIR}/f${f_val}_d${d_val}/i${i_val}_a${a_val}_s${i_val}"
+                    OUTDIR="${RAGTAG_OUTPUT_DIR}/f${f_val}_d${d_val}/i${i_val}_a${a_val}_s${s_val}"
                     PREFIX="dSAMPLE_CLI.f${f_val}_d${d_val}_i${i_val}_a${a_val}_s${s_val}"
                     LENGTHS_FILE="${OUTDIR}/${PREFIX}.ragtag.scaffold.lengths"
-                    lengths_complete "${LENGTHS_FILE}" || { echo "Invalid or missing ${LENGTHS_FILE}" >&2; exit 1; }
+                    [[ -s "${LENGTHS_FILE}" ]] || { echo "Missing scaffold lengths: ${LENGTHS_FILE}" >&2; exit 1; }
                     awk -F '\t' -v sample="dSAMPLE_CLI" -v f="${f_val}" -v d="${d_val}" \
                         -v i="${i_val}" -v a="${a_val}" -v s="${s_val}" '
                         NR == 1 { next }
@@ -193,6 +185,7 @@ for f_val in "${F_VALS[@]}"; do
     done
 done
 mv "${LENGTHS_TSV}.tmp" "${LENGTHS_TSV}"
+echo "Wrote $(( $(wc -l < "${LENGTHS_TSV}") - 1 )) rows to ${LENGTHS_TSV}"
 
 TOTALS_TSV="${RAGTAG_OUTPUT_DIR}/scaffold_total_lengths.tsv"
 awk -F '\t' -v OFS='\t' '
@@ -207,3 +200,4 @@ awk -F '\t' -v OFS='\t' '
         print $1, $2, $3, $4, $5, $6, chr1_to_12_length, unplaced_length
     }' "${LENGTHS_TSV}" > "${TOTALS_TSV}.tmp"
 mv "${TOTALS_TSV}.tmp" "${TOTALS_TSV}"
+echo "Wrote $(( $(wc -l < "${TOTALS_TSV}") - 1 )) rows to ${TOTALS_TSV}"
