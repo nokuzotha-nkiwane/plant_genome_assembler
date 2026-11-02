@@ -35,7 +35,7 @@ INPUT_FASTA="${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.fasta"
 WHOLE_BAM="${READ_SCAFFOLD_ALN_DIR}/dSAMPLE_CLI_whole.bam"
 
 #chromosomes to be corrected
-CORRECTION_CHROMOSOMES=(1 2 3 4 5 6 7 8 9 10 11 12)
+CORRECTION_CHROMOSOMES=(1 2 3 4 5 6 7 8 9 10 11 12 0)
 MIN_MAPQ=30
 
 #filter reads if needed
