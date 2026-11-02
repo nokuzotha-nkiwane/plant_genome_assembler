@@ -42,9 +42,9 @@ CORRECTED_FASTA="${RAGTAG_CORRECT_DIR}/ragtag.correct.fasta"
 #  -s orientation confidence
 F_VALS=(5000 10000 15000 20000)
 D_VALS=(100000 300000 500000 700000)
-I_VALS=(0.2 0.4 0.6 0.8 1.0)
-A_VALS=(0.2 0.4 0.6 0.8 1.0)
-S_VALS=(0.2 0.4 0.6 0.8 1.0)
+I_VALS=(0.2 0.4 0.6 0.8)
+A_VALS=(0.2 0.4 0.6 0.8)
+S_VALS=(0.2 0.4 0.6 0.8)
 
 mkdir -p "${TEMP_DIR}"
 trap 'rm -rf "${TEMP_DIR}"' EXIT
