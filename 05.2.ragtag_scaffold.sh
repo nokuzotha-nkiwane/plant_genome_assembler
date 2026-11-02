@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -l select=1:ncpus=32:mem=120GB
+#PBS -l select=1:ncpus=24:mem=160GB
 #PBS -q bix
 #PBS -l walltime=144:00:00
 #PBS -N SAMPLE_CLI_STEP_PBS
@@ -21,7 +21,7 @@ module load app/parallel/parallel
 
 #resource parameters
 THREADS=2
-JOBS=15
+JOBS=10
 
 #directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
