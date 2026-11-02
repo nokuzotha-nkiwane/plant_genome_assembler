@@ -25,6 +25,13 @@ MERQURY_DIR="__RESULTS_DIR__"
 ALL_RESULTS_DIR="${WORKDIR}/results"
 RAGATAG_SCAFFOLD_DIR="${ALL_RESULTS_DIR}/07.1.agp_correct/ragtag_output"
 
+#parameter sweep values according to 07.1.agp_correct
+F_VALUES=(5000 10000 15000 20000)
+D_VALUES=(100000 300000 500000 700000)
+I_VALUES=(0.2 0.4 0.6 0.8 1.0)
+A_VALUES=(0.2 0.4 0.6 0.8 1.0)
+S_VALUES=(0.2 0.4 0.6 0.8 1.0)
+
 #reuse the read k-mer database built once in 04.2a -- it's a property of the
 #raw reads, not of any particular assembly, so no separate ragtag prep step
 #is needed
@@ -72,11 +79,20 @@ run_merqury() {
     rm -f "${SCAFFOLD_IN}"
 }
 
-# run for full output scaffold fasta
-run_merqury "${RAGATAG_SCAFFOLD_DIR}/dSAMPLE_CLI.ragtag.scaffold.fasta" "full" "mq_full"
+for F_VAL in "${F_VALUES[@]}"; do
+    for D_VAL in "${D_VALUES[@]}"; do
+        for I_VAL in "${I_VALUES[@]}"; do
+            for A_VAL in "${A_VALUES[@]}"; do
+                for S_VAL in "${S_VALUES[@]}"; do
+                    PREFIX="dSAMPLE_CLI.f${F_VAL}_d${D_VAL}_i${I_VAL}_a${A_VAL}_s${S_VAL}"
+                    COMBO_DIR="${RAGATAG_SCAFFOLD_DIR}/f${F_VAL}_d${D_VAL}/i${I_VAL}_a${A_VAL}_s${S_VAL}"
+                    OUT_SUBDIR="f${F_VAL}_d${D_VAL}/i${I_VAL}_a${A_VAL}_s${S_VAL}"
 
-# run for chromosomes only scaffold fasta
-run_merqury "${RAGATAG_SCAFFOLD_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta" "chromosomes" "mq_chromosomes"
-
-# run for unplaced chromosomes only scaffold fasta
-run_merqury "${RAGATAG_SCAFFOLD_DIR}/dSAMPLE_CLI.ragtag.scaffold.unplaced.fasta" "unplaced" "mq_unplaced"
+                    run_merqury "${COMBO_DIR}/${PREFIX}.ragtag.scaffold.fasta" "${OUT_SUBDIR}/full" "mq_${PREFIX}_full"
+                    run_merqury "${COMBO_DIR}/${PREFIX}.ragtag.scaffold.chromosomes.fasta" "${OUT_SUBDIR}/chromosomes" "mq_${PREFIX}_chromosomes"
+                    run_merqury "${COMBO_DIR}/${PREFIX}.ragtag.scaffold.unplaced.fasta" "${OUT_SUBDIR}/unplaced" "mq_${PREFIX}_unplaced"
+                done
+            done
+        done
+    done
+done

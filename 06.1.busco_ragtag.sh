@@ -25,12 +25,12 @@ export _JAVA_OPTIONS="-Xmx8g"
 THREADS=4
 JOBS=6
 
-#read length thresholds used for ragtag correct
-MIN_LENGTHS=(1000 2000 3000 4000 5000 6000 7000 8000)
-
 #parameter sweep values according to 05.2.ragtag_scaffold
-F_VALUES=(15000)
-D_VALUES=(500000)
+F_VALUES=(5000 10000 15000 20000)
+D_VALUES=(100000 300000 500000 700000)
+I_VALUES=(0.2 0.4 0.6 0.8)
+A_VALUES=(0.2 0.4 0.6 0.8)
+S_VALUES=(0.2 0.4 0.6 0.8)
 
 #directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
@@ -94,15 +94,19 @@ export BUSCO_DIR BUSCO_DB_DIR TEMP_DIR THREADS
 #build the list of independent commands (one fasta per line)
 TASKS="${BUSCO_DIR}/busco.tasks"
 : > "${TASKS}"
-for MIN_LEN in "${MIN_LENGTHS[@]}"; do
-    for F_VAL in "${F_VALUES[@]}"; do
-        for D_VAL in "${D_VALUES[@]}"; do
-            PREFIX="SAMPLE_CLI.minlen${MIN_LEN}.f${F_VAL}_d${D_VAL}"
-            COMBO_STEP_DIR="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold/minlen_${MIN_LEN}/f${F_VAL}_d${D_VAL}"
+for F_VAL in "${F_VALUES[@]}"; do
+    for D_VAL in "${D_VALUES[@]}"; do
+        for I_VAL in "${I_VALUES[@]}"; do
+            for A_VAL in "${A_VALUES[@]}"; do
+                for S_VAL in "${S_VALUES[@]}"; do
+                    PREFIX="SAMPLE_CLI.f${F_VAL}_d${D_VAL}_i${I_VAL}_a${A_VAL}_s${S_VAL}"
+                    COMBO_STEP_DIR="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold/f${F_VAL}_d${D_VAL}/i${I_VAL}_a${A_VAL}_s${S_VAL}"
 
-            echo "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.fasta"             >> "${TASKS}"
-            echo "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.chromosomes.fasta" >> "${TASKS}"
-            echo "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.unplaced.fasta"    >> "${TASKS}"
+                    echo "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.fasta"             >> "${TASKS}"
+                    echo "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.chromosomes.fasta" >> "${TASKS}"
+                    echo "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.unplaced.fasta"    >> "${TASKS}"
+                done
+            done
         done
     done
 done

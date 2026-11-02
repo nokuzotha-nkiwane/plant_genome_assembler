@@ -28,12 +28,12 @@ RAW_READS_GZ="${WORKDIR}/raw_reads/D260405-SAMPLE_CLI_HiFi.fastq.gz"
 MERQURY_DIR="__RESULTS_DIR__"
 ALL_RESULTS_DIR="${WORKDIR}/results"
 
-#read length thresholds used for ragtag correct
-MIN_LENGTHS=(1000 2000 3000 4000 5000 6000 7000 8000)
-
 #parameter sweep values according to 05.2.ragtag_scaffold
-F_VALUES=(15000)
-D_VALUES=(500000)
+F_VALUES=(5000 10000 15000 20000)
+D_VALUES=(100000 300000 500000 700000)
+I_VALUES=(0.2 0.4 0.6 0.8)
+A_VALUES=(0.2 0.4 0.6 0.8)
+S_VALUES=(0.2 0.4 0.6 0.8)
 
 #reuse the read k-mer database built once in 04.2a -- it's a property of the
 #raw reads, not of any particular assembly, so no separate ragtag prep step
@@ -91,16 +91,20 @@ export MERQURY MERQURY_DIR MERYL_DB TEMP_DIR
 #build the list of independent commands (one per line: fasta  output_subdir  prefix)
 TASKS="${MERQURY_DIR}/merqury.tasks"
 : > "${TASKS}"
-for MIN_LEN in "${MIN_LENGTHS[@]}"; do
-    for F_VAL in "${F_VALUES[@]}"; do
-        for D_VAL in "${D_VALUES[@]}"; do
-            PREFIX="SAMPLE_CLI.minlen${MIN_LEN}.f${F_VAL}_d${D_VAL}"
-            COMBO_STEP_DIR="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold/minlen_${MIN_LEN}/f${F_VAL}_d${D_VAL}"
-            OUT_SUBDIR="minlen_${MIN_LEN}/f${F_VAL}_d${D_VAL}"
+for F_VAL in "${F_VALUES[@]}"; do
+    for D_VAL in "${D_VALUES[@]}"; do
+        for I_VAL in "${I_VALUES[@]}"; do
+            for A_VAL in "${A_VALUES[@]}"; do
+                for S_VAL in "${S_VALUES[@]}"; do
+                    PREFIX="SAMPLE_CLI.f${F_VAL}_d${D_VAL}_i${I_VAL}_a${A_VAL}_s${S_VAL}"
+                    COMBO_STEP_DIR="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold/f${F_VAL}_d${D_VAL}/i${I_VAL}_a${A_VAL}_s${S_VAL}"
+                    OUT_SUBDIR="f${F_VAL}_d${D_VAL}/i${I_VAL}_a${A_VAL}_s${S_VAL}"
 
-            printf '%s %s %s\n' "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.fasta"             "${OUT_SUBDIR}/full"        "mq_${PREFIX}_full"        >> "${TASKS}"
-            printf '%s %s %s\n' "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.chromosomes.fasta" "${OUT_SUBDIR}/chromosomes" "mq_${PREFIX}_chromosomes" >> "${TASKS}"
-            printf '%s %s %s\n' "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.unplaced.fasta"    "${OUT_SUBDIR}/unplaced"    "mq_${PREFIX}_unplaced"    >> "${TASKS}"
+                    printf '%s %s %s\n' "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.fasta"             "${OUT_SUBDIR}/full"        "mq_${PREFIX}_full"        >> "${TASKS}"
+                    printf '%s %s %s\n' "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.chromosomes.fasta" "${OUT_SUBDIR}/chromosomes" "mq_${PREFIX}_chromosomes" >> "${TASKS}"
+                    printf '%s %s %s\n' "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.unplaced.fasta"    "${OUT_SUBDIR}/unplaced"    "mq_${PREFIX}_unplaced"    >> "${TASKS}"
+                done
+            done
         done
     done
 done

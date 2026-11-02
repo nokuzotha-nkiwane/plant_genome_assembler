@@ -31,6 +31,13 @@ BUSCO_DB_DIR="${TOMATO_PATH}/data"
 RAGATAG_SCAFFOLD_DIR="${ALL_RESULTS_DIR}/07.1.agp_correct/ragtag_output"
 TEMP_DIR="${BUSCO_DIR}/${PBS_JOBID}_temp"
 
+#parameter sweep values according to 07.1.agp_correct
+F_VALUES=(5000 10000 15000 20000)
+D_VALUES=(100000 300000 500000 700000)
+I_VALUES=(0.2 0.4 0.6 0.8 1.0)
+A_VALUES=(0.2 0.4 0.6 0.8 1.0)
+S_VALUES=(0.2 0.4 0.6 0.8 1.0)
+
 #make temp directory to fastas to so the original ones are accessible to other scripts
 mkdir -p "${TEMP_DIR}"
 
@@ -73,14 +80,22 @@ run_busco() {
     rm -f "${SCAFFOLD_IN}"
 }
 
-# run for full output scaffold fasta
-run_busco "${RAGATAG_SCAFFOLD_DIR}/dSAMPLE_CLI.ragtag.scaffold.fasta"
+for F_VAL in "${F_VALUES[@]}"; do
+    for D_VAL in "${D_VALUES[@]}"; do
+        for I_VAL in "${I_VALUES[@]}"; do
+            for A_VAL in "${A_VALUES[@]}"; do
+                for S_VAL in "${S_VALUES[@]}"; do
+                    PREFIX="dSAMPLE_CLI.f${F_VAL}_d${D_VAL}_i${I_VAL}_a${A_VAL}_s${S_VAL}"
+                    COMBO_DIR="${RAGATAG_SCAFFOLD_DIR}/f${F_VAL}_d${D_VAL}/i${I_VAL}_a${A_VAL}_s${S_VAL}"
 
-# run for chromosomes only scaffold fasta
-run_busco "${RAGATAG_SCAFFOLD_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta"
-
-# run for unplaced chromosomes only scaffold fasta
-# run_busco "${RAGATAG_SCAFFOLD_DIR}/dSAMPLE_CLI.ragtag.scaffold.unplaced.fasta"
+                    run_busco "${COMBO_DIR}/${PREFIX}.ragtag.scaffold.fasta"
+                    run_busco "${COMBO_DIR}/${PREFIX}.ragtag.scaffold.chromosomes.fasta"
+                    run_busco "${COMBO_DIR}/${PREFIX}.ragtag.scaffold.unplaced.fasta"
+                done
+            done
+        done
+    done
+done
 
 ### why is it in braces?
 # without braces the actual outputs go to stout because that is the default stream
