@@ -58,7 +58,7 @@ zcat "${REF_GENOME_GZ}" > "${SHARED_REF}"
 #indexes beside its inputs and concurrent workers would race on shared copies
 #
 #steps: run ragtag -> measure every sequence in the scaffold fasta -> delete the
-#big files (scaffold fasta, alignments) -> keep agp, stats, confidence, lengths
+#big alignment files -> keep the scaffold fasta, agp, stats, confidence, lengths
 #the .lengths file is written last, so it only exists for a finished combo
 scaffold_one() {
     set -euo pipefail
@@ -92,7 +92,6 @@ scaffold_one() {
     [[ -s "${scaffold_fasta}" ]] || { echo "Missing scaffold FASTA: ${scaffold_fasta}" >&2; exit 1; }
 
     #length of every sequence in the scaffold fasta: "name <tab> length"
-    #(awk, so this does not need the seqkit env)
     awk 'BEGIN { OFS = "\t"; print "name", "length" }
          /^>/ {
              if (seq_name != "") print seq_name, seq_length
@@ -103,9 +102,6 @@ scaffold_one() {
          { seq_length += length($0) }
          END { if (seq_name != "") print seq_name, seq_length }' \
         "${scaffold_fasta}" > "${lengths_file}.tmp"
-
-    #delete the big files, keep agp / stats / confidence
-    rm -f "${scaffold_fasta}" "${outdir}/${prefix}".ragtag.scaffold.asm.*
 
     #last step: the lengths file appears only now
     mv "${lengths_file}.tmp" "${lengths_file}"
