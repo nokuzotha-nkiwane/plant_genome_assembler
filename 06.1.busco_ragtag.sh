@@ -1,8 +1,8 @@
 #!/bin/bash
-#PBS -l ncpus=12
-#PBS -l mem=20GB
+#PBS -l ncpus=38
+#PBS -l mem=60GB
 #PBS -q bix
-#PBS -l walltime=4:00:00
+#PBS -l walltime=12:00:00
 #PBS -N SAMPLE_CLI_STEP_PBS
 #PBS -o OUTPUT_FILE_PBS
 #PBS -e ERROR_FILE_PBS
@@ -23,17 +23,18 @@ export _JAVA_OPTIONS="-Xmx8g"
 #resource parameters
 THREADS=12
 
-#which ragtag stage this run evaluates -- sed-substituted by submit.sh's
-#RAGTAG_MODE=correct|scaffold CLI argument. The two modes are independent for now
-#(scaffold runs on the raw hifiasm output, not the ragtag-corrected assembly); will
-#chain them once the best hifiasm config + correction step is settled
-RAGTAG_MODE="__RAGTAG_MODE__"
-
 #directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 ALL_RESULTS_DIR="${WORKDIR}/results"
 BUSCO_DIR="__RESULTS_DIR__"
 BUSCO_DB_DIR="${TOMATO_PATH}/data"
+RAGTAG_SCAFFOLD_DIR="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold"
+RAGTAG_OUTPUT_DIR="${RAGTAG_SCAFFOLD_DIR}/f15000_d500000"
+FASTAS_IN=(
+    "${RAGTAG_OUTPUT_DIR}/SAMPLE_CLI.f15000_d500000.ragtag.scaffold.fasta"
+    "${RAGTAG_OUTPUT_DIR}/SAMPLE_CLI.f15000_d500000.ragtag.scaffold.chromosomes.fasta"
+    "${RAGTAG_OUTPUT_DIR}/SAMPLE_CLI.f15000_d500000.ragtag.scaffold.unplaced.fasta"
+)
 
 TEMP_DIR="${BUSCO_DIR}/${PBS_JOBID}_temp"
 
@@ -42,14 +43,6 @@ mkdir -p "${TEMP_DIR}"
 
 #automatically remove TEMP_DIR whenever the script exits (normal or error)
 trap 'rm -rf "${TEMP_DIR}"' EXIT
-
-#tracks exit status of each combination for end-of-run summary
-declare -A COMBO_STATUS
-
-### what does declare mean
-# -A flag means "associative array"
-# associative array = a variable that maps arbitrary string keys to values (like a dictionary/
-# hash map) instead of bash's default indexed arrays which only use integer indices (0,1,2,..)
 
 #run busco on a single contigs fasta, staged to TEMP_DIR first
 run_busco() {
@@ -82,47 +75,27 @@ run_busco() {
     rm -f "${CONTIGS_IN}"
 }
 
-#parameter sweep values according to 05.2.ragtag_scaffold
-F_VALUES=(15000)
-D_VALUES=(500000)
+#run BUSCO on the RagTag scaffold FASTAs produced by 05.2.ragtag_scaffold.sh
+PIDS=()
+FASTA_NAMES=()
+for FASTA in "${FASTAS_IN[@]}"; do
+    echo "Running BUSCO for ${FASTA}"
+    run_busco "${FASTA}" &
+    PIDS+=("$!")
+    FASTA_NAMES+=("${FASTA}")
+done
 
-if [[ "${RAGTAG_MODE}" == "correct" ]]; then
-    run_busco "${ALL_RESULTS_DIR}/05.1.ragtag_correct/ragtag.correct.fasta"
+FAILED=0
+for INDEX in "${!PIDS[@]}"; do
+    if wait "${PIDS[INDEX]}"; then
+        echo "BUSCO for ${FASTA_NAMES[INDEX]} complete"
+    else
+        echo "BUSCO failed for ${FASTA_NAMES[INDEX]}" >&2
+        FAILED=1
+    fi
+done
 
-elif [[ "${RAGTAG_MODE}" == "scaffold" ]]; then
-    for F_VAL in "${F_VALUES[@]}"; do
-        for D_VAL in "${D_VALUES[@]}"; do
-            PREFIX="SAMPLE_CLI.f${F_VAL}_d${D_VAL}"
-            COMBO_STEP_DIR="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold/f${F_VAL}_d${D_VAL}"
-
-            # run for full output scaffold fasta
-            run_busco "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.fasta"
-            COMBO_STATUS["f${F_VAL}_d${D_VAL}_full"]=$?
-
-            # run for chromosomes only scaffold fasta
-            run_busco "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.chromosomes.fasta"
-            COMBO_STATUS["f${F_VAL}_d${D_VAL}_chromosomes"]=$?
-
-            # run for unplaced chromosomes only scaffold fasta
-            run_busco "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.unplaced.fasta"
-            COMBO_STATUS["f${F_VAL}_d${D_VAL}_unplaced"]=$?
-        done
-    done
-
-else
-    echo "Error: RAGTAG_MODE must be 'correct' or 'scaffold', got: ${RAGTAG_MODE}"
-    exit 1
-fi
-
-echo "BUSCO (${RAGTAG_MODE}) complete"
-#log final exit status of each combination to the error log
-{
-    echo "===== BUSCO combination exit status summary ====="
-    for COMBO in "${!COMBO_STATUS[@]}"; do
-        echo "${COMBO}: exit_status=${COMBO_STATUS[${COMBO}]}"
-    done
-    echo "==================================================="
-} >&2
+exit "${FAILED}"
 
 ### why is it in braces?
 # without braces the actual outputs go to stout because that is the default stream
