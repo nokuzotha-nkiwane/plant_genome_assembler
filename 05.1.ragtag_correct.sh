@@ -21,14 +21,14 @@ conda activate ragtag
 THREADS=26
 
 #read length thresholds: 1000 to 8000 in steps of 1000
-MIN_LENGTHS=(1000 2000 3000 4000 5000 6000 7000 8000)
+# MIN_LENGTHS=(1000 2000 3000 4000 5000 6000 7000 8000)
 
 #directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 REF_DIR="${TOMATO_PATH}/data/reference_data"
 REF_GENOME="${REF_DIR}/SL5.0.fasta.gz"
 RAW_READS_DIR="${WORKDIR}/raw_reads"
-FILTERED_READS_DIR="${RAW_READS_DIR}/filtered_reads"
+# FILTERED_READS_DIR="${RAW_READS_DIR}/filtered_reads"
 ALL_RESULTS_DIR="${WORKDIR}/results"
 RAGTAG_CORRECT_DIR="__RESULTS_DIR__"
 HIFIASM_DIR="${ALL_RESULTS_DIR}/03.hifiasm"
