@@ -31,6 +31,7 @@ WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 REF_GENOME="${TOMATO_PATH}/data/reference_data/SL5.0.fasta.gz"
 ALL_RESULTS_DIR="${WORKDIR}/results"
 UNPLACED_SCAFFOLDS_FASTA="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold/f15000_d500000/SAMPLE_CLI.f15000_d500000.ragtag.scaffold.unplaced.fasta"
+SCAFFOLD_FASTA="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold/f15000_d500000/SAMPLE_CLI.f15000_d500000.ragtag.scaffold.fasta"
 BUSCO_DIR="${ALL_RESULTS_DIR}/06.1.busco_ragtag"
 BUSCO_MISSING_CHRSM_SCAFFOLDS="${BUSCO_DIR}/SAMPLE_CLI.f15000_d500000.ragtag.scaffold.chromosomes_busco/run_solanales_odb10/missing_busco_list.tsv"
 BUSCO_FULL_UNPLACED_SCAFFOLDS="${BUSCO_DIR}/SAMPLE_CLI.f15000_d500000.ragtag.scaffold.unplaced_busco/run_solanales_odb10/full_table.tsv"
@@ -42,6 +43,7 @@ unique_CONSOLIDATED_MISSINGS_FASTA="${OUTPUT_DIR}/unique_consoldated_missings.fa
 DGENIES_INPUT="${OUTPUT_DIR}/dgenies_input"
 SORTED_BAM="${OUTPUT_DIR}/dSAMPLE_CLI_aln5.sorted.bam"
 PAF_OUT="${OUTPUT_DIR}/dSAMPLE_CLI_aln5.paf"
+SCAFFOLD_PAF_OUT="${OUTPUT_DIR}/dSAMPLE_CLI_to_scaffold_aln5.paf"
 AGP="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold/f15000_d500000"
 
 # make dgenies input directory
@@ -86,10 +88,17 @@ conda activate helper-tools
 minimap2 -cx asm5 --cs -t "${THREADS}" "${REF_GENOME}" "${unique_CONSOLIDATED_MISSINGS_FASTA}" > "${PAF_OUT}" \
     || { echo "minimap2 PAF generation failed"; exit 1; }
 
+#align the extracted unplaced scaffolds to the complete RagTag scaffold output
+minimap2 -cx asm5 --cs -t "${THREADS}" "${SCAFFOLD_FASTA}" "${unique_CONSOLIDATED_MISSINGS_FASTA}" > "${SCAFFOLD_PAF_OUT}" \
+    || { echo "minimap2 scaffold PAF generation failed"; exit 1; }
+
 #make a bam file file (should be sorted) to visualise in IGV after alignment
 minimap2 -ax asm5 -t "${THREADS}" "${REF_GENOME}" "${unique_CONSOLIDATED_MISSINGS_FASTA}" | samtools sort -@ "${THREADS}" -o "${SORTED_BAM}" - \
     || { echo "minimap2/samtools sort failed"; exit 1; }
 samtools index "${SORTED_BAM}"
 
-#copy paf, unique_CONSOLIDATED_MISSINGS_FASTA and REF_GENOME to DGENIES_INPUT
-cp "${PAF_OUT}" "${unique_CONSOLIDATED_MISSINGS_FASTA}" "${REF_GENOME}" "${DGENIES_INPUT}/"
+#copy PAF outputs and symlink the FASTA inputs into DGENIES_INPUT
+cp "${PAF_OUT}" "${SCAFFOLD_PAF_OUT}" "${DGENIES_INPUT}/"
+ln -s "${unique_CONSOLIDATED_MISSINGS_FASTA}" "${DGENIES_INPUT}/"
+ln -s "${REF_GENOME}" "${DGENIES_INPUT}/"
+ln -s "${SCAFFOLD_FASTA}" "${DGENIES_INPUT}/"
