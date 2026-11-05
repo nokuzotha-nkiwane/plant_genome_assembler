@@ -58,7 +58,7 @@ awk 'BEGIN {OFS="\t"} /^#/ {next} $5 == "W" {contig_length=$8-$7+1; print $6, 1,
 ragtag.py agp2fa "${AGP_CONTIG_NAMES}" "${INPUT_FASTA}" > "${OUTPUT_FASTA}"
 
 #run ragtag scaffold for new fasta
-ragtag.py scaffold --remove-small -f 15000 -d 500000 -i 0.5 -a 0.5 -s 0.5 --mm2-params '-x asm5' -t "${THREADS}" \
+ragtag.py scaffold --remove-small -f 15000 -d 500000 -i 0.4 -a 0.4 -s 0.4 --mm2-params '-x asm5' -t "${THREADS}" \
     -j "${UNPLACED_LIST}" -C \
     -o "${RAGTAG_OUTPUT_DIR}" "${REF_GENOME}" "${OUTPUT_FASTA}" || { echo "ragtag scaffold failed for sample dSAMPLE_CLI"; exit 1; }
 
