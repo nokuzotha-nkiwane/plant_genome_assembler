@@ -58,7 +58,7 @@ run_ragtag_scaffold() {
     local prefix="SAMPLE_CLI.f${f_val}_d${d_val}"
 
     ragtag.py scaffold --remove-small -f "${f_val}" -d "${d_val}" -i 0.5 \
-        -a 0.5 -s 0.5 --mm2-params '-x asm5' -t "${THREADS}" \
+        -a 0.4 -s 0.4 --mm2-params '-x asm5' -t "${THREADS}" \
         -o "${outdir}" "${REF_GENOME}" "${P_CONTIGS_IN}" \
         || { echo "ragtag scaffold failed for -f ${f_val} -d ${d_val}"; exit 1; }
 
