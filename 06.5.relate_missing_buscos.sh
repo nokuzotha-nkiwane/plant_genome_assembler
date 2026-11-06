@@ -32,6 +32,7 @@ REF_GENOME="${TOMATO_PATH}/data/reference_data/SL5.0.fasta.gz"
 ALL_RESULTS_DIR="${WORKDIR}/results"
 UNPLACED_SCAFFOLDS_FASTA="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold/f15000_d500000/SAMPLE_CLI.f15000_d500000.ragtag.scaffold.unplaced.fasta"
 SCAFFOLD_FASTA="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold/f15000_d500000/SAMPLE_CLI.f15000_d500000.ragtag.scaffold.chromosomes.fasta"
+FULL_SCAFFOLD_FASTA="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold/f15000_d500000/SAMPLE_CLI.f15000_d500000.ragtag.scaffold.fasta"
 BUSCO_DIR="${ALL_RESULTS_DIR}/06.1.busco_ragtag"
 BUSCO_MISSING_CHRSM_SCAFFOLDS="${BUSCO_DIR}/SAMPLE_CLI.f15000_d500000.ragtag.scaffold.chromosomes_busco/run_solanales_odb10/missing_busco_list.tsv"
 BUSCO_FULL_UNPLACED_SCAFFOLDS="${BUSCO_DIR}/SAMPLE_CLI.f15000_d500000.ragtag.scaffold.unplaced_busco/run_solanales_odb10/full_table.tsv"
@@ -44,6 +45,8 @@ DGENIES_INPUT="${OUTPUT_DIR}/dgenies_input"
 SORTED_BAM="${OUTPUT_DIR}/dSAMPLE_CLI_aln5.sorted.bam"
 PAF_OUT="${OUTPUT_DIR}/dSAMPLE_CLI_aln5.paf"
 SCAFFOLD_PAF_OUT="${OUTPUT_DIR}/dSAMPLE_CLI_to_scaffold_aln5.paf"
+RAW_READS="${WORKDIR}/raw_reads/D260405-SAMPLE_CLI_HiFi.fastq.gz"
+FULL_SCAFFOLD_READS_BAM="${OUTPUT_DIR}/dSAMPLE_CLI_full_scaffold_reads.bam"
 AGP="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold/f15000_d500000"
 
 # make dgenies input directory
@@ -97,8 +100,18 @@ minimap2 -ax asm5 -t "${THREADS}" "${REF_GENOME}" "${unique_CONSOLIDATED_MISSING
     || { echo "minimap2/samtools sort failed"; exit 1; }
 samtools index "${SORTED_BAM}"
 
+
+#align raw reads to the full RagTag scaffold output for visualisation
+minimap2 -ax map-hifi -t "${THREADS}" --secondary=no -N 1 -p 0.8 --eqx "${FULL_SCAFFOLD_FASTA}" "${RAW_READS}" | \
+    samtools view -b -q 30 -F 2308 -@ "${THREADS}" - | \
+    samtools sort -@ "${THREADS}" -o "${FULL_SCAFFOLD_READS_BAM}" - \
+    || { echo "minimap2/samtools full scaffold read alignment failed"; exit 1; }
+samtools index "${FULL_SCAFFOLD_READS_BAM}"
+
 #copy PAF outputs and symlink the FASTA inputs into DGENIES_INPUT
 cp "${PAF_OUT}" "${SCAFFOLD_PAF_OUT}" "${DGENIES_INPUT}/"
 ln -s "${unique_CONSOLIDATED_MISSINGS_FASTA}" "${DGENIES_INPUT}/"
 ln -s "${REF_GENOME}" "${DGENIES_INPUT}/"
 ln -s "${SCAFFOLD_FASTA}" "${DGENIES_INPUT}/"
+ln -s "${FULL_SCAFFOLD_FASTA}" "${DGENIES_INPUT}/"
+ln -s "${FULL_SCAFFOLD_READS_BAM}" "${DGENIES_INPUT}/"
