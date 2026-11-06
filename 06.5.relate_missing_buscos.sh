@@ -45,7 +45,7 @@ DGENIES_INPUT="${OUTPUT_DIR}/dgenies_input"
 SORTED_BAM="${OUTPUT_DIR}/dSAMPLE_CLI_aln5.sorted.bam"
 PAF_OUT="${OUTPUT_DIR}/dSAMPLE_CLI_aln5.paf"
 SCAFFOLD_PAF_OUT="${OUTPUT_DIR}/dSAMPLE_CLI_to_scaffold_aln5.paf"
-RAW_READS="${WORKDIR}/raw_reads/filtered_reads/d05_filtered_minlen7000.fastq.gz"
+RAW_READS="${WORKDIR}/raw_reads/filtered_reads/dSAMPLE_CLI_filtered_minlen7000.fastq.gz"
 FULL_SCAFFOLD_READS_BAM="${OUTPUT_DIR}/dSAMPLE_CLI_full_scaffold_reads.bam"
 AGP="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold/f15000_d500000"
 
