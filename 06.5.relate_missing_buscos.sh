@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -l ncpus=24
+#PBS -l ncpus=36
 #PBS -l mem=60GB
 #PBS -q bix
 #PBS -l walltime=4:00:00
@@ -20,7 +20,7 @@ module load app/miniconda/mamba
 conda activate seqkit
 
 #resources
-THREADS=24
+THREADS=36
 
 #read length threshold used for the ragtag/busco inputs
 MINLEN=8000
