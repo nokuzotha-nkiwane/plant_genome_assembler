@@ -1,6 +1,6 @@
 #!/bin/bash
-#PBS -l ncpus=4
-#PBS -l mem=8GB
+#PBS -l ncpus=24
+#PBS -l mem=60GB
 #PBS -q bix
 #PBS -l walltime=4:00:00
 #PBS -N SAMPLE_CLI_STEP_PBS
@@ -20,7 +20,7 @@ module load app/miniconda/mamba
 conda activate seqkit
 
 #resources
-THREADS=4
+THREADS=24
 
 #read length threshold used for the ragtag/busco inputs
 MINLEN=8000
@@ -45,7 +45,7 @@ DGENIES_INPUT="${OUTPUT_DIR}/dgenies_input"
 SORTED_BAM="${OUTPUT_DIR}/dSAMPLE_CLI_aln5.sorted.bam"
 PAF_OUT="${OUTPUT_DIR}/dSAMPLE_CLI_aln5.paf"
 SCAFFOLD_PAF_OUT="${OUTPUT_DIR}/dSAMPLE_CLI_to_scaffold_aln5.paf"
-RAW_READS="${WORKDIR}/raw_reads/D260405-SAMPLE_CLI_HiFi.fastq.gz"
+RAW_READS="${WORKDIR}/raw_reads/SAMPLE_CLI_filtered.fastq.gz"
 FULL_SCAFFOLD_READS_BAM="${OUTPUT_DIR}/dSAMPLE_CLI_full_scaffold_reads.bam"
 AGP="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold/f15000_d500000"
 
