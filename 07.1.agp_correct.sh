@@ -66,7 +66,7 @@ $1 ~ /_RagTag/ {
 ragtag.py agp2fa "${RENAMED_AGP}" "${INPUT_FASTA}" > "${OUTPUT_FASTA}"
 
 #run ragtag scaffold for new fasta
-ragtag.py scaffold --remove-small -f 15000 -d 500000 -i 0.4 -a 0.4 -s 0.4 --mm2-params '-x asm5' -t "${THREADS}" \
+ragtag.py scaffold --remove-small -f 15000 -d 500000 -i 0.4 -a 0.4 -s 0.4 --mm2-params '-x asm5' -t "${THREADS}" -C \
     -o "${RAGTAG_OUTPUT_DIR}" "${REF_GENOME}" "${OUTPUT_FASTA}" || { echo "ragtag scaffold failed for sample dSAMPLE_CLI"; exit 1; }
 
 #make a copy of the output fasta and agp to make it easier to differentiate the two samples when used together
