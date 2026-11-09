@@ -47,11 +47,11 @@ mkdir -p "${DGENIES_INPUT}" "${AGP2FASTA_DIR}"
 #check format of agp
 ragtag.py agpcheck "${AGP}" > "${AGP2FASTA_DIR}/agpcheck.txt"
 
-#rename each component AGP object to its source sequence name
+#rename only RagTag component AGP objects to their source sequence names
 awk '
     BEGIN { FS=OFS="\t" }
     /^#/ { print; next }
-    $5 == "W" { $1 = $6 }
+    $5 == "W" && $1 ~ /_RagTag/ { $1 = $6 }
     { print }
 ' "${AGP}" > "${RENAMED_AGP}"
 
