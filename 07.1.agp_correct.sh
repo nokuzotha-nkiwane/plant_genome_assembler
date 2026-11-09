@@ -1,5 +1,6 @@
 #!/bin/bash
-#PBS -l select=1:ncpus=8:mem=20GB
+#PBS -l ncpus=36
+#PBS -l mem=60GB
 #PBS -q bix
 #PBS -l walltime=4:00:00
 #PBS -N SAMPLE_CLI_STEP_PBS
@@ -19,7 +20,7 @@ module load app/miniconda/mamba
 conda activate ragtag
 
 #resource allocation
-THREADS=8
+THREADS=34
 
 #read length threshold used for the ragtag/busco inputs
 MINLEN=8000
