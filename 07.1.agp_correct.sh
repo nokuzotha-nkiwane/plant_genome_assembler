@@ -49,10 +49,13 @@ ragtag.py agpcheck "${AGP}" > "${AGP2FASTA_DIR}/agpcheck.txt"
 
 #rename only RagTag component AGP objects to their source sequence names
 awk '
-    BEGIN { FS=OFS="\t" }
-    /^#/ { print; next }
-    $5 == "W" && $1 ~ /_RagTag/ { $1 = $6 }
-    { print }
+BEGIN { FS=OFS="\t" }
+/^#/ { print; next }
+$1 ~ /_RagTag/ {
+    if ($5 == "W") { $1 = $6; $2 = 1; $3 = $8 - $7 + 1; $4 = 1; print }
+    next
+}
+{ print }
 ' "${AGP}" > "${RENAMED_AGP}"
 
 #convert the single renamed AGP to fasta
