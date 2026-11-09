@@ -33,14 +33,13 @@ RAGTAG_SCAFFOLD_DIR="__RESULTS_DIR__"
 INPUT_FASTA="${ALL_RESULTS_DIR}/05.1.ragtag_correct/ragtag.correct.fasta"
 AGP="${ALL_RESULTS_DIR}/06.5.relate_missing_buscos/ragtag.scaffold_corrected.agp"
 AGP2FASTA_DIR="${RAGTAG_SCAFFOLD_DIR}/agp2fasta"
-AGP_CONTIG_NAMES="${AGP2FASTA_DIR}/contig_names.agp"
+RENAMED_AGP="${AGP2FASTA_DIR}/corrected.agp"
 OUTPUT_FASTA="${AGP2FASTA_DIR}/corrected.fasta"
 RAGTAG_OUTPUT_DIR="${RAGTAG_SCAFFOLD_DIR}/ragtag_output"
 MINIMAP_PAF="${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI_to_ref_aln5.paf"
 MINIMAP_PAF_2="${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI_w-unplaced_to_ref_aln5.paf"
 MINIMAP_PAF_3="${RAGTAG_OUTPUT_DIR}/ref_to_dSAMPLE_CLI_aln5.paf"
 DGENIES_INPUT="${RAGTAG_SCAFFOLD_DIR}/dgenies_input"
-UNPLACED_LIST="${AGP2FASTA_DIR}/dSAMPLE_CLI_unplaced_ids.txt"
 
 #make dgenies input directory
 mkdir -p "${DGENIES_INPUT}" "${AGP2FASTA_DIR}"
@@ -48,18 +47,19 @@ mkdir -p "${DGENIES_INPUT}" "${AGP2FASTA_DIR}"
 #check format of agp
 ragtag.py agpcheck "${AGP}" > "${AGP2FASTA_DIR}/agpcheck.txt"
 
-#make list of unplaced contigs to not be included scaffold fasta
-awk '$1 !~ /_RagTag$/ {print $1}' "${AGP}" > "${UNPLACED_LIST}"
+#rename each component AGP object to its source sequence name
+awk '
+    BEGIN { FS=OFS="\t" }
+    /^#/ { print; next }
+    $5 == "W" { $1 = $6 }
+    { print }
+' "${AGP}" > "${RENAMED_AGP}"
 
-#remove scaffold and gap rows, making each contig a standalone AGP object
-awk 'BEGIN {OFS="\t"} /^#/ {next} $5 == "W" {contig_length=$8-$7+1; print $6, 1, contig_length, 1, "W", $6, 1, contig_length, $9}' "${AGP}" > "${AGP_CONTIG_NAMES}"
-
-#convert agp to fasta while retaining the input contig names
-ragtag.py agp2fa "${AGP_CONTIG_NAMES}" "${INPUT_FASTA}" > "${OUTPUT_FASTA}"
+#convert the single renamed AGP to fasta
+ragtag.py agp2fa "${RENAMED_AGP}" "${INPUT_FASTA}" > "${OUTPUT_FASTA}"
 
 #run ragtag scaffold for new fasta
 ragtag.py scaffold --remove-small -f 15000 -d 500000 -i 0.4 -a 0.4 -s 0.4 --mm2-params '-x asm5' -t "${THREADS}" \
-    -j "${UNPLACED_LIST}" -C \
     -o "${RAGTAG_OUTPUT_DIR}" "${REF_GENOME}" "${OUTPUT_FASTA}" || { echo "ragtag scaffold failed for sample dSAMPLE_CLI"; exit 1; }
 
 #make a copy of the output fasta and agp to make it easier to differentiate the two samples when used together
