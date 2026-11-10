@@ -1,7 +1,7 @@
 #!/bin/bash
 #PBS -l select=1:ncpus=23:mem=60GB
 #PBS -q bix
-#PBS -l walltime=48:00:00
+#PBS -l walltime=12:00:00
 #PBS -N SAMPLE_CLI_STEP_PBS
 #PBS -o OUTPUT_FILE_PBS
 #PBS -e ERROR_FILE_PBS
@@ -66,9 +66,9 @@ run_quast() {
 # run for full output scaffold fasta
 run_quast "${RAGATAG_SCAFFOLD_DIR}/dSAMPLE_CLI.ragtag.scaffold.fasta" "${QUAST_DIR}/full"
 
-# run for chromosomes only scaffold fasta
-run_quast "${RAGATAG_SCAFFOLD_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta" "${QUAST_DIR}/chromosomes"
+# # run for chromosomes only scaffold fasta
+# run_quast "${RAGATAG_SCAFFOLD_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta" "${QUAST_DIR}/chromosomes"
 
-# run for unplaced chromosomes only scaffold fasta
-run_quast "${RAGATAG_SCAFFOLD_DIR}/dSAMPLE_CLI.ragtag.scaffold.unplaced.fasta" "${QUAST_DIR}/unplaced"
+# # run for unplaced chromosomes only scaffold fasta
+# run_quast "${RAGATAG_SCAFFOLD_DIR}/dSAMPLE_CLI.ragtag.scaffold.unplaced.fasta" "${QUAST_DIR}/unplaced"
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 #PBS -l select=1:ncpus=23:mem=60GB
 #PBS -q bix
-#PBS -l walltime=48:00:00
+#PBS -l walltime=12:00:00
 #PBS -N SAMPLE_CLI_STEP_PBS
 #PBS -o OUTPUT_FILE_PBS
 #PBS -e ERROR_FILE_PBS
@@ -19,11 +19,6 @@ module load app/QUAST/5.3.0
 
 #resource parameters
 THREADS=23
-
-#which ragtag stage this run evaluates -- sed-substituted by submit.sh's
-#RAGTAG_MODE=correct|scaffold CLI argument (see 06.1.busco_ragtag.sh for the
-#same pattern)
-RAGTAG_MODE="__RAGTAG_MODE__"
 
 #directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
@@ -75,33 +70,25 @@ run_quast() {
 F_VALUES=(15000)
 D_VALUES=(500000)
 
-if [[ "${RAGTAG_MODE}" == "correct" ]]; then
-    run_quast "${ALL_RESULTS_DIR}/05.1.ragtag_correct/ragtag.correct.fasta" "correct"
 
-elif [[ "${RAGTAG_MODE}" == "scaffold" ]]; then
-    for F_VAL in "${F_VALUES[@]}"; do
-        for D_VAL in "${D_VALUES[@]}"; do
-            PREFIX="SAMPLE_CLI.f${F_VAL}_d${D_VAL}"
-            COMBO_STEP_DIR="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold/f${F_VAL}_d${D_VAL}"
-            OUT_SUBDIR="f${F_VAL}_d${D_VAL}"
+for F_VAL in "${F_VALUES[@]}"; do
+    for D_VAL in "${D_VALUES[@]}"; do
+        PREFIX="SAMPLE_CLI.f${F_VAL}_d${D_VAL}"
+        COMBO_STEP_DIR="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold/f${F_VAL}_d${D_VAL}"
+        OUT_SUBDIR="f${F_VAL}_d${D_VAL}"
 
-            run_quast "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.fasta" "${OUT_SUBDIR}/full"
-            QUAST_STATUS["f${F_VAL}_d${D_VAL}_full"]=$?
+        run_quast "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.fasta" "${OUT_SUBDIR}/full"
+        QUAST_STATUS["f${F_VAL}_d${D_VAL}_full"]=$?
 
-            run_quast "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.chromosomes.fasta" "${OUT_SUBDIR}/chromosomes"
-            QUAST_STATUS["f${F_VAL}_d${D_VAL}_chromosomes"]=$?
+        # run_quast "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.chromosomes.fasta" "${OUT_SUBDIR}/chromosomes"
+        # QUAST_STATUS["f${F_VAL}_d${D_VAL}_chromosomes"]=$?
 
-            run_quast "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.unplaced.fasta" "${OUT_SUBDIR}/unplaced"
-            QUAST_STATUS["f${F_VAL}_d${D_VAL}_unplaced"]=$?
-        done
+        # run_quast "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.unplaced.fasta" "${OUT_SUBDIR}/unplaced"
+        # QUAST_STATUS["f${F_VAL}_d${D_VAL}_unplaced"]=$?
     done
+done
 
-else
-    echo "Error: RAGTAG_MODE must be 'correct' or 'scaffold', got: ${RAGTAG_MODE}"
-    exit 1
-fi
-
-echo "QUAST (${RAGTAG_MODE}) complete"
+echo "QUAST for scaffold complete"
 
 #log final exit status of each fasta to the error log (scaffold mode only)
 {
