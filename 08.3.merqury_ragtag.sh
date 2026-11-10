@@ -75,8 +75,8 @@ run_merqury() {
 # run for full output scaffold fasta
 run_merqury "${RAGATAG_SCAFFOLD_DIR}/dSAMPLE_CLI.ragtag.scaffold.fasta" "full" "mq_full"
 
-# run for chromosomes only scaffold fasta
-run_merqury "${RAGATAG_SCAFFOLD_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta" "chromosomes" "mq_chromosomes"
+# # run for chromosomes only scaffold fasta
+# run_merqury "${RAGATAG_SCAFFOLD_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta" "chromosomes" "mq_chromosomes"
 
-# run for unplaced chromosomes only scaffold fasta
-run_merqury "${RAGATAG_SCAFFOLD_DIR}/dSAMPLE_CLI.ragtag.scaffold.unplaced.fasta" "unplaced" "mq_unplaced"
+# # run for unplaced chromosomes only scaffold fasta
+# run_merqury "${RAGATAG_SCAFFOLD_DIR}/dSAMPLE_CLI.ragtag.scaffold.unplaced.fasta" "unplaced" "mq_unplaced"

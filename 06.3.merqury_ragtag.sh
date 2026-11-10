@@ -18,10 +18,6 @@ source ~/.pbsrc
 module load app/miniconda/mamba
 conda activate merqury
 
-#which ragtag stage this run evaluates -- sed-substituted by submit.sh's
-#RAGTAG_MODE=correct|scaffold CLI argument (see 06.1.busco_ragtag.sh)
-RAGTAG_MODE="__RAGTAG_MODE__"
-
 #directories and files
 WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 RAW_READS_GZ="${WORKDIR}/raw_reads/D260405-SAMPLE_CLI_HiFi.fastq.gz"
@@ -85,37 +81,27 @@ run_merqury() {
 # breaks away. once its done the script returns to the initial workdir to subshell into
 # the next appropriate one again
 
-if [[ "${RAGTAG_MODE}" == "correct" ]]; then
-    CONTIGS_IN="${ALL_RESULTS_DIR}/05.1.ragtag_correct/ragtag.correct.fasta"
-    run_merqury "${CONTIGS_IN}" "correct" "mq_dSAMPLE_CLI_correct"
 
-elif [[ "${RAGTAG_MODE}" == "scaffold" ]]; then
-    F_VALUES=(15000)
-    D_VALUES=(500000)
+F_VALUES=(15000)
+D_VALUES=(500000)
 
-    for F_VAL in "${F_VALUES[@]}"; do
-        for D_VAL in "${D_VALUES[@]}"; do
-            PREFIX="SAMPLE_CLI.f${F_VAL}_d${D_VAL}"
-            COMBO_STEP_DIR="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold/f${F_VAL}_d${D_VAL}"
-            OUT_SUBDIR="f${F_VAL}_d${D_VAL}"
+for F_VAL in "${F_VALUES[@]}"; do
+    for D_VAL in "${D_VALUES[@]}"; do
+        PREFIX="SAMPLE_CLI.f${F_VAL}_d${D_VAL}"
+        COMBO_STEP_DIR="${ALL_RESULTS_DIR}/05.2.ragtag_scaffold/f${F_VAL}_d${D_VAL}"
+        OUT_SUBDIR="f${F_VAL}_d${D_VAL}"
 
-            run_merqury "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.fasta" "${OUT_SUBDIR}" "mq_${PREFIX}_full"
-            MERQURY_STATUS["f${F_VAL}_d${D_VAL}_full"]=$?
+        run_merqury "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.fasta" "${OUT_SUBDIR}" "mq_${PREFIX}_full"
+        MERQURY_STATUS["f${F_VAL}_d${D_VAL}_full"]=$?
 
-            run_merqury "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.chromosomes.fasta" "${OUT_SUBDIR}" "mq_${PREFIX}_chromosomes"
-            MERQURY_STATUS["f${F_VAL}_d${D_VAL}_chromosomes"]=$?
+        # run_merqury "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.chromosomes.fasta" "${OUT_SUBDIR}" "mq_${PREFIX}_chromosomes"
+        # MERQURY_STATUS["f${F_VAL}_d${D_VAL}_chromosomes"]=$?
 
-            run_merqury "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.unplaced.fasta" "${OUT_SUBDIR}" "mq_${PREFIX}_unplaced"
-            MERQURY_STATUS["f${F_VAL}_d${D_VAL}_unplaced"]=$?
-        done
+        # run_merqury "${COMBO_STEP_DIR}/${PREFIX}.ragtag.scaffold.unplaced.fasta" "${OUT_SUBDIR}" "mq_${PREFIX}_unplaced"
+        # MERQURY_STATUS["f${F_VAL}_d${D_VAL}_unplaced"]=$?
     done
+done
 
-else
-    echo "Error: RAGTAG_MODE must be 'correct' or 'scaffold', got: ${RAGTAG_MODE}"
-    exit 1
-fi
-
-echo "Merqury (${RAGTAG_MODE}) complete"
 
 #log final exit status of each fasta to the error log (scaffold mode only)
 {
