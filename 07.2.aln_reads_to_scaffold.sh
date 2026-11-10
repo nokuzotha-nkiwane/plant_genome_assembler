@@ -27,11 +27,11 @@ WORKDIR="${TOMATO_PATH}/SAMPLE_CLI"
 READS="${WORKDIR}/raw_reads/D260405-SAMPLE_CLI_HiFi.fastq.gz"
 MIN_MEAN_Q=20
 MIN_LENGTH=3000
-FILTERED_READS="${WORKDIR}/raw_reads/filtered_reads_CLI_HAPLOTYPE_q${MIN_MEAN_Q}_minlen${MIN_LENGTH}.fq.gz"
+FILTERED_READS="${WORKDIR}/raw_reads/filtered_reads/dSAMPLE_CLI_filtered_minlen7000.fastq.gz"
 ALL_RESULTS_DIR="${WORKDIR}/results"
 READ_SCAFFOLD_ALN_DIR="__RESULTS_DIR__"
 RAGTAG_OUTPUT_DIR="${ALL_RESULTS_DIR}/07.1.agp_correct/ragtag_output"
-INPUT_FASTA="${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.fasta"
+INPUT_FASTA="${RAGTAG_OUTPUT_DIR}/dSAMPLE_CLI.ragtag.scaffold.chromosomes.fasta"
 WHOLE_BAM="${READ_SCAFFOLD_ALN_DIR}/dSAMPLE_CLI_whole.bam"
 
 #chromosomes to be corrected
@@ -67,27 +67,27 @@ samtools index "${WHOLE_BAM}"
 # conda deactivate
 # conda activate helper-tools
 
-add minimum aligned length to filter reads that align (samtools)
+# add minimum aligned length to filter reads that align (samtools)
 
-#function to extract regions matching to chromosomes of interest
-extract_region(){
-    local CHRSM="$1"
-    local OUTPUT_DIR="${READ_SCAFFOLD_ALN_DIR}/chromosome_${CHRSM}"
-    local OUTPUT_BAM="${OUTPUT_DIR}/dSAMPLE_CLI_chromosome_${CHRSM}.bam"
-    local OUTPUT_FASTA="${OUTPUT_DIR}/dSAMPLE_CLI_chromosome_${CHRSM}.fasta"
+# #function to extract regions matching to chromosomes of interest
+# extract_region(){
+#     local CHRSM="$1"
+#     local OUTPUT_DIR="${READ_SCAFFOLD_ALN_DIR}/chromosome_${CHRSM}"
+#     local OUTPUT_BAM="${OUTPUT_DIR}/dSAMPLE_CLI_chromosome_${CHRSM}.bam"
+#     local OUTPUT_FASTA="${OUTPUT_DIR}/dSAMPLE_CLI_chromosome_${CHRSM}.fasta"
 
-    mkdir -p "${OUTPUT_DIR}"
+#     mkdir -p "${OUTPUT_DIR}"
 
-    #extract region in bam
-    samtools view -b "${WHOLE_BAM}" "${CHRSM}_RagTag" > "${OUTPUT_BAM}"
-    samtools index "${OUTPUT_BAM}"
+#     #extract region in bam
+#     samtools view -b "${WHOLE_BAM}" "${CHRSM}_RagTag" > "${OUTPUT_BAM}"
+#     samtools index "${OUTPUT_BAM}"
 
-    #extract fasta sequence
-    samtools faidx "${INPUT_FASTA}" "${CHRSM}_RagTag" > "${OUTPUT_FASTA}"
-}
+#     #extract fasta sequence
+#     samtools faidx "${INPUT_FASTA}" "${CHRSM}_RagTag" > "${OUTPUT_FASTA}"
+# }
 
 
-# run function to correct chromosomes
-for CHR in "${CORRECTION_CHROMOSOMES[@]}"; do
-    extract_region "${CHR}"
-done
+# # run function to correct chromosomes
+# for CHR in "${CORRECTION_CHROMOSOMES[@]}"; do
+#     extract_region "${CHR}"
+# done
