@@ -26,8 +26,12 @@ REF_FASTA="${WORKDIR}/data/reference_data/SL5.0.fasta"
 SAMPLE_CSV="${ANNOT_OUT_DIR}/sample_assembly_sheet.csv"
 SAMPLE_D03_TAG="sample_d03"
 SAMPLE_D05_TAG="sample_d05"
-SAMPLE_D03_PATH="${WORKDIR}/03/results/09.2.edta_repeat_masking/d03.ragtag.scaffold.chromosomes_soft_masked.fasta"
-SAMPLE_D05_PATH="${WORKDIR}/05/results/09.2.edta_repeat_masking/d05.ragtag.scaffold.chromosomes_soft_masked.fasta"
+SAMPLE_D03_MASKED="${WORKDIR}/03/results/09.2.edta_repeat_masking/d03.ragtag.scaffold.chromosomes_soft_masked.fasta"
+SAMPLE_D05_MASKED="${WORKDIR}/05/results/09.2.edta_repeat_masking/d05.ragtag.scaffold.chromosomes_soft_masked.fasta"
+SAMPLE_D03_PATH="${ANNOT_OUT_DIR}/d03.ragtag.scaffold.chromosomes_soft_masked.renamed.fasta"
+SAMPLE_D05_PATH="${ANNOT_OUT_DIR}/d05.ragtag.scaffold.chromosomes_soft_masked.renamed.fasta"
+SAMPLE_D03_ID_MAP="${ANNOT_OUT_DIR}/d03.id_map.tsv"
+SAMPLE_D05_ID_MAP="${ANNOT_OUT_DIR}/d05.id_map.tsv"
 BRAKER_PROTEIN_EVIDENCE="${WORKDIR}/data/orthodb13/Viridiplantae.fa"
 EGGNOG_MAPPER="${WORKDIR}/data/databases/eggnog_v7"
 EGGNOG_MAPPER_TAX_SCOPE=33090
@@ -39,6 +43,56 @@ cd "${ANNOT_OUT_DIR}"
 
 #singularity cache directory
 export NXF_SINGULARITY_CACHEDIR="/new-home/25086138/singularity_cache"
+
+#rename FASTA headers so they pass genepal's FA-LINT check
+#usage: rename_fasta_ids in.fasta out.fasta id_map.tsv
+rename_fasta_ids () {
+  local in="${1}" out="${2}" map="${3}"
+  awk -v map="${map}" '
+    BEGIN { OFS="\t" }
+    /^>/ {
+      #original ID without the ">" and without any description
+      old = substr($0, 2)
+      sub(/[ \t].*/, "", old)
+      new = old
+
+      #RagTag chromosomes: 10_RagTag -> Chromosome_10
+      if (new ~ /^[0-9]+_RagTag$/) {
+        sub(/_RagTag$/, "", new)
+        new = "Chromosome_" new
+      } else {
+        #unplaced contigs: replace anything outside [A-Za-z0-9_] with _
+        gsub(/[^A-Za-z0-9_]/, "_", new)
+        #IDs must start with a letter
+        if (new !~ /^[A-Za-z]/) new = "ctg_" new
+      }
+
+      #abort if two headers collapse to the same ID
+      if (new in seen) { print "DUPLICATE ID: " new > "/dev/stderr"; exit 1 }
+      seen[new] = 1
+
+      #record old -> new mapping, then write the new header
+      print old, new > map
+      print ">" new
+      next
+    }
+    #sequence lines pass through unchanged
+    { print }
+  ' "${in}" > "${out}"
+}
+
+#rename headers in both masked assemblies
+rename_fasta_ids "${SAMPLE_D03_MASKED}" "${SAMPLE_D03_PATH}" "${SAMPLE_D03_ID_MAP}"
+rename_fasta_ids "${SAMPLE_D05_MASKED}" "${SAMPLE_D05_PATH}" "${SAMPLE_D05_ID_MAP}"
+
+#fail early if any renamed header is still invalid (grep -c exits 1 on zero matches, so guard it)
+for fasta in "${SAMPLE_D03_PATH}" "${SAMPLE_D05_PATH}"; do
+  n_bad=$(grep '^>' "${fasta}" | grep -vcE '^>[A-Za-z][A-Za-z0-9_]*$' || true)
+  if [ "${n_bad}" -ne 0 ]; then
+    echo "ERROR: ${n_bad} invalid FASTA IDs remain in ${fasta}" >&2
+    exit 1
+  fi
+done
 
 #make sample csv
 printf 'tag,fasta,is_masked\n' > "${SAMPLE_CSV}"
