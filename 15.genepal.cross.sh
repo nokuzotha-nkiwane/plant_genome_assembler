@@ -1,7 +1,7 @@
 #!/bin/bash
-#PBS -l select=1:ncpus=24:mem=60GB
+#PBS -l select=1:ncpus=48:mem=128GB
 #PBS -q bix
-#PBS -l walltime=24:00:00
+#PBS -l walltime=144:00:00
 #PBS -N SAMPLE_CLI_STEP_PBS
 #PBS -o OUTPUT_FILE_PBS
 #PBS -e ERROR_FILE_PBS
@@ -20,6 +20,7 @@ module load app/nextflow/24
 #files and directories
 WORKDIR="${TOMATO_PATH}"
 ANNOT_OUT_DIR="__RESULTS_DIR__"
+CUSTOM_CONFIG="/new-home/25086138/my_environments/genepal/custom.config"
 LIFTOFF_ANNOTATION_CSV="${ANNOT_OUT_DIR}/input_liftoff_annotation.csv"
 REF_GFF3="${WORKDIR}/data/reference_data/SL5.0.gff3"
 REF_FASTA="${WORKDIR}/data/reference_data/SL5.0.fasta"
@@ -107,6 +108,7 @@ printf '"%s","%s"' "${REF_FASTA}" "${REF_GFF3}" >> "${LIFTOFF_ANNOTATION_CSV}"
 nextflow run plant-food-research-open/genepal \
   -revision 1.0.1 \
   -profile singularity\
+  -c "${CUSTOM_CONFIG}" \
   --input "${SAMPLE_CSV}" \
   --email "${EMAIL}" \
   --protein_evidence "${BRAKER_PROTEIN_EVIDENCE}" \
