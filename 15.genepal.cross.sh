@@ -51,6 +51,9 @@ LOGFILE="${ANNOT_OUT_DIR}/genepal.log"
 #move into output directory
 cd "${ANNOT_OUT_DIR}"
 
+#make renamed_fastas_and_id_maps directory
+mkdir -p "${RENAMED_FASTAS_AND_ID_MAPS}"
+
 #singularity cache directory
 export NXF_SINGULARITY_CACHEDIR="/new-home/25086138/singularity_cache"
 
