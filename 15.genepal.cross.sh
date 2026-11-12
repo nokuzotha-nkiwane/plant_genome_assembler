@@ -40,11 +40,9 @@ REF_ID_MAP="${RENAMED_FASTAS_AND_ID_MAPS}/reference.id_map.tsv"
 SAMPLE_D03_ID_MAP="${RENAMED_FASTAS_AND_ID_MAPS}/d03.id_map.tsv"
 SAMPLE_D05_ID_MAP="${RENAMED_FASTAS_AND_ID_MAPS}/d05.id_map.tsv"
 REPEAT_ANNOTATOR="edta"
-EDTA_SENSITIVE="TRUE"
 BRAKER_PROTEIN_EVIDENCE="${WORKDIR}/data/orthodb13/Viridiplantae.fa"
 BUSCO_LINEAGE="solanales_odb10"
 EGGNOG_MAPPER="${WORKDIR}/data/databases/eggnog_db"
-EGGNOG_MAPPER_TAX_SCOPE=33090
 EMAIL="PBS_EMAIL"
 LOGFILE="${ANNOT_OUT_DIR}/genepal.log"
 
@@ -118,9 +116,6 @@ printf '"%s","%s",no\n' "${SAMPLE_D05_TAG}" "${SAMPLE_D05_PATH}" >> "${SAMPLE_CS
 printf 'fasta,gff3\n' > "${LIFTOFF_ANNOTATION_CSV}"
 printf '"%s","%s"' "${REF_FASTA_INPUT}" "${REF_GFF3}" >> "${LIFTOFF_ANNOTATION_CSV}"
 
-#convert EGGNOG_MAPPER_TAX_SCOPE to integer
-EGGNOG_MAPPER_TAX_SCOPE_INTEGER=$(("${EGGNOG_MAPPER_TAX_SCOPE}" + 0))
-
 #run genepal
 nextflow run plant-food-research-open/genepal \
   -revision 1.0.1 \
@@ -129,11 +124,11 @@ nextflow run plant-food-research-open/genepal \
   --input "${SAMPLE_CSV}" \
   --email "${EMAIL}" \
   --repeat_annotator "${REPEAT_ANNOTATOR}" \
-  --edta_is_sensitive "${EDTA_SENSITIVE}" \
+  --edta_is_sensitive true \
   --busco_lineage_datasets "${BUSCO_LINEAGE}" \
   --protein_evidence "${BRAKER_PROTEIN_EVIDENCE}" \
   --eggnogmapper_db_dir "${EGGNOG_MAPPER}" \
-  --eggnogmapper_tax_scope "${EGGNOG_MAPPER_TAX_SCOPE_INTEGER}" \
+  --eggnogmapper_tax_scope 33090 \
   --liftoff_annotations "${LIFTOFF_ANNOTATION_CSV}" \
   --outdir "${ANNOT_OUT_DIR}" \
   2>&1 | tee -a "${LOGFILE}"
