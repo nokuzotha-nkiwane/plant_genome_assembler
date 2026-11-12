@@ -96,8 +96,8 @@ rename_fasta_ids () {
 
 #rename headers in assemblies
 rename_fasta_ids "${REF_FASTA_INPUT}" "${REF_PATH}" "${REF_ID_MAP}"
-rename_fasta_ids "${SAMPLE_D03_MASKED}" "${SAMPLE_D03_PATH}" "${SAMPLE_D03_ID_MAP}"
-rename_fasta_ids "${SAMPLE_D05_MASKED}" "${SAMPLE_D05_PATH}" "${SAMPLE_D05_ID_MAP}"
+rename_fasta_ids "${SAMPLE_D03_INPUT}" "${SAMPLE_D03_PATH}" "${SAMPLE_D03_ID_MAP}"
+rename_fasta_ids "${SAMPLE_D05_INPUT}" "${SAMPLE_D05_PATH}" "${SAMPLE_D05_ID_MAP}"
 
 #fail early if any renamed header is still invalid (grep -c exits 1 on zero matches, so guard it)
 for fasta in "${REF_PATH}" "${SAMPLE_D03_PATH}" "${SAMPLE_D05_PATH}"; do
