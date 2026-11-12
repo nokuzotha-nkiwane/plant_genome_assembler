@@ -40,9 +40,7 @@ REF_PATH="${RENAMED_FASTAS_AND_ID_MAPS}/SL5.0.renamed.fasta"
 REF_ID_MAP="${RENAMED_FASTAS_AND_ID_MAPS}/reference.id_map.tsv"
 SAMPLE_D03_ID_MAP="${RENAMED_FASTAS_AND_ID_MAPS}/d03.id_map.tsv"
 SAMPLE_D05_ID_MAP="${RENAMED_FASTAS_AND_ID_MAPS}/d05.id_map.tsv"
-REPEAT_ANNOTATOR="edta"
 BRAKER_PROTEIN_EVIDENCE="${WORKDIR}/data/orthodb13/Viridiplantae.fa"
-BUSCO_LINEAGE="solanales_odb10"
 EGGNOG_MAPPER="${WORKDIR}/data/databases/eggnog_db"
 EMAIL="PBS_EMAIL"
 LOGFILE="${ANNOT_OUT_DIR}/genepal.log"
@@ -125,12 +123,8 @@ nextflow run plant-food-research-open/genepal \
   -params-file "${PARAMS_YAML}" \
   --input "${SAMPLE_CSV}" \
   --email "${EMAIL}" \
-  --repeat_annotator "${REPEAT_ANNOTATOR}" \
-  --edta_is_sensitive true \
-  --busco_lineage_datasets "${BUSCO_LINEAGE}" \
   --protein_evidence "${BRAKER_PROTEIN_EVIDENCE}" \
   --eggnogmapper_db_dir "${EGGNOG_MAPPER}" \
-  --eggnogmapper_tax_scope 33090 \
   --liftoff_annotations "${LIFTOFF_ANNOTATION_CSV}" \
   --outdir "${ANNOT_OUT_DIR}" \
   2>&1 | tee -a "${LOGFILE}"
