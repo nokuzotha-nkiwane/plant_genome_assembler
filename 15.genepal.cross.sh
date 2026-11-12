@@ -40,7 +40,7 @@ REF_ID_MAP="${RENAMED_FASTAS_AND_ID_MAPS}/reference.id_map.tsv"
 SAMPLE_D03_ID_MAP="${RENAMED_FASTAS_AND_ID_MAPS}/d03.id_map.tsv"
 SAMPLE_D05_ID_MAP="${RENAMED_FASTAS_AND_ID_MAPS}/d05.id_map.tsv"
 REPEAT_ANNOTATOR="edta"
-EDTA_SENSITIVE="true"
+EDTA_SENSITIVE="TRUE"
 BRAKER_PROTEIN_EVIDENCE="${WORKDIR}/data/orthodb13/Viridiplantae.fa"
 BUSCO_LINEAGE="solanales_odb10"
 EGGNOG_MAPPER="${WORKDIR}/data/databases/eggnog_db"
@@ -118,6 +118,9 @@ printf '"%s","%s",no\n' "${SAMPLE_D05_TAG}" "${SAMPLE_D05_PATH}" >> "${SAMPLE_CS
 printf 'fasta,gff3\n' > "${LIFTOFF_ANNOTATION_CSV}"
 printf '"%s","%s"' "${REF_FASTA_INPUT}" "${REF_GFF3}" >> "${LIFTOFF_ANNOTATION_CSV}"
 
+#convert EGGNOG_MAPPER_TAX_SCOPE to integer
+EGGNOG_MAPPER_TAX_SCOPE_INTEGER=$(("${EGGNOG_MAPPER_TAX_SCOPE}" + 0))
+
 #run genepal
 nextflow run plant-food-research-open/genepal \
   -revision 1.0.1 \
@@ -130,7 +133,7 @@ nextflow run plant-food-research-open/genepal \
   --busco_lineage_datasets "${BUSCO_LINEAGE}" \
   --protein_evidence "${BRAKER_PROTEIN_EVIDENCE}" \
   --eggnogmapper_db_dir "${EGGNOG_MAPPER}" \
-  --eggnogmapper_tax_scope "${EGGNOG_MAPPER_TAX_SCOPE}" \
+  --eggnogmapper_tax_scope "${EGGNOG_MAPPER_TAX_SCOPE_INTEGER}" \
   --liftoff_annotations "${LIFTOFF_ANNOTATION_CSV}" \
   --outdir "${ANNOT_OUT_DIR}" \
   2>&1 | tee -a "${LOGFILE}"
