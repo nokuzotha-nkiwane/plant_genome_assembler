@@ -22,7 +22,7 @@ module load app/apptainer/1.2.5
 WORKDIR="${TOMATO_PATH}"
 ANNOT_OUT_DIR="__RESULTS_DIR__"
 CUSTOM_CONFIG="/new-home/25086138/my_environments/genepal/custom.config"
-PARAMS_YAML="/new-home/25086138/my_environments/genepal/params.yaml"
+PARAMS_YAML="/new-home/25086138/my_environments/genepal/params.json"
 LIFTOFF_ANNOTATION_CSV="${ANNOT_OUT_DIR}/input_liftoff_annotation.csv"
 REF_GFF3="${WORKDIR}/data/reference_data/SL5.0.gff3"
 REF_FASTA_INPUT="${WORKDIR}/data/reference_data/SL5.0.fasta"
@@ -121,6 +121,7 @@ nextflow run plant-food-research-open/genepal \
   -revision 1.0.1 \
   -profile singularity \
   -c "${CUSTOM_CONFIG}" \
+  -params-file "${PARAMS_YAML}" \
   --input "${SAMPLE_CSV}" \
   --email "${EMAIL}" \
   --repeat_annotator "${REPEAT_ANNOTATOR}" \
