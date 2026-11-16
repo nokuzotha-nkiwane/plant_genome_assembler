@@ -75,7 +75,6 @@ awk -F'\t' '{print $3}' "${CONSOLIDATED_MISSINGS_LIST}" | sort -u > "${unique_CO
 #if file empty emit a warning instead of silent failure
 if [[ ! -s "${unique_CONSOLIDATED_MISSINGS_LIST}" ]]; then
     echo "No BUSCOs missing-in-chromosomes-but-complete-in-unplaced found — nothing to extract."
-    exit 0
 fi
 
 #use the sorted list to extract the sequences from the orignal fasta (UNPLACED_SCAFFOLDS_FASTA) and print the matches to a
