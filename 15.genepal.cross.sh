@@ -25,7 +25,8 @@ CUSTOM_CONFIG="/new-home/25086138/my_environments/genepal/custom.config"
 PARAMS_YAML="/new-home/25086138/my_environments/genepal/params.json"
 LIFTOFF_ANNOTATION_CSV="${ANNOT_OUT_DIR}/input_liftoff_annotation.csv"
 REF_GFF3="${WORKDIR}/data/reference_data/SL5.0.gff3"
-REF_FASTA_INPUT="${WORKDIR}/data/reference_data/SL5.0.fasta"
+REF_FASTA_INPUT_NORMAL="${WORKDIR}/data/reference_data/SL5.0.fasta"
+REF_FASTA_INPUT="${WORKDIR}/data/reference_data/SL5.0.unplaced_removed.fasta"
 REF_TAG="reference"
 SAMPLE_CSV="${ANNOT_OUT_DIR}/sample_assembly_sheet.csv"
 SAMPLE_D03_TAG="sample_d03"
@@ -114,7 +115,7 @@ printf '"%s","%s",no\n' "${SAMPLE_D05_TAG}" "${SAMPLE_D05_PATH}" >> "${SAMPLE_CS
 
 #make liftoff annotation csv
 printf 'fasta,gff3\n' > "${LIFTOFF_ANNOTATION_CSV}"
-printf '"%s","%s"' "${REF_FASTA_INPUT}" "${REF_GFF3}" >> "${LIFTOFF_ANNOTATION_CSV}"
+printf '"%s","%s"' "${REF_FASTA_INPUT_NORMAL}" "${REF_GFF3}" >> "${LIFTOFF_ANNOTATION_CSV}"
 
 #run genepal
 nextflow run plant-food-research-open/genepal \
