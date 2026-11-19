@@ -42,7 +42,7 @@ LOGFILE="${PLOTSV_OUT_DIR}/plotsv.log"
 
 #move into output directory
 cd "${PLOTSV_OUT_DIR}"
-
+mkdir -p "${RENAMED_FASTAS_AND_ID_MAPS}"
 
 #rename FASTA headers so they pass genepal's FA-LINT check
 #usage: rename_fasta_ids in.fasta out.fasta id_map.tsv
@@ -59,6 +59,9 @@ rename_fasta_ids () {
       #RagTag chromosomes: 10_RagTag -> Chromosome_10
       if (new ~ /^[0-9]+_RagTag$/) {
         sub(/_RagTag$/, "", new)
+        new = "Chromosome_" new
+      #reference chromosomes: bare numbers 1, 2, 3 -> Chromosome_1, Chromosome_2, ...
+      } else if (new ~ /^[0-9]+$/) {
         new = "Chromosome_" new
       } else {
         #unplaced contigs: replace anything outside [A-Za-z0-9_] with _
@@ -96,9 +99,9 @@ for fasta in "${REF_PATH}" "${SAMPLE_D03_PATH}" "${SAMPLE_D05_PATH}"; do
 done
 
 #make sample csv
-printf 'name,fasta' > "${SAMPLE_CSV}"
-printf '"%s","%s"' "${REF_TAG}" "${REF_PATH}" >> "${SAMPLE_CSV}"
-printf '"%s","%s"' "${SAMPLE_D03_TAG}" "${SAMPLE_D03_PATH}" >> "${SAMPLE_CSV}"
-printf '"%s","%s"' "${SAMPLE_D05_TAG}" "${SAMPLE_D05_PATH}" >> "${SAMPLE_CSV}"
+printf 'name,fasta\n' > "${SAMPLE_CSV}"
+printf '"%s","%s"\n' "${REF_TAG}" "${REF_PATH}" >> "${SAMPLE_CSV}"
+printf '"%s","%s"\n' "${SAMPLE_D03_TAG}" "${SAMPLE_D03_PATH}" >> "${SAMPLE_CSV}"
+printf '"%s","%s"\n' "${SAMPLE_D05_TAG}" "${SAMPLE_D05_PATH}" >> "${SAMPLE_CSV}"
 
 nextflow run "${PLOTSV}" -c "${CUSTOM_CONFIG}" -profile local,apptainer --samplesheet "${SAMPLE_CSV}" --pairwise
