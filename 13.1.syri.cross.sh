@@ -100,8 +100,8 @@ done
 
 #make sample csv
 printf 'name,fasta\n' > "${SAMPLE_CSV}"
-printf '"%s","%s"\n' "${REF_TAG}" "${REF_PATH}" >> "${SAMPLE_CSV}"
-printf '"%s","%s"\n' "${SAMPLE_D03_TAG}" "${SAMPLE_D03_PATH}" >> "${SAMPLE_CSV}"
-printf '"%s","%s"\n' "${SAMPLE_D05_TAG}" "${SAMPLE_D05_PATH}" >> "${SAMPLE_CSV}"
+printf '%s,%s\n' "${REF_TAG}" "${REF_PATH}" >> "${SAMPLE_CSV}"
+printf '%s,%s\n' "${SAMPLE_D03_TAG}" "${SAMPLE_D03_PATH}" >> "${SAMPLE_CSV}"
+printf '%s,%s\n' "${SAMPLE_D05_TAG}" "${SAMPLE_D05_PATH}" >> "${SAMPLE_CSV}"
 
 nextflow run "${PLOTSV}" -c "${CUSTOM_CONFIG}" -profile local,apptainer --samplesheet "${SAMPLE_CSV}" --pairwise
