@@ -44,6 +44,9 @@ LOGFILE="${PLOTSV_OUT_DIR}/plotsv.log"
 cd "${PLOTSV_OUT_DIR}"
 mkdir -p "${RENAMED_FASTAS_AND_ID_MAPS}"
 
+#singularity cache directory
+export NXF_SINGULARITY_CACHEDIR="/new-home/25086138/singularity_cache"
+
 #rename FASTA headers so they pass genepal's FA-LINT check
 #usage: rename_fasta_ids in.fasta out.fasta id_map.tsv
 rename_fasta_ids () {
