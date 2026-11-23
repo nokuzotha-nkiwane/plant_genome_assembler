@@ -17,3 +17,45 @@ source ~/.pbsrc
 #load modules
 module load app/Java/21.0.2
 module load app/apptainer/1.2.5
+
+#files and directories
+WORKDIR="${TOMATO_PATH}"
+VARIANTS_OUT_DIR="__RESULTS_DIR__"
+CUSTOM_CONFIG="/new-home/25086138/my_environments/pacvar/custom.config"
+REF_FASTA="${WORKDIR}/data/reference_data/SL5.0.fasta"
+SAMPLE_CSV="${VARIANTS_OUT_DIR}/samplesheet.csv"
+SAMPLE_D03_TAG="sample_d03"
+SAMPLE_D05_TAG="sample_d05"
+BAM_READS_03="${WORKDIR}/data/d03/D260405-03.hifi_reads.bam"
+PBI_READS_03="${WORKDIR}/data/d03/D260405-03.hifi_reads.bam.pbi"
+BAM_READS_05="${WORKDIR}/data/d03/D260405-05.hifi_reads.bam"
+PBI_READS_05="${WORKDIR}/data/d03/D260405-05.hifi_reads.bam.pbi"
+SAMPLE_D03_ID_MAP="${VARIANTS_OUT_DIR}/d03.id_map.tsv"
+SAMPLE_D05_ID_MAP="${VARIANTS_OUT_DIR}/d05.id_map.tsv"
+WORKFLOW_TYPE="wgs"
+SKIP_DEMULTIPLEXING="True"
+SV_CALLER="pbsv"
+LOGFILE="${VARIANTS_OUT_DIR}/pacvar.log"
+
+#move into output directory
+cd "${VARIANTS_OUT_DIR}"
+
+#singularity cache directory
+export NXF_SINGULARITY_CACHEDIR="/new-home/25086138/singularity_cache"
+
+#make sample csv
+printf 'sample,bam,pbi\n' > "${SAMPLE_CSV}"
+printf '%s,%s,%s\n' "${SAMPLE_D03_TAG}" "${BAM_READS_03}" "${PBI_READS_03}" >> "${SAMPLE_CSV}"
+printf '%s,%s,%s\n' "${SAMPLE_D05_TAG}" "${BAM_READS_05}" "${PBI_READS_05}" >> "${SAMPLE_CSV}"
+
+#run pacvar
+nextflow run nf-core/pacvar \
+    -revision 1.1.0 \
+    -profile apptainer \
+    --input "${SAMPLE_CSV}" \
+    --workflow "${WORKFLOW_TYPE}" \
+    --skip_demultiplexing "${SKIP_DEMULTIPLEXING}" \
+    --fasta "${REF_FASTA}" \
+    --sv_caller "${SV_CALLER}" \
+    --outdir "${VARIANTS_OUT_DIR}" \
+      2>&1 | tee -a "${LOGFILE}"
