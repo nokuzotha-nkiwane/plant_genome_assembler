@@ -27,7 +27,7 @@ OUTPUT_DIR="__RESULTS_DIR__"
 REF_DIR="${TOMATO_PATH}/data/reference_data"
 CDS="${REF_DIR}/SL5.cds.fa.gz"
 logfile="${OUTPUT_DIR}/edta.log"
-RAGATAG_SCAFFOLD_FASTA="${ALL_RESULTS_DIR}/07.1.agp_correct/ragtag_output/dSAMPLE_CLI.ragtag.scaffold.fasta"
+RAGATAG_SCAFFOLD_FASTA="${TOMATO_PATH}/data/reference_data/SL5.0.unplaced_removed.fasta"
 # EDTA_IMAGE="/new-home/25086138/my_environments/edta/EDTA.sif"
 # TOOL_ENV="/usr/local/bin/"
 
