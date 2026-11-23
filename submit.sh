@@ -78,12 +78,13 @@ fi
 #make new results directory
 mkdir -p ${RESULTS_DIR}
 
-#substitutions for PBS directives in script. ARCHIVE_STEP (not STEP) drives the job
-#name / .out / .err filenames so ragtag-mode variants are distinguishable in qstat
-#and in the results dir listing
+#substitutions for PBS directives in script. Combined scripts use the full script
+#name as STEP_PBS; normal scripts retain the ragtag-mode-aware archive step name.
+PBS_STEP="${ARCHIVE_STEP}"
+[[ "${IS_CROSS}" == true ]] && PBS_STEP="${SCRIPT}"
 SED_ARGS=(
     -e "s/PBS_EMAIL/${PBS_EMAIL}/g"
-    -e "s/STEP_PBS/${ARCHIVE_STEP}/g"
+    -e "s/STEP_PBS/${PBS_STEP}/g"
     -e "s|OUTPUT_FILE_PBS|${RESULTS_DIR}/${ARCHIVE_STEP}.out|g"
     -e "s|ERROR_FILE_PBS|${RESULTS_DIR}/${ARCHIVE_STEP}.err|g"
     -e "s|__RESULTS_DIR__|${RESULTS_DIR}|g"
