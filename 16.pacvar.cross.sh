@@ -34,7 +34,6 @@ PBI_READS_05="${WORKDIR}/data/d05/D260405-05.hifi_reads.bam.pbi"
 SAMPLE_D03_ID_MAP="${VARIANTS_OUT_DIR}/d03.id_map.tsv"
 SAMPLE_D05_ID_MAP="${VARIANTS_OUT_DIR}/d05.id_map.tsv"
 WORKFLOW_TYPE="wgs"
-SKIP_DEMULTIPLEXING="True"
 SV_CALLER="pbsv"
 LOGFILE="${VARIANTS_OUT_DIR}/pacvar.log"
 
@@ -57,7 +56,6 @@ nextflow run nf-core/pacvar \
     -params-file "${PARAMS_JSON}" \
     --input "${SAMPLE_CSV}" \
     --workflow "${WORKFLOW_TYPE}" \
-    --skip_demultiplexing "${SKIP_DEMULTIPLEXING}" \
     --fasta "${REF_FASTA}" \
     --sv_caller "${SV_CALLER}" \
     --outdir "${VARIANTS_OUT_DIR}" \
