@@ -51,7 +51,7 @@ printf '%s,%s,%s\n' "${SAMPLE_D05_TAG}" "${BAM_READS_05}" "${PBI_READS_05}" >> "
 #run pacvar
 nextflow run nf-core/pacvar \
     -revision 1.1.0 \
-    -profile apptainer \
+    -profile singularity \
     -c "${CUSTOM_CONFIG}" \
     -params-file "${PARAMS_JSON}" \
     --input "${SAMPLE_CSV}" \
