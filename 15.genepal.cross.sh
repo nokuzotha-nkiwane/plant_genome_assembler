@@ -32,10 +32,10 @@ SAMPLE_CSV="${ANNOT_OUT_DIR}/sample_assembly_sheet.csv"
 SAMPLE_D03_TAG="sample_d03"
 SAMPLE_D05_TAG="sample_d05"
 RENAMED_FASTAS_AND_ID_MAPS="${ANNOT_OUT_DIR}/renamed_fastas_and_id_maps"
-SAMPLE_D03_INPUT="${WORKDIR}/03/results/09.2.edta_repeat_masking/d03.ragtag.scaffold.chromosomes.fasta"
-SAMPLE_D05_INPUT="${WORKDIR}/05/results/09.2.edta_repeat_masking/d05.ragtag.scaffold.chromosomes.fasta"
-SAMPLE_D03_PATH="${RENAMED_FASTAS_AND_ID_MAPS}/d03.ragtag.scaffold.chromosomes.renamed.fasta"
-SAMPLE_D05_PATH="${RENAMED_FASTAS_AND_ID_MAPS}/d05.ragtag.scaffold.chromosomes.renamed.fasta"
+SAMPLE_D03_MASKED="${WORKDIR}/03/results/09.2.edta_repeat_masking/d03.ragtag.scaffold.chromosomes_soft_masked.fasta"
+SAMPLE_D05_MASKED="${WORKDIR}/05/results/09.2.edta_repeat_masking/d05.ragtag.scaffold.chromosomes_soft_masked.fasta"
+SAMPLE_D03_PATH="${VARIANTS_OUT_DIR}/d03.ragtag.scaffold.chromosomes_soft_masked.renamed.fasta"
+SAMPLE_D05_PATH="${VARIANTS_OUT_DIR}/d05.ragtag.scaffold.chromosomes_soft_masked.renamed.fasta"
 REF_PATH="${RENAMED_FASTAS_AND_ID_MAPS}/SL5.0.renamed.fasta"
 REF_ID_MAP="${RENAMED_FASTAS_AND_ID_MAPS}/reference.id_map.tsv"
 SAMPLE_D03_ID_MAP="${RENAMED_FASTAS_AND_ID_MAPS}/d03.id_map.tsv"
@@ -118,7 +118,7 @@ printf '"%s","%s"' "${REF_FASTA_INPUT_NORMAL}" "${REF_GFF3}" >> "${LIFTOFF_ANNOT
 #run genepal
 nextflow run plant-food-research-open/genepal \
   -revision 1.0.1 \
-  -profile singularity \
+  -profile apptainer \
   -c "${CUSTOM_CONFIG}" \
   -params-file "${PARAMS_YAML}" \
   --input "${SAMPLE_CSV}" \
