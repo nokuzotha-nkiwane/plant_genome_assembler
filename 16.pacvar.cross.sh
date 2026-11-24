@@ -52,6 +52,7 @@ printf '%s,%s,%s\n' "${SAMPLE_D05_TAG}" "${BAM_READS_05}" "${PBI_READS_05}" >> "
 nextflow run nf-core/pacvar \
     -revision 1.1.0 \
     -profile apptainer \
+    -c "${CUSTOM_CONFIG}" \
     --input "${SAMPLE_CSV}" \
     --workflow "${WORKFLOW_TYPE}" \
     --skip_demultiplexing "${SKIP_DEMULTIPLEXING}" \
