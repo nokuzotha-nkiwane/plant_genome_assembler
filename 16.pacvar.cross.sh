@@ -22,6 +22,7 @@ module load app/apptainer/1.2.5
 WORKDIR="${TOMATO_PATH}"
 VARIANTS_OUT_DIR="__RESULTS_DIR__"
 CUSTOM_CONFIG="/new-home/25086138/my_environments/pacvar/custom.config"
+PARAMS_JSON="/new-home/25086138/my_environments/pacvar/params.json"
 REF_FASTA="${WORKDIR}/data/reference_data/SL5.0.fasta"
 SAMPLE_CSV="${VARIANTS_OUT_DIR}/samplesheet.csv"
 SAMPLE_D03_TAG="sample_d03"
@@ -53,6 +54,7 @@ nextflow run nf-core/pacvar \
     -revision 1.1.0 \
     -profile apptainer \
     -c "${CUSTOM_CONFIG}" \
+    -params-file "${PARAMS_JSON}" \
     --input "${SAMPLE_CSV}" \
     --workflow "${WORKFLOW_TYPE}" \
     --skip_demultiplexing "${SKIP_DEMULTIPLEXING}" \
