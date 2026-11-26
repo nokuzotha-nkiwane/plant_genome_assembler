@@ -34,7 +34,7 @@ PBI_READS_05="${WORKDIR}/data/subset_test/d05/D260405-05.hifi_reads.bam.pbi"
 SAMPLE_D03_ID_MAP="${VARIANTS_OUT_DIR}/d03.id_map.tsv"
 SAMPLE_D05_ID_MAP="${VARIANTS_OUT_DIR}/d05.id_map.tsv"
 WORKFLOW_TYPE="wgs"
-SV_CALLER="sawfish"
+SV_CALLER="pbsv"
 SNV_CALLER="gatk4"
 LOGFILE="${VARIANTS_OUT_DIR}/pacvar.log"
 
