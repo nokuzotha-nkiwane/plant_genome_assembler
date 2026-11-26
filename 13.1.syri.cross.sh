@@ -63,8 +63,11 @@ rename_fasta_ids () {
         sub(/[ \t].*/, "", old)
         new = old
 
+        #RagTag chromosome 0 uses Chr0_RagTag; other chromosomes use numeric IDs
+        if (new == "Chr0_RagTag") {
+          new = "Chromosome_0"
         #RagTag chromosomes: 10_RagTag -> Chromosome_10
-        if (new ~ /^[0-9]+_RagTag$/) {
+        } else if (new ~ /^[0-9]+_RagTag$/) {
           sub(/_RagTag$/, "", new)
           new = "Chromosome_" new
         #reference chromosomes: bare numbers 1, 2, 3 -> Chromosome_1, Chromosome_2, ...
