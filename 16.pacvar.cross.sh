@@ -35,6 +35,7 @@ SAMPLE_D03_ID_MAP="${VARIANTS_OUT_DIR}/d03.id_map.tsv"
 SAMPLE_D05_ID_MAP="${VARIANTS_OUT_DIR}/d05.id_map.tsv"
 WORKFLOW_TYPE="wgs"
 SV_CALLER="sawfish"
+SNV_CALLER="gatk4"
 LOGFILE="${VARIANTS_OUT_DIR}/pacvar.log"
 
 #move into output directory
@@ -58,5 +59,6 @@ nextflow run nf-core/pacvar \
     --workflow "${WORKFLOW_TYPE}" \
     --fasta "${REF_FASTA}" \
     --sv_caller "${SV_CALLER}" \
+    --snv_caller "${SNV_CALLER}" \
     --outdir "${VARIANTS_OUT_DIR}" \
       2>&1 | tee -a "${LOGFILE}"
