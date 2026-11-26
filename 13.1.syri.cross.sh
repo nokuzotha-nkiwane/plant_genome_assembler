@@ -22,7 +22,7 @@ module load app/apptainer/1.2.5
 WORKDIR="${TOMATO_PATH}"
 PLOTSV_OUT_DIR="__RESULTS_DIR__"
 CUSTOM_CONFIG="/new-home/25086138/my_environments/nf-plotsv/custom.config"
-# PARAMS_YAML="/new-home/25086138/my_environments/genepal/params.json"
+PARAMS_YAML="/new-home/25086138/my_environments/nf-plotsv/parameters.yml"
 PLOTSV="/new-home/25086138/my_environments/nf-plotsv"
 SAMPLE_CSV="${PLOTSV_OUT_DIR}/sample_assembly_sheet.csv"
 REF_FASTA_INPUT="${WORKDIR}/data/reference_data/SL5.0.unplaced_removed.fasta"
@@ -45,9 +45,9 @@ cd "${PLOTSV_OUT_DIR}"
 mkdir -p "${RENAMED_FASTAS_AND_ID_MAPS}"
 
 #singularity cache directory
-export NXF_SINGULARITY_CACHEDIR="/new-home/25086138/singularity_cache"
+export NXF_APPTAINER_CACHEDIR="/new-home/25086138/singularity_cache"
 
-#rename FASTA headers so they pass genepal's FA-LINT check
+#rename FASTA headers so they pass nf-plotsv's FA-LINT check
 #usage: rename_fasta_ids in.fasta out.fasta id_map.tsv
 rename_fasta_ids () {
   local in="${1}" out="${2}" map="${3}"
@@ -108,4 +108,4 @@ printf '%s,%s\n' "${SAMPLE_D03_TAG}" "${SAMPLE_D03_PATH}" >> "${SAMPLE_CSV}"
 printf '%s,%s\n' "${SAMPLE_D05_TAG}" "${SAMPLE_D05_PATH}" >> "${SAMPLE_CSV}"
 
 nextflow run "${PLOTSV}" -c "${CUSTOM_CONFIG}" -profile local,apptainer \
-    --samplesheet "${SAMPLE_CSV}" --pairwise 2>&1 | tee -a "${LOGFILE}"
+  -params-file "${PARAMS_YAML}" --samplesheet "${SAMPLE_CSV}" --pairwise 2>&1 | tee -a "${LOGFILE}"
