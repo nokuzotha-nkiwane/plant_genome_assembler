@@ -3,6 +3,7 @@
 #PBS -l mem=80GB
 #PBS -q bix
 #PBS -l walltime=96:00:00
+#PBS -N SAMPLE_CLI_STEP_PBS
 #PBS -o OUTPUT_FILE_PBS
 #PBS -e ERROR_FILE_PBS
 #PBS -m be
@@ -27,7 +28,7 @@ OUTPUT_DIR="__RESULTS_DIR__"
 REF_DIR="${TOMATO_PATH}/data/reference_data"
 CDS="${REF_DIR}/SL5.cds.fa.gz"
 logfile="${OUTPUT_DIR}/edta.log"
-RAGATAG_SCAFFOLD_FASTA="${TOMATO_PATH}/data/reference_data/SL5.0.fasta"
+RAGATAG_SCAFFOLD_FASTA="${ALL_RESULTS_DIR}/07.1.agp_correct/ragtag_output/dSAMPLE_CLI.ragtag.scaffold.fasta"
 # EDTA_IMAGE="/new-home/25086138/my_environments/edta/EDTA.sif"
 # TOOL_ENV="/usr/local/bin/"
 
